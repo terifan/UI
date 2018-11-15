@@ -1,0 +1,27 @@
+{
+	"collapse_button": "resources/collapse_button.png",
+	"expand_button": "resources/expand_button.png",
+
+	"text_foreground": [255,255,255],
+	"text_background": [0,0,0],
+	"text_foreground_disabled": [160,160,160],
+	"text_background_disabled": [0,0,0],
+	"text_foreground_readonly": [128,128,128],
+	"text_background_readonly": [0,0,0],
+	"text_foreground_selected": [255,255,255],
+	"text_background_selected": "9ACD3D",
+	"indent_foreground": [255,255,255],
+	"indent_background": [64,64,64],
+	"grid": [64,64,64],
+
+	"group": ["arial","bold",11],
+	"item": ["arial","plain",11],
+	"item_changed": ["arial","bold",11],
+
+	"show_description": true,
+	"show_indent": true,
+
+	"divider_position": 150,
+	"indent_width": 16,
+	"row_height": 18
+}
