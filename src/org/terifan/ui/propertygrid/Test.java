@@ -31,7 +31,7 @@ public class Test
 					))
 				)
 			);
-			model1.add(new Property("Number", 7));
+			model1.add(new Property("Number", 17));
 			model1.add(new Property("Color", new ColorChooser("ff800")));
 			model1.add(new Property("Region Settings",
 				new PropertyList()
