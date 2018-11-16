@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import javax.swing.JComponent;
 import org.terifan.ui.Anchor;
+import org.terifan.ui.TextBox;
 import org.terifan.ui.Utilities;
 
 
@@ -41,7 +42,7 @@ class PropertyGridLabel extends JComponent
 		{
 			foreground = style.getColor("indent_foreground");
 			background = style.getColor("indent_background");
-			font = style.getFont("group");
+			font = style.getFont("group_font");
 		}
 		else
 		{
@@ -56,14 +57,10 @@ class PropertyGridLabel extends JComponent
 				foreground = style.getColor("text_foreground");
 				background = style.getColor("text_background");
 			}
-			font = style.getFont("item");
+			font = style.getFont("item_font");
 		}
 
-		aGraphics.setFont(font);
-		aGraphics.setColor(background);
-		aGraphics.fillRect(0, 0, getWidth(), getHeight());
-
-		Rectangle dim = propertyGrid.getTextRenderer().drawString(aGraphics, mProperty.getLabel(), 2, 1, getWidth() - 2, getHeight(), Anchor.WEST, foreground, background, false);
+		Rectangle dim = new TextBox(mProperty.getLabel()).setPadding(0, 2, 0, 2).setBounds(0,0,getWidth(),getHeight()).setFont(font).setAnchor(Anchor.WEST).setForeground(foreground).setBackground(background).render(aGraphics).measure().getBounds();
 
 		if (selected && (mProperty.isGroup() || mProperty.isReadOnly()))
 		{

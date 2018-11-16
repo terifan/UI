@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.LayoutManager;
+import java.awt.font.FontRenderContext;
 import java.util.Iterator;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -50,7 +51,7 @@ class PropertyGridLayout implements LayoutManager //, PropertyGridModel.Callback
 			PropertyGrid propertyGrid = ((PropertyGridListPane)target).mPropertyGrid;
 			PropertyGridModel model = propertyGrid.getModel();
 			StyleSheet style = propertyGrid.getStyleSheet();
-			int rowHeight = style.getInt("row_height");
+			int rowHeight = propertyGrid.getRowHeight();
 
 			int y = 0;
 			int dividerX = propertyGrid.getDividerPosition();
@@ -59,9 +60,7 @@ class PropertyGridLayout implements LayoutManager //, PropertyGridModel.Callback
 
 			for (Iterator<Property> it = model.getRecursiveIterator(); it.hasNext();)
 			{
-				Property property = it.next();
-
-				layoutPropertyComponents(propertyGrid, property, dividerX, y, width, indentWidth, rowHeight);
+				layoutPropertyComponents(propertyGrid, it.next(), dividerX, y, width, indentWidth, rowHeight);
 
 				y += rowHeight;
 			}

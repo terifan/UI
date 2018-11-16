@@ -2,6 +2,7 @@ package org.terifan.ui.propertygrid;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
+import java.awt.font.FontRenderContext;
 import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.JButton;
@@ -10,7 +11,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import org.terifan.ui.TextRenderer;
 
 
 public class PropertyGrid extends JPanel
@@ -21,7 +21,6 @@ public class PropertyGrid extends JPanel
 	protected JScrollPane mScrollPane;
 	protected PropertyGridListPane mPanel;
 	protected Property mSelectedProperty;
-	protected TextRenderer mTextRenderer;
 	protected StyleSheet mStyleSheet;
 
 
@@ -36,8 +35,6 @@ public class PropertyGrid extends JPanel
 		super(new BorderLayout());
 
 		setStyleSheet(aStyleSheet);
-
-		mTextRenderer = new TextRenderer();
 
 		mPanel = new PropertyGridListPane(this);
 		mListeners = new ArrayList<>();
@@ -101,7 +98,7 @@ public class PropertyGrid extends JPanel
 
 		mPanel.removeAll();
 
-		Font valueFont = mStyleSheet.getFont("item");
+		Font valueFont = mStyleSheet.getFont("item_font");
 
 		for (Iterator<Property> it = mModel.getRecursiveIterator(); it.hasNext();)
 		{
@@ -141,15 +138,12 @@ public class PropertyGrid extends JPanel
 
 		if (aProperty != null)
 		{
-//			if (aProperty.commitValue())
+			if (mListeners.size() > 0)
 			{
-				if (mListeners.size() > 0)
+				ChangeEvent event = new ChangeEvent(aProperty);
+				for (ChangeListener o : mListeners)
 				{
-					ChangeEvent event = new ChangeEvent(aProperty);
-					for (ChangeListener o : mListeners)
-					{
-						o.stateChanged(event);
-					}
+					o.stateChanged(event);
 				}
 			}
 
@@ -170,8 +164,8 @@ public class PropertyGrid extends JPanel
 	}
 
 
-	protected TextRenderer getTextRenderer()
+	public int getRowHeight()
 	{
-		return mTextRenderer;
+		return mStyleSheet.getInt("row_padding") + (int)mStyleSheet.getFont("item_font").getLineMetrics("Aj]", new FontRenderContext(null, true, false)).getHeight();
 	}
 }

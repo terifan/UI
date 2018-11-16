@@ -14,14 +14,15 @@
 	"indent_background": [64,64,64],
 	"grid": [64,64,64],
 
-	"group": ["arial","bold",11],
-	"item": ["arial","plain",11],
+	"item_font": ["arial","plain",11],
 	"item_changed": ["arial","bold",11],
+	"group_font": ["arial","bold",11],
+	"group_font_value": ["arial","plain",11],
 
 	"show_description": true,
 	"show_indent": true,
 
 	"divider_position": 150,
 	"indent_width": 16,
-	"row_height": 18
+	"row_padding": 6
 }

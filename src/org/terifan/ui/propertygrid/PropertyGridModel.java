@@ -16,9 +16,19 @@ public class PropertyGridModel implements Iterable<Property>, Cloneable
 	}
 
 
-	public void add(Property aProperty)
+	public PropertyGridModel addProperty(Property aProperty)
 	{
 		mElements.add(aProperty);
+		return this;
+	}
+
+
+	public PropertyGridModel addProperty(PropertyList aPropertyList)
+	{
+		Property property = new Property(aPropertyList.getLabel(), aPropertyList);
+		property.setGroup(true);
+		mElements.add(property);
+		return this;
 	}
 
 

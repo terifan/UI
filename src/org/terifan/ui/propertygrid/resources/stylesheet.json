@@ -9,19 +9,20 @@
 	"text_foreground_readonly": [128,128,128],
 	"text_background_readonly": [0,0,0],
 	"text_foreground_selected": [255,255,255],
-	"text_background_selected": [0,0,160],
+	"text_background_selected": "3399FF",
 	"indent_foreground": [0,0,0],
 	"indent_background": [244,247,252],
 	"grid": [244,247,252],
 
-	"group": ["arial","bold",11],
-	"item": ["arial","plain",11],
+	"item_font": ["arial","plain",11],
 	"item_changed": ["arial","bold",11],
+	"group_font": ["arial","bold",11],
+	"group_font_value": ["arial","plain",11],
 
 	"show_description": true,
 	"show_indent": true,
 
 	"divider_position": 150,
 	"indent_width": 16,
-	"row_height": 18
+	"row_padding": 6
 }

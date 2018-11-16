@@ -51,7 +51,7 @@ public class Property implements Comparable<Property>, Iterable<Property>, Clone
 	}
 
 
-	public Property setValueProducer(Function<Property,Object> aFunction)
+	public Property setPopupHandler(Function<Property,Object> aFunction)
 	{
 		mFunction = aFunction;
 
@@ -327,7 +327,7 @@ public class Property implements Comparable<Property>, Iterable<Property>, Clone
 		{
 			return (PropertyList)mValueComponent;
 		}
-		return new PropertyList();
+		return new PropertyList("");
 	}
 
 

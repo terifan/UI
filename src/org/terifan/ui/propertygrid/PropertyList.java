@@ -9,6 +9,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
+import org.terifan.ui.Anchor;
+import org.terifan.ui.TextBox;
 
 
 public class PropertyList extends JComponent implements Iterable<Property>, Cloneable
@@ -16,6 +18,7 @@ public class PropertyList extends JComponent implements Iterable<Property>, Clon
 	protected Property mProperty;
 	protected ArrayList<Property> mElements;
 	protected Function<PropertyList, String> mFunction;
+	protected String mLabel;
 
 	private Function<PropertyList, String> DEFAULT_FORMATTER = aList ->
 	{
@@ -58,15 +61,50 @@ public class PropertyList extends JComponent implements Iterable<Property>, Clon
 	}
 
 
+	public PropertyList(String aLabel)
+	{
+		mElements = new ArrayList<>();
+		mFunction = DEFAULT_FORMATTER;
+		mLabel = aLabel;
+	}
+
+
+	public String getLabel()
+	{
+		return mLabel;
+	}
+
+
+	public void setLabel(String aLabel)
+	{
+		this.mLabel = aLabel;
+	}
+
+
 	protected void bindProperty(Property aProperty)
 	{
 		mProperty = aProperty;
 	}
 
 
-	public PropertyList add(Property aProperty)
+	public PropertyList addProperty(String aLabel, Object aValue)
+	{
+		mElements.add(new Property(aLabel, aValue));
+		return this;
+	}
+
+
+	public PropertyList addProperty(Property aProperty)
 	{
 		mElements.add(aProperty);
+		return this;
+	}
+
+
+	public PropertyList addProperty(PropertyList aPropertyList)
+	{
+		Property property = new Property(aPropertyList.getLabel(), aPropertyList);
+		mElements.add(property);
 		return this;
 	}
 
@@ -102,19 +140,21 @@ public class PropertyList extends JComponent implements Iterable<Property>, Clon
 	{
 		String t = getPresentationValue();
 
+		StyleSheet style = mProperty.getPropertyGrid().getStyleSheet();
+		Color color;
+
 		if (mProperty.isGroup())
 		{
-			StyleSheet style = mProperty.getPropertyGrid().getStyleSheet();
 			aGraphics.setColor(style.getColor("indent_background"));
 			aGraphics.fillRect(0, 0, getWidth(), getHeight());
-			aGraphics.setColor(new Color(100,100,100));
+			color = style.getColor("text_foreground_readonly");
 		}
 		else
 		{
-			aGraphics.setColor(new Color(128, 128, 128));
+			color = style.getColor("text_foreground_readonly");
 		}
 
-		aGraphics.drawString(t, mProperty.isGroup() ? 4 : 0, 11);
+		new TextBox(t).setFont(style.getFont("group_font_value")).setForeground(color).setBounds(0, 0, getWidth(), getHeight()).setAnchor(Anchor.WEST).setMargins(0, mProperty.isGroup() ? 4 : 0, 0, 0).render(aGraphics);
 	}
 
 

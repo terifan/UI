@@ -33,18 +33,18 @@ class PropertyGridIndent extends JComponent
 
 		if (mProperty.isGroup())
 		{
-			aGraphics.setFont(style.getFont("group"));
+			aGraphics.setFont(style.getFont("group_font"));
 			background = style.getColor("indent_background");
 		}
 		else if (selected && !mProperty.isReadOnly())
 		{
 			boolean focusOwner = Utilities.isWindowFocusOwner(propertyGrid);
-			aGraphics.setFont(style.getFont("item"));
+			aGraphics.setFont(style.getFont("item_font"));
 			background = focusOwner ? style.getColor("text_background_selected") : style.getColor("grid");
 		}
 		else
 		{
-			aGraphics.setFont(style.getFont("item"));
+			aGraphics.setFont(style.getFont("item_font"));
 			background = style.getColor("text_background");
 		}
 

@@ -13,39 +13,37 @@ public class Test
 	{
 		try
 		{
-			PropertyGridModel model1 = new PropertyGridModel();
-			model1.add(new Property("Text", "value"));
-			model1.add(new Property("Icon", new PropertyList()
-					.add(new Property("Path", "d:\\")
-						.setValueProducer(e->Strings.replaceNull(JOptionPane.showInputDialog("Value", e.getComponentValue()), (String)e.getComponentValue()))
+			PropertyGridModel model = new PropertyGridModel()
+				.addProperty(new PropertyList("(General)")
+					.addProperty("Text", "value")
+					.addProperty(new PropertyList("Icon")
+						.addProperty(new Property("Path", "d:\\")
+							.setPopupHandler(e->Strings.replaceNull(JOptionPane.showInputDialog("Value", e.getComponentValue()), (String)e.getComponentValue()))
+						)
+						.addProperty(new PropertyList("Size")
+							.addProperty("Width", 32)
+							.addProperty("Height", 32)
+							.addProperty(new PropertyList("DPI")
+								.addProperty("X", 100)
+								.addProperty("Y", 100)
+							)
+							.addProperty("ComboBox", new String[]{"aaa","bbbbb"})
+							.addProperty("CheckBox", true)
+						)
 					)
-					.add(new Property("Size", new PropertyList()
-						.add(new Property("Width", 32))
-						.add(new Property("Height", 32))
-						.add(new Property("DPI", new PropertyList()
-							.add(new Property("X", 100))
-							.add(new Property("Y", 100))
-						))
-						.add(new Property("ComboBox", new String[]{"aaa","bbbbb"}))
-						.add(new Property("CheckBox", true))
-					))
+					.addProperty("Number", 17)
+					.addProperty("Color", new ColorChooser("ff800"))
 				)
-			);
-			model1.add(new Property("Number", 17));
-			model1.add(new Property("Color", new ColorChooser("ff800")));
-			model1.add(new Property("Region Settings",
-				new PropertyList()
-					.add(new Property("Language", "Swedish"))
-					.add(new Property("Short Date", "a"))
-					.add(new Property("Long Date", "b"))
-					.add(new Property("Short time", "c"))
-					.add(new Property("Long time", "d"))
-				)
-				.setGroup(true)
-			);
+				.addProperty(new PropertyList("Region Settings")
+					.addProperty("Language", "Swedish")
+					.addProperty("Short Date", "a")
+					.addProperty("Long Date", "b")
+					.addProperty("Short time", "c")
+					.addProperty("Long time", "d")
+				);
 
-			PropertyGrid prop1 = new PropertyGrid(model1);
-			PropertyGrid prop2 = new PropertyGrid(model1.clone(), new StyleSheet(PropertyGrid.class, PropertyGrid.class.getResource("resources/stylesheet_dark.json")));
+			PropertyGrid prop1 = new PropertyGrid(model);
+			PropertyGrid prop2 = new PropertyGrid(model.clone(), new StyleSheet(PropertyGrid.class, PropertyGrid.class.getResource("resources/stylesheet_dark.json")));
 
 			JPanel panel = new JPanel(new BorderLayout());
 			panel.add(prop1, BorderLayout.NORTH);

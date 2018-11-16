@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.font.FontRenderContext;
 import java.util.Iterator;
 import javax.swing.JPanel;
 import javax.swing.Scrollable;
@@ -29,8 +30,7 @@ class PropertyGridListPane extends JPanel implements Scrollable
 	public Dimension getPreferredSize()
 	{
 		PropertyGridModel model = mPropertyGrid.getModel();
-		StyleSheet style = mPropertyGrid.getStyleSheet();
-		int rowHeight = style.getInt("row_height");
+		int rowHeight = mPropertyGrid.getRowHeight();
 
 		int width = 0;
 		int height = 0;
@@ -57,7 +57,7 @@ class PropertyGridListPane extends JPanel implements Scrollable
 	{
 		StyleSheet style = mPropertyGrid.getStyleSheet();
 		PropertyGridModel model = mPropertyGrid.getModel();
-		int rowHeight = style.getInt("row_height");
+		int rowHeight = mPropertyGrid.getRowHeight();
 
 		Graphics2D g = (Graphics2D)aGraphics;
 
