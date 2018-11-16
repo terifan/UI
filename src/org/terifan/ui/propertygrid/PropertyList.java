@@ -20,44 +20,49 @@ public class PropertyList extends Property implements Iterable<Property>, Clonea
 	private final static Function<PropertyList, String> DEFAULT_VALUE = aList ->
 	{
 		StringBuilder sb = new StringBuilder();
-		if (aList.mChildren != null)
+		for (Property p : aList.mChildren)
 		{
-			for (Property p : aList.mChildren)
+			Object v = p.getValueComponent();
+			if (!(v instanceof PropertyList))
 			{
-				Object v = p.getValueComponent();
-				if (!(v instanceof PropertyList))
+				if (sb.length() > 0)
 				{
-					if (sb.length() > 0)
-					{
-						sb.append("; ");
-					}
-					if (v instanceof JTextField)
-					{
-						sb.append(((JTextField)v).getText());
-					}
-					else if (v instanceof JComboBox)
-					{
-						sb.append(((JComboBox)v).getSelectedItem());
-					}
-					else if (v instanceof JCheckBox)
-					{
-						sb.append(((JCheckBox)v).isSelected());
-					}
-					else
-					{
-						sb.append(v);
-					}
+					sb.append("; ");
+				}
+				if (v instanceof JTextField)
+				{
+					sb.append(((JTextField)v).getText());
+				}
+				else if (v instanceof JComboBox)
+				{
+					sb.append(((JComboBox)v).getSelectedItem());
+				}
+				else if (v instanceof JCheckBox)
+				{
+					sb.append(((JCheckBox)v).isSelected());
+				}
+				else
+				{
+					sb.append(v);
 				}
 			}
 		}
+
 		return sb.toString();
 	};
 
 
 	public PropertyList(String aLabel)
 	{
+		this(false, aLabel);
+	}
+
+
+	public PropertyList(boolean aGroup, String aLabel)
+	{
 		super(aLabel, DEFAULT_VALUE);
 
+		mGroup = aGroup;
 		mChildren = new ArrayList<>();
 	}
 
@@ -102,7 +107,7 @@ public class PropertyList extends Property implements Iterable<Property>, Clonea
 		{
 			font = style.getFont("group_font_value");
 			background = style.getColor("indent_background");
-			foregound = style.getColor("text_foreground_readonly");
+			foregound = style.getColor("indent_foreground_value");
 		}
 		else
 		{
@@ -111,7 +116,7 @@ public class PropertyList extends Property implements Iterable<Property>, Clonea
 			foregound = style.getColor("text_foreground_readonly");
 		}
 
-		new TextBox(((Function<Property,String>)mValue).apply(this)).setFont(font).setForeground(foregound).setBackground(background).setBounds(0, 0, getWidth(), getHeight()).setAnchor(Anchor.WEST).setMargins(0, mGroup ? 4 : 0, 0, 0).render(aGraphics);
+		new TextBox(((Function)mValue).apply(this).toString()).setFont(font).setForeground(foregound).setBackground(background).setBounds(0, 0, getWidth(), getHeight()).setAnchor(Anchor.WEST).setMargins(0, mGroup ? 4 : 0, 0, 0).render(aGraphics);
 	}
 
 

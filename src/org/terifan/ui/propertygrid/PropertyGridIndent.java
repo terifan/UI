@@ -16,7 +16,7 @@ class PropertyGridIndent extends JComponent
 	{
 		mProperty = aProperty;
 
-		addMouseListener(new PropertyClickListener(mProperty));
+		addMouseListener(new PropertyClickListener(mProperty, true));
 	}
 
 
@@ -36,7 +36,7 @@ class PropertyGridIndent extends JComponent
 			aGraphics.setFont(style.getFont("group_font"));
 			background = style.getColor("indent_background");
 		}
-		else if (selected && !mProperty.isReadOnly())
+		else if (selected && !mProperty.isReadOnly() && !(mProperty instanceof PropertyList))
 		{
 			boolean focusOwner = Utilities.isWindowFocusOwner(propertyGrid);
 			aGraphics.setFont(style.getFont("item_font"));
@@ -54,7 +54,7 @@ class PropertyGridIndent extends JComponent
 		aGraphics.setColor(background);
 		aGraphics.fillRect(indentWidth, 0, getWidth() - indentWidth, getHeight());
 
-		if (mProperty instanceof PropertyList && !((PropertyList)mProperty).getChildren().isEmpty())
+		if (mProperty instanceof PropertyList)
 		{
 			int x = indent * indentWidth;
 			BufferedImage image = mProperty.getCollapsed() ? style.getImage("expand_button") : style.getImage("collapse_button");

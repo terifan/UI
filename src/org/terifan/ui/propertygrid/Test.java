@@ -14,17 +14,11 @@ public class Test
 		try
 		{
 			PropertyGridModel model = new PropertyGridModel()
-//				.addProperty(new PropertyList("(General)")
-//					.addProperty(new Property("test1", "test1"))
-//					.addProperty(new Property("test2", "test2"))
-//					.addProperty(new Property("test3", "test3"))
-//				);
-
-				.addProperty(new PropertyList("(General)")
+				.addProperty(new PropertyList(true, "(General)")
 					.addProperty("Text", "value")
 					.addProperty(new PropertyList("Icon")
 						.addProperty(new Property("Path", "d:\\")
-//							.setPopupFunction(e->Strings.replaceNull(JOptionPane.showInputDialog("Value", e.getComponentValue()), (String)e.getComponentValue()))
+							.setPopupFunction(e->Strings.replaceNull(JOptionPane.showInputDialog("Value", e.getValue()), (String)e.getValue()))
 						)
 						.addProperty(new PropertyList("Size")
 							.addProperty("Width", 32)
@@ -40,7 +34,7 @@ public class Test
 					.addProperty("Number", 17)
 					.addProperty("Color", new ColorChooser("ff8000"))
 				)
-				.addProperty(new PropertyList("Region Settings")
+				.addProperty(new PropertyList(true, "Region Settings")
 					.addProperty("Language", "Swedish")
 					.addProperty("Short Date", "a")
 					.addProperty("Long Date", "b")

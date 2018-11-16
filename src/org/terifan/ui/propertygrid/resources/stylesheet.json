@@ -10,7 +10,8 @@
 	"text_background_readonly": [255,255,255],
 	"text_foreground_selected": [255,255,255],
 	"text_background_selected": "3399FF",
-	"indent_foreground": [0,0,0],
+	"indent_foreground_label": [0,0,0],
+	"indent_foreground_value": [128,128,128],
 	"indent_background": [244,247,252],
 	"grid": [244,247,252],
 

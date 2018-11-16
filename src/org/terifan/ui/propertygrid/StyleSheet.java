@@ -73,6 +73,10 @@ public class StyleSheet
 		}
 
 		Integer[] values = mBundle.getIntArray(aKey);
+		if (values == null)
+		{
+			throw new IllegalArgumentException("Key not found: " + aKey);
+		}
 		if (values.length == 3)
 		{
 			return new Color(values[0], values[1], values[2]);

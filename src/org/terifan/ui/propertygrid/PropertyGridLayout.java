@@ -4,7 +4,6 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.LayoutManager;
-import java.awt.font.FontRenderContext;
 import java.util.Iterator;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -74,11 +73,9 @@ class PropertyGridLayout implements LayoutManager //, PropertyGridModel.Callback
 
 		item.getIndentComponent().setBounds(0, y, indent * indentWidth, rowHeight - 1);
 
-		JComponent component = item.getValueComponent();
+		int btnWidth = 0;
 
 		JButton button = item.getDetailButton();
-
-		int btnWidth = 0;
 		if (button != null)
 		{
 			btnWidth = button.getPreferredSize().width;
@@ -86,6 +83,7 @@ class PropertyGridLayout implements LayoutManager //, PropertyGridModel.Callback
 			btnWidth += 4;
 		}
 
+		JComponent component = item.getValueComponent();
 		component.setBounds(dividerX + (item.isGroup() ? 0 : 4), y, width - dividerX - btnWidth - (item.isGroup() ? 0 : 4), rowHeight - 1);
 
 		component = item.getLabelComponent();

@@ -174,12 +174,6 @@ public class Property extends JComponent implements Comparable<Property>, Clonea
 	}
 
 
-	protected void setValueComponent(JComponent aValueComponent)
-	{
-		mValueComponent = aValueComponent;
-	}
-
-
 	protected JComponent getLabelComponent()
 	{
 		return mLabelComponent;
@@ -243,12 +237,6 @@ public class Property extends JComponent implements Comparable<Property>, Clonea
 	}
 
 
-	public void setIndent(int aIndent)
-	{
-		mIndent = aIndent;
-	}
-
-
 	public PropertyGrid getPropertyGrid()
 	{
 		return mPropertyGrid;
@@ -297,7 +285,11 @@ public class Property extends JComponent implements Comparable<Property>, Clonea
 	{
 		JComponent valueComponent;
 
-		if (mValue instanceof JComponent)
+		if (this instanceof PropertyList)
+		{
+			valueComponent = (JComponent)this;
+		}
+		else if (mValue instanceof JComponent)
 		{
 			valueComponent = (JComponent)mValue;
 		}
@@ -329,6 +321,8 @@ public class Property extends JComponent implements Comparable<Property>, Clonea
 		if (aComponent instanceof JTextField)
 		{
 			aComponent.setBorder(null);
+
+			((JTextField)aComponent).setCaretColor(mPropertyGrid.getStyleSheet().getColor("text_foreground"));
 		}
 		else if (aComponent instanceof JCheckBox)
 		{
@@ -383,7 +377,7 @@ public class Property extends JComponent implements Comparable<Property>, Clonea
 		else if (mValue instanceof JCheckBox)
 		{
 			JCheckBox c = (JCheckBox)mValue;
-			clone.setValueComponent(new JCheckBox(c.getText(), c.isSelected()));
+			clone.setValue(new JCheckBox(c.getText(), c.isSelected()));
 		}
 		else if (mValue instanceof JComboBox)
 		{
@@ -394,7 +388,7 @@ public class Property extends JComponent implements Comparable<Property>, Clonea
 			{
 				modelCopy.addElement(model.getElementAt(i));
 			}
-			clone.setValueComponent(new JComboBox(modelCopy));
+			clone.setValue(new JComboBox(modelCopy));
 		}
 
 		return clone;

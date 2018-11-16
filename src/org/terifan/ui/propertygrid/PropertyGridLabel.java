@@ -24,7 +24,7 @@ class PropertyGridLabel extends JComponent
 			setFocusable(true);
 		}
 
-		addMouseListener(new PropertyClickListener(mProperty));
+		addMouseListener(new PropertyClickListener(mProperty, false));
 	}
 
 
@@ -41,13 +41,13 @@ class PropertyGridLabel extends JComponent
 
 		if (mProperty.isGroup())
 		{
-			foreground = style.getColor("indent_foreground");
+			foreground = style.getColor("indent_foreground_label");
 			background = style.getColor("indent_background");
 			font = style.getFont("group_font");
 		}
 		else
 		{
-			if (selected && !mProperty.isReadOnly())
+			if (selected && !mProperty.isReadOnly() && !(mProperty instanceof PropertyList))
 			{
 				boolean focusOwner = Utilities.isWindowFocusOwner(propertyGrid);
 				foreground = focusOwner ? style.getColor("text_foreground_selected") : style.getColor("text_background");
@@ -63,7 +63,7 @@ class PropertyGridLabel extends JComponent
 
 		Rectangle dim = new TextBox(mProperty.getLabel()).setPadding(0, 2, 0, 2).setBounds(0,0,getWidth(),getHeight()).setFont(font).setAnchor(Anchor.WEST).setForeground(foreground).setBackground(background).render(aGraphics).measure().getBounds();
 
-		if (selected && (mProperty.isGroup() || mProperty.isReadOnly()))
+		if (selected && (mProperty instanceof PropertyList || mProperty.isReadOnly()))
 		{
 			aGraphics.setColor(foreground);
 			Utilities.drawDottedRect(aGraphics, 0, 0, dim.width + 2, dim.height + 2, true);
