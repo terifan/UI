@@ -140,7 +140,7 @@ public class PropertyList extends Property implements Iterable<Property>, Clonea
 		for (Property item : mChildren)
 		{
 			aList.add(item);
-			if (item instanceof PropertyList && !item.getCollapsed())
+			if (item instanceof PropertyList && !item.isCollapsed())
 			{
 				((PropertyList)item).getRecursiveElements(aList);
 			}

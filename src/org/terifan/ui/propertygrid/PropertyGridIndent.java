@@ -57,7 +57,7 @@ class PropertyGridIndent extends JComponent
 		if (mProperty instanceof PropertyList)
 		{
 			int x = indent * indentWidth;
-			BufferedImage image = mProperty.getCollapsed() ? style.getImage("expand_button") : style.getImage("collapse_button");
+			BufferedImage image = mProperty.isCollapsed() ? style.getImage("expand_button") : style.getImage("collapse_button");
 			aGraphics.drawImage(image, x - indentWidth + (indentWidth - image.getWidth()) / 2, (getHeight() - image.getHeight()) / 2, null);
 		}
 	}
