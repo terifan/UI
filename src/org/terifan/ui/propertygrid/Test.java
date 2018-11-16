@@ -14,11 +14,17 @@ public class Test
 		try
 		{
 			PropertyGridModel model = new PropertyGridModel()
+//				.addProperty(new PropertyList("(General)")
+//					.addProperty(new Property("test1", "test1"))
+//					.addProperty(new Property("test2", "test2"))
+//					.addProperty(new Property("test3", "test3"))
+//				);
+
 				.addProperty(new PropertyList("(General)")
 					.addProperty("Text", "value")
 					.addProperty(new PropertyList("Icon")
 						.addProperty(new Property("Path", "d:\\")
-							.setPopupHandler(e->Strings.replaceNull(JOptionPane.showInputDialog("Value", e.getComponentValue()), (String)e.getComponentValue()))
+//							.setPopupFunction(e->Strings.replaceNull(JOptionPane.showInputDialog("Value", e.getComponentValue()), (String)e.getComponentValue()))
 						)
 						.addProperty(new PropertyList("Size")
 							.addProperty("Width", 32)
@@ -32,7 +38,7 @@ public class Test
 						)
 					)
 					.addProperty("Number", 17)
-					.addProperty("Color", new ColorChooser("ff800"))
+					.addProperty("Color", new ColorChooser("ff8000"))
 				)
 				.addProperty(new PropertyList("Region Settings")
 					.addProperty("Language", "Swedish")
@@ -40,7 +46,8 @@ public class Test
 					.addProperty("Long Date", "b")
 					.addProperty("Short time", "c")
 					.addProperty("Long time", "d")
-				);
+				)
+				;
 
 			PropertyGrid prop1 = new PropertyGrid(model);
 			PropertyGrid prop2 = new PropertyGrid(model.clone(), new StyleSheet(PropertyGrid.class, PropertyGrid.class.getResource("resources/stylesheet_dark.json")));

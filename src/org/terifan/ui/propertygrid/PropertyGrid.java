@@ -1,12 +1,8 @@
 package org.terifan.ui.propertygrid;
 
 import java.awt.BorderLayout;
-import java.awt.Font;
 import java.awt.font.FontRenderContext;
 import java.util.ArrayList;
-import java.util.Iterator;
-import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.ChangeEvent;
@@ -98,29 +94,19 @@ public class PropertyGrid extends JPanel
 
 		mPanel.removeAll();
 
-		Font valueFont = mStyleSheet.getFont("item_font");
+		buildComponentTree(mModel.getChildren(), 0);
+	}
 
-		for (Iterator<Property> it = mModel.getRecursiveIterator(); it.hasNext();)
+
+	protected void buildComponentTree(ArrayList<Property> aList, int aIndent)
+	{
+		for (Property item : aList)
 		{
-			Property item = it.next();
+			item.buildItem(this, mPanel, aIndent);
 
-			item.setPropertyGrid(this);
-
-			mPanel.add(item.getIndentComponent());
-			mPanel.add(item.getLabelComponent());
-
-			JComponent component = item.getValueComponent();
-			if (component != null)
+			if (item instanceof PropertyList)
 			{
-				mPanel.add(component);
-				component.addFocusListener(new PropertyGridEditorListener(item));
-				component.setFont(valueFont);
-			}
-
-			JButton button = item.getDetailButton();
-			if (button != null)
-			{
-				mPanel.add(button);
+				buildComponentTree(((PropertyList)item).getChildren(), aIndent + 1);
 			}
 		}
 	}

@@ -16,7 +16,7 @@ class PropertyGridIndent extends JComponent
 	{
 		mProperty = aProperty;
 
-		addMouseListener(new PropertyClickListener(mProperty, true));
+		addMouseListener(new PropertyClickListener(mProperty));
 	}
 
 
@@ -25,7 +25,7 @@ class PropertyGridIndent extends JComponent
 	{
 		PropertyGrid propertyGrid = mProperty.getPropertyGrid();
 		StyleSheet style = propertyGrid.getStyleSheet();
-		int indent = propertyGrid.getModel().getIndent(mProperty) + 1;
+		int indent = mProperty.getIndent() + 1;
 		int indentWidth = style.getInt("indent_width");
 		boolean selected = propertyGrid.getSelectedProperty() == mProperty;
 
@@ -54,7 +54,7 @@ class PropertyGridIndent extends JComponent
 		aGraphics.setColor(background);
 		aGraphics.fillRect(indentWidth, 0, getWidth() - indentWidth, getHeight());
 
-		if (mProperty.getChildren().getItemCount() > 0)
+		if (mProperty instanceof PropertyList && !((PropertyList)mProperty).getChildren().isEmpty())
 		{
 			int x = indent * indentWidth;
 			BufferedImage image = mProperty.getCollapsed() ? style.getImage("expand_button") : style.getImage("collapse_button");

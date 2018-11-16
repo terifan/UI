@@ -10,23 +10,21 @@ class PropertyClickListener extends MouseAdapter
 	private boolean mIndentComponent;
 
 
-	PropertyClickListener(Property aProperty, boolean aIndentComponent)
+	PropertyClickListener(Property aProperty)
 	{
 		mProperty = aProperty;
-		mIndentComponent = aIndentComponent;
 	}
 
 
 	@Override
 	public void mousePressed(MouseEvent aEvent)
 	{
-		if (mIndentComponent && mProperty.getChildren().getItemCount() > 0)
+		if (mProperty instanceof PropertyList && !((PropertyList)mProperty).getChildren().isEmpty())
 		{
 			PropertyGrid propertyGrid = mProperty.getPropertyGrid();
 
-			int indent = propertyGrid.getModel().getIndent(mProperty);
 			int indentWidth = propertyGrid.getStyleSheet().getInt("indent_width");
-			int x = indent * indentWidth;
+			int x = mProperty.getIndent() * indentWidth;
 
 			if (aEvent.getX() >= x && aEvent.getX() <= x + indentWidth)
 			{

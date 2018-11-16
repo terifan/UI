@@ -4,9 +4,6 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.function.Function;
 import javax.swing.AbstractAction;
 import javax.swing.ComboBoxModel;
@@ -15,6 +12,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 import javax.swing.plaf.basic.BasicComboBoxUI;
@@ -22,38 +20,37 @@ import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.plaf.basic.ComboPopup;
 
 
-public class Property implements Comparable<Property>, Cloneable
+public class Property extends JComponent implements Comparable<Property>, Cloneable
 {
-	private PropertyGrid mPropertyGrid;
-	private String mLabel;
-	private boolean mReadOnly;
-	private PropertyGridLabel mLabelComponent;
-	private JComponent mValueComponent;
-	private Object mUserObject;
-	private boolean mCollapsed;
-	private boolean mGroup;
-	private PropertyGridIndent mIndentComponent;
-	private Function<Property, Object> mFunction;
-	protected JButton mDetailsButton;
+	protected PropertyGrid mPropertyGrid;
+	protected PropertyGridIndent mIndentComponent;
+	protected PropertyGridLabel mLabelComponent;
+	protected JComponent mValueComponent;
+	protected Function<Property, Object> mPopupFunction;
+	protected JButton mDetailButton;
+	protected boolean mReadOnly;
+	protected boolean mCollapsed;
+	protected boolean mGroup;
+	protected String mLabel;
+	protected int mIndent;
+	protected Object mValue;
 
 
 	public Property(String aLabel, Object aValue)
 	{
-		if (aValue == null || !(aValue instanceof String || aValue instanceof Number || aValue instanceof Boolean || aValue instanceof JTextField || aValue instanceof JCheckBox || aValue instanceof JComboBox || aValue instanceof PropertyList || aValue.getClass().isArray()))
+		if (aValue == null || !(aValue instanceof String || aValue instanceof Number || aValue instanceof Boolean || aValue instanceof JTextField || aValue instanceof JCheckBox || aValue instanceof JComboBox || aValue instanceof PropertyList || aValue.getClass().isArray() || aValue instanceof Function))
 		{
 			throw new IllegalArgumentException("Unsupported value: " + aValue);
 		}
 
 		mLabel = aLabel;
-		mIndentComponent = new PropertyGridIndent(this);
-
-		setValueComponent(aValue);
+		mValue = aValue;
 	}
 
 
-	public Property setPopupHandler(Function<Property,Object> aFunction)
+	public Property setPopupFunction(Function<Property,Object> aFunction)
 	{
-		mFunction = aFunction;
+		mPopupFunction = aFunction;
 
 		updateDetailsButton();
 
@@ -63,20 +60,20 @@ public class Property implements Comparable<Property>, Cloneable
 
 	protected void updateDetailsButton()
 	{
-		if (mFunction == null)
+		if (mPopupFunction == null)
 		{
-			mDetailsButton = null;
+			mDetailButton = null;
 			return;
 		}
 
-		mDetailsButton = new JButton(new AbstractAction()
+		mDetailButton = new JButton(new AbstractAction()
 		{
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
 				if (mValueComponent instanceof JTextField)
 				{
-					Object value = mFunction.apply(Property.this);
+					Object value = mPopupFunction.apply(Property.this);
 					if (value != null)
 					{
 						((JTextField)mValueComponent).setText(value.toString());
@@ -87,24 +84,11 @@ public class Property implements Comparable<Property>, Cloneable
 			}
 		});
 
-		mDetailsButton.setMargin(new Insets(0, 0, 0, 0));
-		mDetailsButton.setOpaque(false);
-		mDetailsButton.setFocusable(false);
-		mDetailsButton.setActionCommand(mLabel);
-		mDetailsButton.setText("...");
-	}
-
-
-	public Object getUserObject()
-	{
-		return mUserObject;
-	}
-
-
-	public Property setUserObject(Object aObject)
-	{
-		mUserObject = aObject;
-		return this;
+		mDetailButton.setMargin(new Insets(0, 0, 0, 0));
+		mDetailButton.setOpaque(false);
+		mDetailButton.setFocusable(false);
+		mDetailButton.setActionCommand(mLabel);
+		mDetailButton.setText("...");
 	}
 
 
@@ -136,13 +120,13 @@ public class Property implements Comparable<Property>, Cloneable
 
 	public boolean isDetailsButtonVisible()
 	{
-		return mDetailsButton != null;
+		return mDetailButton != null;
 	}
 
 
 	public JButton getDetailButton()
 	{
-		return mDetailsButton;
+		return mDetailButton;
 	}
 
 
@@ -159,64 +143,28 @@ public class Property implements Comparable<Property>, Cloneable
 	}
 
 
-	public Object getComponentValue()
+	public Object getValue()
 	{
-		return getComponentValue(mValueComponent);
+		if (mValueComponent instanceof JTextField)
+		{
+			return ((JTextField)mValueComponent).getText();
+		}
+		if (mValueComponent instanceof JCheckBox)
+		{
+			return ((JCheckBox)mValueComponent).isSelected();
+		}
+		if (mValueComponent instanceof JComboBox)
+		{
+			return ((JComboBox)mValueComponent).getSelectedItem();
+		}
+
+		return mValueComponent;
 	}
 
 
-	protected Object getComponentValue(JComponent aComponent)
+	public void setValue(Object aValue)
 	{
-		if (aComponent instanceof JTextField)
-		{
-			return ((JTextField)aComponent).getText();
-		}
-		if (aComponent instanceof JCheckBox)
-		{
-			return ((JCheckBox)aComponent).isSelected();
-		}
-		if (aComponent instanceof JComboBox)
-		{
-			return ((JComboBox)aComponent).getSelectedItem();
-		}
-		if (aComponent instanceof PropertyList)
-		{
-			return ((PropertyList)aComponent).getPresentationValue();
-		}
-
-		System.out.println("Unsupported component: " + aComponent);
-
-		return null;
-	}
-
-
-	protected void configureValueComponent(JComponent aComponent)
-	{
-		if (aComponent instanceof JTextField)
-		{
-			aComponent.setBorder(null);
-		}
-		else if (aComponent instanceof JCheckBox)
-		{
-			aComponent.setOpaque(false);
-			aComponent.setCursor(Cursor.getDefaultCursor());
-			((JCheckBox)aComponent).addActionListener(e -> mPropertyGrid.repaint());
-		}
-		else if (aComponent instanceof JComboBox)
-		{
-			aComponent.setOpaque(false);
-			aComponent.setCursor(Cursor.getDefaultCursor());
-			((JComboBox)aComponent).addActionListener(e -> mPropertyGrid.repaint());
-
-			((JComboBox)aComponent).setUI(new BasicComboBoxUI() {
-				@Override
-				protected ComboPopup createPopup() {
-					BasicComboPopup basicComboPopup = new BasicComboPopup(comboBox);
-					basicComboPopup.setBorder(new LineBorder(Color.GRAY));
-					return basicComboPopup;
-				}
-			});
-		}
+		mValue = aValue;
 	}
 
 
@@ -226,46 +174,14 @@ public class Property implements Comparable<Property>, Cloneable
 	}
 
 
-	public Property setValueComponent(final Object aValue)
+	protected void setValueComponent(JComponent aValueComponent)
 	{
-		if (aValue instanceof PropertyList)
-		{
-			PropertyList comp = (PropertyList)aValue;
-			comp.bindProperty(this);
-
-			mReadOnly = true;
-			mValueComponent = comp;
-		}
-		else if (aValue instanceof JComponent)
-		{
-			mValueComponent = (JComponent)aValue;
-		}
-		else if (aValue instanceof Boolean)
-		{
-			mValueComponent = new JCheckBox("", (Boolean)aValue);
-		}
-		else if (aValue.getClass().isArray())
-		{
-			mValueComponent = new JComboBox((Object[])aValue);
-		}
-		else
-		{
-			mValueComponent = new JTextField(aValue.toString());
-		}
-
-		configureValueComponent(mValueComponent);
-
-		return this;
+		mValueComponent = aValueComponent;
 	}
 
 
 	protected JComponent getLabelComponent()
 	{
-		if (mLabelComponent == null)
-		{
-			mLabelComponent = new PropertyGridLabel(this);
-		}
-
 		return mLabelComponent;
 	}
 
@@ -321,47 +237,15 @@ public class Property implements Comparable<Property>, Cloneable
 	}
 
 
-	protected PropertyList getChildren()
+	protected Integer getIndent()
 	{
-		if (mValueComponent instanceof PropertyList)
-		{
-			return (PropertyList)mValueComponent;
-		}
-		return new PropertyList("");
+		return mIndent;
 	}
 
 
-	protected void getRecursiveElements(ArrayList<Property> aList)
+	public void setIndent(int aIndent)
 	{
-		if (mValueComponent instanceof PropertyList)
-		{
-			for (Property item : (PropertyList)mValueComponent)
-			{
-				aList.add(item);
-				if (!item.getCollapsed())
-				{
-					item.getRecursiveElements(aList);
-				}
-			}
-		}
-	}
-
-
-	protected Integer getIndent(Property aProperty, int aIndent)
-	{
-		for (Property item : getChildren())
-		{
-			if (item == aProperty)
-			{
-				return aIndent;
-			}
-			Integer i = item.getIndent(aProperty, aIndent + 1);
-			if (i != null)
-			{
-				return i;
-			}
-		}
-		return null;
+		mIndent = aIndent;
 	}
 
 
@@ -374,9 +258,102 @@ public class Property implements Comparable<Property>, Cloneable
 	protected void setPropertyGrid(PropertyGrid aPropertyGrid)
 	{
 		mPropertyGrid = aPropertyGrid;
+	}
 
-		mValueComponent.setForeground(mPropertyGrid.getStyleSheet().getColor("text_foreground"));
-		mValueComponent.setBackground(mPropertyGrid.getStyleSheet().getColor("text_background"));
+
+	public Object getUserDefinedValue()
+	{
+		return mValue;
+	}
+
+
+	protected void buildItem(PropertyGrid aPropertyGrid, JPanel aPanel, int aIndent)
+	{
+		mPropertyGrid = aPropertyGrid;
+		mIndent = aIndent;
+
+		mIndentComponent = new PropertyGridIndent(this);
+		mValueComponent = createValueComponent();
+		mLabelComponent = new PropertyGridLabel(this);
+
+		aPanel.add(mIndentComponent);
+		aPanel.add(mLabelComponent);
+
+		if (mValueComponent != null)
+		{
+			aPanel.add(mValueComponent);
+			mValueComponent.addFocusListener(new PropertyGridEditorListener(this));
+			mValueComponent.setFont(mPropertyGrid.getStyleSheet().getFont("item_font"));
+		}
+
+		if (mDetailButton != null)
+		{
+			aPanel.add(mDetailButton);
+		}
+	}
+
+
+	protected JComponent createValueComponent()
+	{
+		JComponent valueComponent;
+
+		if (mValue instanceof JComponent)
+		{
+			valueComponent = (JComponent)mValue;
+		}
+		else if (mValue instanceof Boolean)
+		{
+			valueComponent = new JCheckBox("", (Boolean)mValue);
+		}
+		else if (mValue.getClass().isArray())
+		{
+			valueComponent = new JComboBox((Object[])mValue);
+		}
+		else if (mValue instanceof Function)
+		{
+			valueComponent = new JTextField(((Function<Property,String>)mValue).apply(this));
+		}
+		else
+		{
+			valueComponent = new JTextField(mValue.toString());
+		}
+
+		configureValueComponent(valueComponent);
+
+		return valueComponent;
+	}
+
+
+	protected void configureValueComponent(JComponent aComponent)
+	{
+		if (aComponent instanceof JTextField)
+		{
+			aComponent.setBorder(null);
+		}
+		else if (aComponent instanceof JCheckBox)
+		{
+			aComponent.setOpaque(false);
+			aComponent.setCursor(Cursor.getDefaultCursor());
+			((JCheckBox)aComponent).addActionListener(e -> repaint());
+		}
+		else if (aComponent instanceof JComboBox)
+		{
+			aComponent.setOpaque(false);
+			aComponent.setCursor(Cursor.getDefaultCursor());
+			((JComboBox)aComponent).addActionListener(e -> repaint());
+
+			((JComboBox)aComponent).setUI(new BasicComboBoxUI() {
+				@Override
+				protected ComboPopup createPopup() {
+					BasicComboPopup basicComboPopup = new BasicComboPopup(comboBox);
+					basicComboPopup.setBorder(new LineBorder(Color.GRAY));
+					return basicComboPopup;
+				}
+			});
+		}
+
+		aComponent.setForeground(mPropertyGrid.getStyleSheet().getColor("text_foreground"));
+		aComponent.setBackground(mPropertyGrid.getStyleSheet().getColor("text_background"));
 	}
 
 
@@ -387,25 +364,30 @@ public class Property implements Comparable<Property>, Cloneable
 		clone.mPropertyGrid = null;
 		clone.mLabelComponent = null;
 		clone.mValueComponent = null;
-		clone.mDetailsButton = clone.getDetailButton();
+		clone.mDetailButton = clone.getDetailButton();
 		clone.mIndentComponent = new PropertyGridIndent(clone);
-		clone.mFunction = mFunction;
+		clone.mPopupFunction = mPopupFunction;
 
 		clone.updateDetailsButton();
 
-		if (mValueComponent instanceof JTextField)
+		if (mValue instanceof ColorChooser)
 		{
-			JTextField c = (JTextField)mValueComponent;
-			clone.setValueComponent(c.getText());
+			ColorChooser c = (ColorChooser)mValue;
+			clone.setValue(new ColorChooser(c.getText()));
 		}
-		else if (mValueComponent instanceof JCheckBox)
+		else if (mValue instanceof JTextField)
 		{
-			JCheckBox c = (JCheckBox)mValueComponent;
+			JTextField c = (JTextField)mValue;
+			clone.setValue(c.getText());
+		}
+		else if (mValue instanceof JCheckBox)
+		{
+			JCheckBox c = (JCheckBox)mValue;
 			clone.setValueComponent(new JCheckBox(c.getText(), c.isSelected()));
 		}
-		else if (mValueComponent instanceof JComboBox)
+		else if (mValue instanceof JComboBox)
 		{
-			JComboBox c = (JComboBox)mValueComponent;
+			JComboBox c = (JComboBox)mValue;
 			ComboBoxModel model = c.getModel();
 			DefaultComboBoxModel modelCopy = new DefaultComboBoxModel();
 			for (int i = 0; i < model.getSize(); i++)
@@ -414,13 +396,7 @@ public class Property implements Comparable<Property>, Cloneable
 			}
 			clone.setValueComponent(new JComboBox(modelCopy));
 		}
-		else if (mValueComponent instanceof PropertyList)
-		{
-			PropertyList c = (PropertyList)mValueComponent;
-			PropertyList copy = c.clone();
-			copy.mProperty = clone;
-			clone.setValueComponent(copy);
-		}
+
 		return clone;
 	}
 }

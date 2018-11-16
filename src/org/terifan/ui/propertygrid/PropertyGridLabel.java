@@ -19,12 +19,12 @@ class PropertyGridLabel extends JComponent
 	{
 		mProperty = aProperty;
 
-		if (mProperty.getPropertyGrid().getModel().getIndent(mProperty) == 0)
+		if (mProperty.getIndent() == 0)
 		{
 			setFocusable(true);
 		}
 
-		addMouseListener(new PropertyClickListener(mProperty, false));
+		addMouseListener(new PropertyClickListener(mProperty));
 	}
 
 

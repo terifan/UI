@@ -70,9 +70,7 @@ class PropertyGridLayout implements LayoutManager //, PropertyGridModel.Callback
 
 	protected void layoutPropertyComponents(PropertyGrid propertyGrid, Property item, int dividerX, int y, int width, int indentWidth, int rowHeight)
 	{
-		PropertyGridModel model = propertyGrid.getModel();
-
-		int indent = model.getIndent(item) + 1;
+		int indent = item.getIndent() + 1;
 
 		item.getIndentComponent().setBounds(0, y, indent * indentWidth, rowHeight - 1);
 

@@ -7,62 +7,44 @@ import java.util.Iterator;
 
 public class PropertyGridModel implements Iterable<Property>, Cloneable
 {
-	protected ArrayList<Property> mElements;
+	protected ArrayList<Property> mChildren;
 
 
 	public PropertyGridModel()
 	{
-		mElements = new ArrayList<>();
+		mChildren = new ArrayList<>();
 	}
 
 
 	public PropertyGridModel addProperty(Property aProperty)
 	{
-		mElements.add(aProperty);
-		return this;
-	}
-
-
-	public PropertyGridModel addProperty(PropertyList aPropertyList)
-	{
-		Property property = new Property(aPropertyList.getLabel(), aPropertyList);
-		property.setGroup(true);
-		mElements.add(property);
+		mChildren.add(aProperty);
 		return this;
 	}
 
 
 	public Property getProperty(int aIndex)
 	{
-		return mElements.get(aIndex);
+		return mChildren.get(aIndex);
 	}
 
 
-	public int getPropertyCount()
+	public int size()
 	{
-		return mElements.size();
+		return mChildren.size();
 	}
 
 
-	protected int getIndent(Property aProperty)
+	public ArrayList<Property> getChildren()
 	{
-		for (Property item : mElements)
-		{
-			Integer tmp = item.getIndent(aProperty, 1);
-			if (tmp != null)
-			{
-				return tmp;
-			}
-		}
-
-		return 0;
+		return mChildren;
 	}
 
 
 	@Override
 	public Iterator<Property> iterator()
 	{
-		ArrayList<Property> list = new ArrayList<>(mElements);
+		ArrayList<Property> list = new ArrayList<>(mChildren);
 		Collections.sort(list);
 		return list.iterator();
 	}
@@ -70,16 +52,13 @@ public class PropertyGridModel implements Iterable<Property>, Cloneable
 
 	public Iterator<Property> getRecursiveIterator()
 	{
-		ArrayList<Property> list = new ArrayList<>(mElements);
-		Collections.sort(list);
-
 		ArrayList<Property> out = new ArrayList<>();
-		for (Property property : list)
+		for (Property item : mChildren)
 		{
-			out.add(property);
-			if (!property.getCollapsed())
+			out.add(item);
+			if (item instanceof PropertyList && !item.getCollapsed())
 			{
-				property.getRecursiveElements(out);
+				((PropertyList)item).getRecursiveElements(out);
 			}
 		}
 
@@ -92,9 +71,9 @@ public class PropertyGridModel implements Iterable<Property>, Cloneable
 	{
 		PropertyGridModel clone = new PropertyGridModel();
 
-		for (Property item : mElements)
+		for (Property item : mChildren)
 		{
-			clone.mElements.add(item.clone());
+			clone.mChildren.add(item.clone());
 		}
 
 		return clone;
