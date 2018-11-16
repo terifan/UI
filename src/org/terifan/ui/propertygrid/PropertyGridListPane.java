@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.font.FontRenderContext;
 import java.util.Iterator;
 import javax.swing.JPanel;
 import javax.swing.Scrollable;
@@ -29,17 +28,13 @@ class PropertyGridListPane extends JPanel implements Scrollable
 	@Override
 	public Dimension getPreferredSize()
 	{
-		PropertyGridModel model = mPropertyGrid.getModel();
 		int rowHeight = mPropertyGrid.getRowHeight();
-
 		int width = 0;
 		int height = 0;
 
-		for (Iterator<Property> it = model.getRecursiveIterator(); it.hasNext(); )
+		for (Iterator<Property> it = mPropertyGrid.getModel().getRecursiveIterator(); it.hasNext();)
 		{
-			Property item = it.next();
-
-			Component component = item.getValueComponent();
+			Component component = it.next().getValueComponent();
 
 			if (component != null)
 			{
@@ -56,26 +51,24 @@ class PropertyGridListPane extends JPanel implements Scrollable
 	protected void paintComponent(Graphics aGraphics)
 	{
 		StyleSheet style = mPropertyGrid.getStyleSheet();
-		PropertyGridModel model = mPropertyGrid.getModel();
 		int rowHeight = mPropertyGrid.getRowHeight();
 
 		Graphics2D g = (Graphics2D)aGraphics;
-
 		g.setColor(style.getColor("text_background"));
 		g.fillRect(0, 0, getWidth(), getHeight());
 
 		aGraphics.setColor(style.getColor("grid"));
 
 		int y = 0;
-		for (Iterator<Property> it = model.getRecursiveIterator(); it.hasNext();)
+		for (Iterator<Property> it = mPropertyGrid.getModel().getRecursiveIterator(); it.hasNext();)
 		{
 			it.next();
 
 			y += rowHeight;
-			aGraphics.drawLine(0, y-1, getWidth()-1, y-1);
+			aGraphics.drawLine(0, y - 1, getWidth() - 1, y - 1);
 		}
 
-		aGraphics.drawLine(mPropertyGrid.getDividerPosition(), 0, mPropertyGrid.getDividerPosition(), y-1);
+		aGraphics.drawLine(mPropertyGrid.getDividerPosition(), 0, mPropertyGrid.getDividerPosition(), y - 1);
 	}
 
 

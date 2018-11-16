@@ -1,6 +1,7 @@
 package org.terifan.ui.propertygrid;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -138,23 +139,25 @@ public class PropertyList extends JComponent implements Iterable<Property>, Clon
 	@Override
 	protected void paintComponent(Graphics aGraphics)
 	{
-		String t = getPresentationValue();
-
 		StyleSheet style = mProperty.getPropertyGrid().getStyleSheet();
-		Color color;
+		Color foregound;
+		Color background;
+		Font font;
 
 		if (mProperty.isGroup())
 		{
-			aGraphics.setColor(style.getColor("indent_background"));
-			aGraphics.fillRect(0, 0, getWidth(), getHeight());
-			color = style.getColor("text_foreground_readonly");
+			font = style.getFont("group_font_value");
+			background = style.getColor("indent_background");
+			foregound = style.getColor("text_foreground_readonly");
 		}
 		else
 		{
-			color = style.getColor("text_foreground_readonly");
+			font = style.getFont("group_font_value");
+			background = style.getColor("text_background_readonly");
+			foregound = style.getColor("text_foreground_readonly");
 		}
 
-		new TextBox(t).setFont(style.getFont("group_font_value")).setForeground(color).setBounds(0, 0, getWidth(), getHeight()).setAnchor(Anchor.WEST).setMargins(0, mProperty.isGroup() ? 4 : 0, 0, 0).render(aGraphics);
+		new TextBox(getPresentationValue()).setFont(font).setForeground(foregound).setBackground(background).setBounds(0, 0, getWidth(), getHeight()).setAnchor(Anchor.WEST).setMargins(0, mProperty.isGroup() ? 4 : 0, 0, 0).render(aGraphics);
 	}
 
 

@@ -7,40 +7,32 @@ import java.awt.event.MouseEvent;
 class PropertyClickListener extends MouseAdapter
 {
 	private Property mProperty;
-	private boolean mIndent;
+	private boolean mIndentComponent;
 
 
-	PropertyClickListener(Property aProperty, boolean aIndent)
+	PropertyClickListener(Property aProperty, boolean aIndentComponent)
 	{
 		mProperty = aProperty;
-		mIndent = aIndent;
+		mIndentComponent = aIndentComponent;
 	}
 
 
 	@Override
 	public void mousePressed(MouseEvent aEvent)
 	{
-		PropertyGrid propertyGrid = mProperty.getPropertyGrid();
-		StyleSheet style = propertyGrid.getStyleSheet();
-		int indent = propertyGrid.getModel().getIndent(mProperty) + 1;
-		int indentWidth = style.getInt("indent_width");
-
-		if (mProperty.getChildren().getItemCount() > 0)
+		if (mIndentComponent && mProperty.getChildren().getItemCount() > 0)
 		{
-			boolean clicked = false;
+			PropertyGrid propertyGrid = mProperty.getPropertyGrid();
 
-			if (mIndent)
-			{
-				int x = (indent - 1) * indentWidth;
-				clicked = aEvent.getX() >= x && aEvent.getX() <= x + indentWidth;
-			}
+			int indent = propertyGrid.getModel().getIndent(mProperty);
+			int indentWidth = propertyGrid.getStyleSheet().getInt("indent_width");
+			int x = indent * indentWidth;
 
-			if (clicked)
+			if (aEvent.getX() >= x && aEvent.getX() <= x + indentWidth)
 			{
 				mProperty.setCollapsed(!mProperty.getCollapsed());
 				propertyGrid.setModel(propertyGrid.getModel());
 				propertyGrid.redisplay();
-				return;
 			}
 		}
 

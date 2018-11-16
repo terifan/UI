@@ -22,7 +22,7 @@ import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.plaf.basic.ComboPopup;
 
 
-public class Property implements Comparable<Property>, Iterable<Property>, Cloneable
+public class Property implements Comparable<Property>, Cloneable
 {
 	private PropertyGrid mPropertyGrid;
 	private String mLabel;
@@ -39,7 +39,7 @@ public class Property implements Comparable<Property>, Iterable<Property>, Clone
 
 	public Property(String aLabel, Object aValue)
 	{
-		if (!(aValue instanceof String || aValue instanceof Number || aValue instanceof Boolean || aValue instanceof JTextField || aValue instanceof JCheckBox || aValue instanceof JComboBox || aValue instanceof PropertyList || aValue.getClass().isArray()))
+		if (aValue == null || !(aValue instanceof String || aValue instanceof Number || aValue instanceof Boolean || aValue instanceof JTextField || aValue instanceof JCheckBox || aValue instanceof JComboBox || aValue instanceof PropertyList || aValue.getClass().isArray()))
 		{
 			throw new IllegalArgumentException("Unsupported value: " + aValue);
 		}
@@ -240,17 +240,17 @@ public class Property implements Comparable<Property>, Iterable<Property>, Clone
 		{
 			mValueComponent = (JComponent)aValue;
 		}
-		else if (aValue.getClass().isArray())
-		{
-			mValueComponent = new JComboBox((Object[])aValue);
-		}
 		else if (aValue instanceof Boolean)
 		{
 			mValueComponent = new JCheckBox("", (Boolean)aValue);
 		}
+		else if (aValue.getClass().isArray())
+		{
+			mValueComponent = new JComboBox((Object[])aValue);
+		}
 		else
 		{
-			mValueComponent = new JTextField(aValue == null ? "" : aValue.toString());
+			mValueComponent = new JTextField(aValue.toString());
 		}
 
 		configureValueComponent(mValueComponent);
@@ -328,16 +328,6 @@ public class Property implements Comparable<Property>, Iterable<Property>, Clone
 			return (PropertyList)mValueComponent;
 		}
 		return new PropertyList("");
-	}
-
-
-	@Override
-	public Iterator<Property> iterator()
-	{
-		ArrayList<Property> list = new ArrayList<>();
-		list.addAll(getChildren().mElements);
-		Collections.sort(list);
-		return list.iterator();
 	}
 
 

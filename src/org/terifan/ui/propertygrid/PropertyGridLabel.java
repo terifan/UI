@@ -35,7 +35,8 @@ class PropertyGridLabel extends JComponent
 		StyleSheet style = propertyGrid.getStyleSheet();
 		boolean selected = propertyGrid.getSelectedProperty() == mProperty;
 
-		Color foreground, background;
+		Color foreground;
+		Color background;
 		Font font;
 
 		if (mProperty.isGroup())

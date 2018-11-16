@@ -1,6 +1,6 @@
 {
-	"collapse_button": "resources/collapse_button.png",
-	"expand_button": "resources/expand_button.png",
+	"collapse_button": "resources/collapse_button_arrow_dark.png",
+	"expand_button": "resources/expand_button_arrow_dark.png",
 
 	"text_foreground": [255,255,255],
 	"text_background": [0,0,0],
