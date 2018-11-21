@@ -66,16 +66,16 @@ public class PropertyGridModel implements Iterable<Property>, Cloneable
 	}
 
 
-	@Override
-	public PropertyGridModel clone() throws CloneNotSupportedException
-	{
-		PropertyGridModel clone = new PropertyGridModel();
-
-		for (Property item : mChildren)
-		{
-			clone.mChildren.add(item.clone());
-		}
-
-		return clone;
-	}
+//	@Override
+//	public PropertyGridModel clone() throws CloneNotSupportedException
+//	{
+//		PropertyGridModel clone = new PropertyGridModel();
+//
+//		for (Property item : mChildren)
+//		{
+//			clone.mChildren.add(item.clone());
+//		}
+//
+//		return clone;
+//	}
 }

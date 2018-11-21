@@ -6,9 +6,9 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.Function;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JTextField;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 import org.terifan.ui.Anchor;
 import org.terifan.ui.TextBox;
 
@@ -22,29 +22,13 @@ public class PropertyList extends Property implements Iterable<Property>, Clonea
 		StringBuilder sb = new StringBuilder();
 		for (Property p : aList.mChildren)
 		{
-			Object v = p.getValueComponent();
-			if (!(v instanceof PropertyList))
+			if (!(p instanceof PropertyList))
 			{
 				if (sb.length() > 0)
 				{
 					sb.append("; ");
 				}
-				if (v instanceof JTextField)
-				{
-					sb.append(((JTextField)v).getText());
-				}
-				else if (v instanceof JComboBox)
-				{
-					sb.append(((JComboBox)v).getSelectedItem());
-				}
-				else if (v instanceof JCheckBox)
-				{
-					sb.append(((JCheckBox)v).isSelected());
-				}
-				else
-				{
-					sb.append(v);
-				}
+				sb.append(p);
 			}
 		}
 
@@ -60,7 +44,7 @@ public class PropertyList extends Property implements Iterable<Property>, Clonea
 
 	public PropertyList(boolean aGroup, String aLabel)
 	{
-		super(aLabel, DEFAULT_VALUE);
+		super(aLabel);
 
 		mGroup = aGroup;
 		mChildren = new ArrayList<>();
@@ -69,8 +53,11 @@ public class PropertyList extends Property implements Iterable<Property>, Clonea
 
 	public PropertyList addProperty(String aLabel, Object aValue)
 	{
-		mChildren.add(new Property(aLabel, aValue));
-		return this;
+		if (aValue instanceof Boolean)
+		{
+			return addProperty(new CheckBoxProperty(aLabel, (boolean)aValue));
+		}
+		return addProperty(new TextProperty(aLabel, aValue));
 	}
 
 
@@ -95,44 +82,62 @@ public class PropertyList extends Property implements Iterable<Property>, Clonea
 
 
 	@Override
-	protected void paintComponent(Graphics aGraphics)
+	protected JComponent createValueComponent()
 	{
-		if (mPropertyGrid == null) return;
-		StyleSheet style = mPropertyGrid.getStyleSheet();
-		Color foregound;
-		Color background;
-		Font font;
-
-		if (mGroup)
+		return new JLabel()
 		{
-			font = style.getFont("group_font_value");
-			background = style.getColor("indent_background");
-			foregound = style.getColor("indent_foreground_value");
-		}
-		else
-		{
-			font = style.getFont("group_font_value");
-			background = style.getColor("text_background_readonly");
-			foregound = style.getColor("text_foreground_readonly");
-		}
+			@Override
+			protected void paintComponent(Graphics aGraphics)
+			{
+				if (mPropertyGrid == null)
+				{
+					return;
+				}
 
-		new TextBox(((Function)mValue).apply(this).toString()).setFont(font).setForeground(foregound).setBackground(background).setBounds(0, 0, getWidth(), getHeight()).setAnchor(Anchor.WEST).setMargins(0, mGroup ? 4 : 0, 0, 0).render(aGraphics);
+				StyleSheet style = mPropertyGrid.getStyleSheet();
+				Color foregound;
+				Color background;
+				Font font;
+
+				if (mGroup)
+				{
+					font = style.getFont("group_font_value");
+					background = style.getColor("indent_background");
+					foregound = style.getColor("indent_foreground_value");
+				}
+				else
+				{
+					font = style.getFont("group_font_value");
+					background = style.getColor("text_background_readonly");
+					foregound = style.getColor("text_foreground_readonly");
+				}
+
+				new TextBox(PropertyList.this.toString()).setFont(font).setForeground(foregound).setBackground(background).setBounds(0, 0, getWidth(), getHeight()).setAnchor(Anchor.WEST).setMargins(0, mGroup ? 4 : 0, 0, 0).render(aGraphics);
+			}
+		};
 	}
 
 
 	@Override
-	protected PropertyList clone() throws CloneNotSupportedException
+	public String toString()
 	{
-		PropertyList clone = (PropertyList)super.clone();
-
-		clone.mChildren = new ArrayList<>();
-		for (Property item : mChildren)
-		{
-			clone.mChildren.add(item.clone());
-		}
-
-		return clone;
+		return DEFAULT_VALUE.apply(PropertyList.this);
 	}
+
+
+//	@Override
+//	protected PropertyList clone() throws CloneNotSupportedException
+//	{
+//		PropertyList clone = (PropertyList)super.clone();
+//
+//		clone.mChildren = new ArrayList<>();
+//		for (Property item : mChildren)
+//		{
+//			clone.mChildren.add(item.clone());
+//		}
+//
+//		return clone;
+//	}
 
 
 	protected void getRecursiveElements(ArrayList<Property> aList)

@@ -114,7 +114,14 @@ public class StyleSheet
 	{
 		try
 		{
-			return ImageIO.read(mClass.getResource(mBundle.getString(aKey)));
+			String path = mBundle.getString(aKey);
+
+			if (path == null)
+			{
+				throw new IllegalArgumentException("Key not found: " + aKey);
+			}
+
+			return ImageIO.read(mClass.getResource(path));
 		}
 		catch (IOException e)
 		{

@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import org.terifan.ui.Utilities;
 import org.terifan.util.Strings;
 
 
@@ -13,13 +14,13 @@ public class Test
 	{
 		try
 		{
+			Utilities.setSystemLookAndFeel();
+
 			PropertyGridModel model = new PropertyGridModel()
 				.addProperty(new PropertyList(true, "(General)")
 					.addProperty("Text", "value")
 					.addProperty(new PropertyList("Icon")
-						.addProperty(new Property("Path", "d:\\")
-							.setPopupFunction(e->Strings.replaceNull(JOptionPane.showInputDialog("Value", e.getValue()), (String)e.getValue()))
-						)
+						.addProperty(new PropertyPopup("Path", "d:\\", e->JOptionPane.showInputDialog("Value", e.getValue())))
 						.addProperty(new PropertyList("Size")
 							.addProperty("Width", 32)
 							.addProperty("Height", 32)
@@ -32,7 +33,7 @@ public class Test
 						)
 					)
 					.addProperty("Number", 17)
-					.addProperty("Color", new ColorChooser("ff8000"))
+					.addProperty(new ColorChooser("Color", "ff8000"))
 				)
 				.addProperty(new PropertyList(true, "Region Settings")
 					.addProperty("Language", "Swedish")
@@ -44,11 +45,11 @@ public class Test
 				;
 
 			PropertyGrid prop1 = new PropertyGrid(model);
-			PropertyGrid prop2 = new PropertyGrid(model.clone(), new StyleSheet(PropertyGrid.class, PropertyGrid.class.getResource("resources/stylesheet_dark.json")));
+//			PropertyGrid prop2 = new PropertyGrid(model.clone(), new StyleSheet(PropertyGrid.class, PropertyGrid.class.getResource("resources/stylesheet_dark.json")));
 
 			JPanel panel = new JPanel(new BorderLayout());
 			panel.add(prop1, BorderLayout.NORTH);
-			panel.add(prop2, BorderLayout.SOUTH);
+//			panel.add(prop2, BorderLayout.SOUTH);
 
 			JFrame frame = new JFrame();
 			frame.add(panel);

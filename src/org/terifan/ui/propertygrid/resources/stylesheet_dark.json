@@ -25,5 +25,8 @@
 
 	"divider_position": 150,
 	"indent_width": 16,
-	"row_padding": 6
+	"row_padding": 6,
+
+	"dropdown_icon": "resources/dropdown_button.png",
+	"popup_icon": "resources/popup_button.png"
 }

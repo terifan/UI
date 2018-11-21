@@ -2,38 +2,20 @@ package org.terifan.ui.propertygrid;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import javax.swing.JComponent;
 import javax.swing.JTextField;
 
 
-public class ColorChooser extends JTextField implements Cloneable
+public class ColorChooser extends Property implements Cloneable
 {
-	protected String mOldValue;
+	protected String mValue;
 
 
-	public ColorChooser(String aColor)
+	public ColorChooser(String aLabel, String aColor)
 	{
-		setText(aColor);
-	}
+		super(aLabel);
 
-
-	@Override
-	public void setText(String aText)
-	{
-		Color color = decodeColor(aText);
-
-		if (color == null && mOldValue == null)
-		{
-			color = new Color(128, 128, 128);
-		}
-		else if (color == null)
-		{
-			setColor(decodeColor(mOldValue));
-			return;
-		}
-
-		setColor(color);
-
-		mOldValue = aText;
+		mValue = aColor;
 	}
 
 
@@ -41,11 +23,11 @@ public class ColorChooser extends JTextField implements Cloneable
 	{
 		if (aColor.getAlpha() != 255)
 		{
-			super.setText(aColor.getRed() + "," + aColor.getGreen() + "," + aColor.getBlue() + "," + aColor.getAlpha());
+			((JTextField)mValueComponent).setText(aColor.getRed() + "," + aColor.getGreen() + "," + aColor.getBlue() + "," + aColor.getAlpha());
 		}
 		else
 		{
-			super.setText(aColor.getRed() + "," + aColor.getGreen() + "," + aColor.getBlue());
+			((JTextField)mValueComponent).setText(aColor.getRed() + "," + aColor.getGreen() + "," + aColor.getBlue());
 		}
 		return this;
 	}
@@ -53,10 +35,10 @@ public class ColorChooser extends JTextField implements Cloneable
 
 	public Color getColor()
 	{
-		Color color = decodeColor(getText());
+		Color color = decodeColor(((JTextField)mValueComponent).getText());
 		if (color == null)
 		{
-			color = decodeColor(mOldValue);
+			color = decodeColor(mValue);
 		}
 		return color;
 	}
@@ -109,30 +91,66 @@ public class ColorChooser extends JTextField implements Cloneable
 
 
 	@Override
-	protected void paintComponent(Graphics aGraphics)
+	protected JComponent createValueComponent()
 	{
-		if (isFocusOwner())
+		JTextField c = new JTextField()
 		{
-			super.paintComponent(aGraphics);
-			return;
-		}
+			@Override
+			public void setText(String aText)
+			{
+				Color color = decodeColor(aText);
 
-		Color color = getColor();
-		mOldValue = super.getText();
+				if (color == null && mValue == null)
+				{
+					color = new Color(128, 128, 128);
+				}
+				else if (color == null)
+				{
+					setColor(decodeColor(mValue));
+					return;
+				}
 
-		aGraphics.setColor(getBackground());
-		aGraphics.fillRect(0, 0, getWidth(), getHeight());
-		aGraphics.setColor(color);
-		aGraphics.fillRect(0, 1, 12, 12);
-		aGraphics.setColor(getForeground());
-		aGraphics.drawRect(0, 1, 12, 12);
-		aGraphics.drawString("[" + getText() + "]", 18, 11);
+				setColor(color);
+
+				mValue = aText;
+			}
+
+
+			@Override
+			protected void paintComponent(Graphics aGraphics)
+			{
+				if (isFocusOwner())
+				{
+					super.paintComponent(aGraphics);
+					return;
+				}
+
+				Color color = getColor();
+				mValue = super.getText();
+
+				aGraphics.setColor(getBackground());
+				aGraphics.fillRect(0, 0, getWidth(), getHeight());
+				aGraphics.setColor(color);
+				aGraphics.fillRect(0, 1, 12, 12);
+				aGraphics.setColor(getForeground());
+				aGraphics.drawRect(0, 1, 12, 12);
+				aGraphics.drawString("[" + getText() + "]", 18, 11);
+			}
+		};
+
+		c.setBorder(null);
+		c.setCaretColor(mPropertyGrid.mStyleSheet.getColor("text_foreground"));
+		c.addActionListener(e -> mValueComponent.repaint());
+		c.setForeground(mPropertyGrid.mStyleSheet.getColor("text_foreground"));
+		c.setBackground(mPropertyGrid.mStyleSheet.getColor("text_background"));
+
+		return c;
 	}
 
 
 	@Override
-	protected ColorChooser clone() throws CloneNotSupportedException
+	public String toString()
 	{
-		return new ColorChooser(getText());
+		return "[" + ((JTextField)mValueComponent).getText() + "]";
 	}
 }

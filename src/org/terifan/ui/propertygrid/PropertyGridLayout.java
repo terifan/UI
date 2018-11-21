@@ -75,10 +75,10 @@ class PropertyGridLayout implements LayoutManager //, PropertyGridModel.Callback
 
 		int btnWidth = 0;
 
-		JButton button = item.getDetailButton();
+		JButton button = item.getActionButton();
 		if (button != null)
 		{
-			btnWidth = button.getPreferredSize().width;
+			btnWidth = rowHeight;
 			button.setBounds(width - btnWidth, y, btnWidth, rowHeight - 1);
 			btnWidth += 4;
 		}
