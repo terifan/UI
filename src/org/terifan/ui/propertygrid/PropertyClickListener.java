@@ -29,7 +29,8 @@ class PropertyClickListener extends MouseAdapter
 
 			if (aEvent.getX() >= x && aEvent.getX() <= x + indentWidth)
 			{
-				mProperty.setCollapsed(!mProperty.isCollapsed());
+				PropertyList prop = (PropertyList)mProperty;
+				prop.setCollapsed(!prop.isCollapsed());
 				propertyGrid.setModel(propertyGrid.getModel());
 				propertyGrid.redisplay();
 			}

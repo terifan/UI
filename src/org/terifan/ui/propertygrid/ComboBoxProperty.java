@@ -38,6 +38,14 @@ public class ComboBoxProperty extends Property<JComboBox, Object>
 
 
 	@Override
+	public ComboBoxProperty setValue(Object aValue)
+	{
+		mValueComponent.setSelectedItem(aValue);
+		return this;
+	}
+
+
+	@Override
 	public Property clone() throws CloneNotSupportedException
 	{
 		return cloneImpl();

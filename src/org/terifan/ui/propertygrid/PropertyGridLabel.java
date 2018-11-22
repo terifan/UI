@@ -47,7 +47,7 @@ class PropertyGridLabel extends JComponent
 		}
 		else
 		{
-			if (selected && !mProperty.isReadOnly() && !(mProperty instanceof PropertyList))
+			if (selected && mProperty.isEditable() && !(mProperty instanceof PropertyList))
 			{
 				boolean focusOwner = Utilities.isWindowFocusOwner(propertyGrid);
 				foreground = focusOwner ? style.getColor("text_foreground_selected") : style.getColor("text_background");
@@ -63,7 +63,7 @@ class PropertyGridLabel extends JComponent
 
 		Rectangle dim = new TextBox(mProperty.getLabel()).setPadding(0, 2, 0, 2).setBounds(0,0,getWidth(),getHeight()).setFont(font).setAnchor(Anchor.WEST).setForeground(foreground).setBackground(background).render(aGraphics).measure().getBounds();
 
-		if (selected && (mProperty instanceof PropertyList || mProperty.isReadOnly()))
+		if (selected && (mProperty instanceof PropertyList || !mProperty.isEditable()))
 		{
 			aGraphics.setColor(foreground);
 			Utilities.drawDottedRect(aGraphics, 0, 0, dim.width + 2, dim.height + 2, true);

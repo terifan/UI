@@ -11,8 +11,6 @@ import javax.swing.JTextField;
 
 public class PropertyPopup extends Property<JTextField,Object> implements Cloneable
 {
-	protected JButton mActionButton;
-	protected Function<Property,Object> mFunction;
 	protected Object mValue;
 
 
@@ -24,16 +22,6 @@ public class PropertyPopup extends Property<JTextField,Object> implements Clonea
 		mValue = aValue;
 
 		setEditable(false);
-	}
-
-
-	public PropertyPopup setEditable(boolean aState)
-	{
-		if (mValueComponent instanceof JTextField)
-		{
-			((JTextField)mValueComponent).setEditable(aState);
-		}
-		return this;
 	}
 
 
@@ -53,23 +41,6 @@ public class PropertyPopup extends Property<JTextField,Object> implements Clonea
 	}
 
 
-//	@Override
-//	public PropertyPopup clone() throws CloneNotSupportedException
-//	{
-//		PropertyPopup clone = new PropertyPopup(null, mFunction); //PropertyPopup)super.clone();
-//		if (mValueComponent instanceof JTextField)
-//		{
-//			clone.mValueComponent = new JTextField(((JTextField)mValueComponent).getText());
-//		}
-//		else
-//		{
-//			clone.mValueComponent = new JLabel("");
-//		}
-//		System.out.println("*");
-//		return clone;
-//	}
-
-
 	@Override
 	public Property clone() throws CloneNotSupportedException
 	{
@@ -86,6 +57,7 @@ public class PropertyPopup extends Property<JTextField,Object> implements Clonea
 		c.addActionListener(e -> mValueComponent.repaint());
 		c.setForeground(mPropertyGrid.mStyleSheet.getColor("text_foreground"));
 		c.setBackground(mPropertyGrid.mStyleSheet.getColor("text_background"));
+		c.setEditable(mEditable);
 
 		return c;
 	}
@@ -99,36 +71,10 @@ public class PropertyPopup extends Property<JTextField,Object> implements Clonea
 
 
 	@Override
-	public JButton getActionButton()
+	public PropertyPopup setValue(Object aValue)
 	{
-		if (mActionButton == null)
-		{
-			mActionButton = createPopupButton();
-		}
-		return mActionButton;
-	}
-
-
-	protected JButton createPopupButton()
-	{
-		AbstractAction action = new AbstractAction()
-		{
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				onClick();
-			}
-		};
-
-		JButton button = new JButton(action);
-		button.setMargin(new Insets(0, 0, 0, 0));
-		button.setOpaque(false);
-		button.setFocusable(false);
-		button.setIcon(new ImageIcon(mPropertyGrid.getStyleSheet().getImage("popup_icon")));
-
-		mActionButton = button;
-
-		return button;
+		mValueComponent.setText(aValue.toString());
+		return this;
 	}
 
 

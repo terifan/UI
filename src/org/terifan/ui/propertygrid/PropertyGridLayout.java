@@ -9,7 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 
 
-class PropertyGridLayout implements LayoutManager //, PropertyGridModel.Callback
+class PropertyGridLayout implements LayoutManager
 {
 	public PropertyGridLayout()
 	{
@@ -17,44 +17,44 @@ class PropertyGridLayout implements LayoutManager //, PropertyGridModel.Callback
 
 
 	@Override
-	public void addLayoutComponent(String name, Component comp)
+	public void addLayoutComponent(String aName, Component aComp)
 	{
 	}
 
 
 	@Override
-	public void removeLayoutComponent(Component comp)
+	public void removeLayoutComponent(Component aComp)
 	{
 	}
 
 
 	@Override
-	public Dimension preferredLayoutSize(Container target)
+	public Dimension preferredLayoutSize(Container aTarget)
 	{
-		return ((PropertyGridListPane)target).getPreferredSize();
+		return ((PropertyGridListPane)aTarget).getPreferredSize();
 	}
 
 
 	@Override
-	public Dimension minimumLayoutSize(Container target)
+	public Dimension minimumLayoutSize(Container aTarget)
 	{
-		return ((PropertyGridListPane)target).getPreferredSize();
+		return ((PropertyGridListPane)aTarget).getPreferredSize();
 	}
 
 
 	@Override
-	public void layoutContainer(Container target)
+	public void layoutContainer(Container aTarget)
 	{
-		synchronized (target.getTreeLock())
+		synchronized (aTarget.getTreeLock())
 		{
-			PropertyGrid propertyGrid = ((PropertyGridListPane)target).mPropertyGrid;
+			PropertyGrid propertyGrid = ((PropertyGridListPane)aTarget).mPropertyGrid;
 			PropertyGridModel model = propertyGrid.getModel();
 			StyleSheet style = propertyGrid.getStyleSheet();
 			int rowHeight = propertyGrid.getRowHeight();
 
 			int y = 0;
 			int dividerX = propertyGrid.getDividerPosition();
-			int width = target.getWidth();
+			int width = aTarget.getWidth();
 			int indentWidth = style.getInt("indent_width");
 
 			for (Iterator<Property> it = model.getRecursiveIterator(); it.hasNext();)
@@ -67,26 +67,26 @@ class PropertyGridLayout implements LayoutManager //, PropertyGridModel.Callback
 	}
 
 
-	protected void layoutPropertyComponents(PropertyGrid propertyGrid, Property item, int dividerX, int y, int width, int indentWidth, int rowHeight)
+	protected void layoutPropertyComponents(PropertyGrid aPropertyGrid, Property aItem, int aDividerX, int aY, int aWidth, int aIndentWidth, int aRowHeight)
 	{
-		int indent = item.getIndent() + 1;
+		int indent = aItem.getIndent() + 1;
 
-		item.getIndentComponent().setBounds(0, y, indent * indentWidth, rowHeight - 1);
+		aItem.getIndentComponent().setBounds(0, aY, indent * aIndentWidth, aRowHeight - 1);
 
 		int btnWidth = 0;
 
-		JButton button = item.getActionButton();
+		JButton button = aItem.getActionButton();
 		if (button != null)
 		{
-			btnWidth = rowHeight;
-			button.setBounds(width - btnWidth, y, btnWidth, rowHeight - 1);
+			btnWidth = aRowHeight;
+			button.setBounds(aWidth - btnWidth, aY, btnWidth, aRowHeight - 1);
 			btnWidth += 4;
 		}
 
-		JComponent component = item.getValueComponent();
-		component.setBounds(dividerX + (item.isGroup() ? 0 : 4), y, width - dividerX - btnWidth - (item.isGroup() ? 0 : 4), rowHeight - 1);
+		JComponent component = aItem.getValueComponent();
+		component.setBounds(aDividerX + (aItem.isGroup() ? 0 : 4), aY, aWidth - aDividerX - btnWidth - (aItem.isGroup() ? 0 : 4), aRowHeight - 1);
 
-		component = item.getLabelComponent();
-		component.setBounds(indent * indentWidth, y, dividerX - (indent * indentWidth), rowHeight - 1);
+		component = aItem.getLabelComponent();
+		component.setBounds(indent * aIndentWidth, aY, aDividerX - (indent * aIndentWidth), aRowHeight - 1);
 	}
 }

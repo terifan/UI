@@ -38,6 +38,15 @@ public class NumberProperty extends Property<JTextField, Number>
 
 
 	@Override
+	public NumberProperty setValue(Number aValue)
+	{
+		mValue = aValue;
+		mValueComponent.setText(mValue.toString());
+		return this;
+	}
+
+
+	@Override
 	public Property clone() throws CloneNotSupportedException
 	{
 		return cloneImpl();

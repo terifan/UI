@@ -14,6 +14,7 @@ import org.terifan.ui.TextBox;
 public class PropertyList extends Property<JLabel, String> implements Iterable<Property>, Cloneable
 {
 	protected ArrayList<Property> mChildren;
+	protected boolean mCollapsed;
 
 	private final static Function<PropertyList, String> DEFAULT_VALUE = aList ->
 	{
@@ -142,6 +143,14 @@ public class PropertyList extends Property<JLabel, String> implements Iterable<P
 
 
 	@Override
+	public PropertyList setValue(String aValue)
+	{
+		mValueComponent.setText(aValue);
+		return this;
+	}
+
+
+	@Override
 	public String toString()
 	{
 		return DEFAULT_VALUE.apply(PropertyList.this);
@@ -168,7 +177,7 @@ public class PropertyList extends Property<JLabel, String> implements Iterable<P
 		for (Property item : mChildren)
 		{
 			aList.add(item);
-			if (item instanceof PropertyList && !item.isCollapsed())
+			if (item instanceof PropertyList && !((PropertyList)item).isCollapsed())
 			{
 				((PropertyList)item).getRecursiveElements(aList);
 			}
@@ -179,5 +188,16 @@ public class PropertyList extends Property<JLabel, String> implements Iterable<P
 	protected ArrayList<Property> getChildren()
 	{
 		return mChildren;
+	}
+
+	public boolean isCollapsed()
+	{
+		return mCollapsed;
+	}
+
+
+	public void setCollapsed(boolean aCollapsed)
+	{
+		mCollapsed = aCollapsed;
 	}
 }

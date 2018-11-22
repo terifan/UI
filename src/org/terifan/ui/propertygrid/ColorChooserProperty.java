@@ -20,7 +20,7 @@ public class ColorChooserProperty extends Property<JTextField, Color> implements
 	}
 
 
-	public ColorChooserProperty setColor(Color aColor)
+	public ColorChooserProperty setValue(Color aColor)
 	{
 		mColor = aColor;
 

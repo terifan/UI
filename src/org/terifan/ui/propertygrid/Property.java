@@ -1,16 +1,23 @@
 package org.terifan.ui.propertygrid;
 
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.util.function.Function;
+import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 
 public abstract class Property<T extends JComponent,R> implements Comparable<Property>, Cloneable
 {
 	protected String mLabel;
-	protected boolean mCollapsed;
-	protected boolean mReadOnly;
+	protected boolean mEditable;
+	protected Function<Property,R> mFunction;
 
+	protected transient JButton mActionButton;
 	protected transient PropertyGrid mPropertyGrid;
 	protected transient PropertyGridIndent mIndentComponent;
 	protected transient PropertyGridLabel mLabelComponent;
@@ -22,6 +29,7 @@ public abstract class Property<T extends JComponent,R> implements Comparable<Pro
 	public Property(String aLabel)
 	{
 		mLabel = aLabel;
+		mEditable = true;
 	}
 
 
@@ -38,22 +46,26 @@ public abstract class Property<T extends JComponent,R> implements Comparable<Pro
 	}
 
 
-	public boolean isReadOnly()
+	public boolean isEditable()
 	{
-		return mReadOnly;
+		return mEditable;
 	}
 
 
-	public Property setReadOnly(boolean aReadOnly)
+	public Property<T, R> setEditable(boolean aEditable)
 	{
-		mReadOnly = aReadOnly;
+		mEditable = aEditable;
 		return this;
 	}
 
 
 	public JButton getActionButton()
 	{
-		return null;
+		if (mActionButton == null)
+		{
+			mActionButton = createActionButton();
+		}
+		return mActionButton;
 	}
 
 
@@ -67,18 +79,6 @@ public abstract class Property<T extends JComponent,R> implements Comparable<Pro
 	{
 		mGroup = aGroup;
 		return this;
-	}
-
-
-	public boolean isCollapsed()
-	{
-		return mCollapsed;
-	}
-
-
-	public void setCollapsed(boolean aCollapsed)
-	{
-		mCollapsed = aCollapsed;
 	}
 
 
@@ -138,24 +138,55 @@ public abstract class Property<T extends JComponent,R> implements Comparable<Pro
 	}
 
 
+	protected JButton createActionButton()
+	{
+		if (mFunction == null)
+		{
+			return null;
+		}
+
+		AbstractAction action = new AbstractAction()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				R value = mFunction.apply(Property.this);
+
+				if (value != null)
+				{
+					setValue(value);
+					mPropertyGrid.repaint();
+				}
+			}
+		};
+
+		JButton button = new JButton(action);
+		button.setMargin(new Insets(0, 0, 0, 0));
+		button.setOpaque(false);
+		button.setFocusable(false);
+		button.setIcon(new ImageIcon(mPropertyGrid.getStyleSheet().getImage("popup_icon")));
+
+		mActionButton = button;
+
+		return button;
+	}
+
+
 	protected void buildItem(PropertyGrid aPropertyGrid, JPanel aPanel, int aIndent)
 	{
 		mPropertyGrid = aPropertyGrid;
 		mIndent = aIndent;
 
 		mIndentComponent = new PropertyGridIndent(this);
-		mValueComponent = createValueComponent();
 		mLabelComponent = new PropertyGridLabel(this);
+
+		mValueComponent = createValueComponent();
+		mValueComponent.addFocusListener(new PropertyGridEditorListener(this));
+		mValueComponent.setFont(mPropertyGrid.getStyleSheet().getFont("item_font"));
 
 		aPanel.add(mIndentComponent);
 		aPanel.add(mLabelComponent);
-
-		if (mValueComponent != null)
-		{
-			aPanel.add(mValueComponent);
-			mValueComponent.addFocusListener(new PropertyGridEditorListener(this));
-			mValueComponent.setFont(mPropertyGrid.getStyleSheet().getFont("item_font"));
-		}
+		aPanel.add(mValueComponent);
 
 		JButton button = getActionButton();
 		if (button != null)
@@ -167,7 +198,10 @@ public abstract class Property<T extends JComponent,R> implements Comparable<Pro
 
 	protected Property cloneImpl() throws CloneNotSupportedException
 	{
-		return (Property)super.clone();
+		Property clone = (Property)super.clone();
+		clone.mActionButton = null;
+
+		return clone;
 	}
 
 
@@ -175,6 +209,9 @@ public abstract class Property<T extends JComponent,R> implements Comparable<Pro
 
 
 	public abstract R getValue();
+
+
+	public abstract Property<T,R> setValue(R aValue);
 
 
 	public abstract Property clone() throws CloneNotSupportedException;

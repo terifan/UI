@@ -56,7 +56,7 @@ public class PropertyGridModel implements Iterable<Property>, Cloneable
 		for (Property item : mChildren)
 		{
 			out.add(item);
-			if (item instanceof PropertyList && !item.isCollapsed())
+			if (item instanceof PropertyList && !((PropertyList)item).isCollapsed())
 			{
 				((PropertyList)item).getRecursiveElements(out);
 			}
