@@ -33,7 +33,7 @@ public class Test
 						)
 					)
 					.addProperty("Number", 17)
-					.addProperty(new ColorChooserProperty("Color", new Color(0xff8000)))
+					.addProperty("Color", new Color(0xff8000))
 				)
 				.addProperty(new PropertyList(true, "Region Settings")
 					.addProperty("Language", "Swedish")
