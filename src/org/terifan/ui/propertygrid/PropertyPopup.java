@@ -6,11 +6,10 @@ import java.util.function.Function;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JTextField;
 
 
-public class PropertyPopup extends Property implements Cloneable
+public class PropertyPopup extends Property<JTextField,Object> implements Cloneable
 {
 	protected JButton mActionButton;
 	protected Function<Property,Object> mFunction;
@@ -72,7 +71,7 @@ public class PropertyPopup extends Property implements Cloneable
 
 
 	@Override
-	protected JComponent createValueComponent()
+	protected JTextField createValueComponent()
 	{
 		JTextField c = new JTextField(mValue.toString());
 		c.setBorder(null);
@@ -82,6 +81,13 @@ public class PropertyPopup extends Property implements Cloneable
 		c.setBackground(mPropertyGrid.mStyleSheet.getColor("text_background"));
 
 		return c;
+	}
+
+
+	@Override
+	public Object getValue()
+	{
+		return mValue;
 	}
 
 

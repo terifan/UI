@@ -1,10 +1,9 @@
 package org.terifan.ui.propertygrid;
 
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
 
 
-public class CheckBoxProperty extends Property
+public class CheckBoxProperty extends Property<JCheckBox, Boolean>
 {
 	public CheckBoxProperty(String aLabel, boolean aSelected)
 	{
@@ -13,13 +12,20 @@ public class CheckBoxProperty extends Property
 
 
 	@Override
-	protected JComponent createValueComponent()
+	protected JCheckBox createValueComponent()
 	{
 		JCheckBox c = new JCheckBox();
 		c.setOpaque(false);
 		c.addActionListener(e -> mValueComponent.repaint());
 
 		return c;
+	}
+
+
+	@Override
+	public Boolean getValue()
+	{
+		return mValueComponent.isSelected();
 	}
 
 

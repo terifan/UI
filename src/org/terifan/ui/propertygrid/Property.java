@@ -1,14 +1,11 @@
 package org.terifan.ui.propertygrid;
 
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 
-public abstract class Property implements Comparable<Property>, Cloneable
+public abstract class Property<T extends JComponent,R> implements Comparable<Property>, Cloneable
 {
 	protected String mLabel;
 	protected boolean mCollapsed;
@@ -17,7 +14,7 @@ public abstract class Property implements Comparable<Property>, Cloneable
 	protected transient PropertyGrid mPropertyGrid;
 	protected transient PropertyGridIndent mIndentComponent;
 	protected transient PropertyGridLabel mLabelComponent;
-	protected transient JComponent mValueComponent;
+	protected transient T mValueComponent;
 	protected transient boolean mGroup;
 	protected transient int mIndent;
 
@@ -73,25 +70,6 @@ public abstract class Property implements Comparable<Property>, Cloneable
 	}
 
 
-	public Object getValue()
-	{
-		if (mValueComponent instanceof JTextField)
-		{
-			return ((JTextField)mValueComponent).getText();
-		}
-		if (mValueComponent instanceof JCheckBox)
-		{
-			return ((JCheckBox)mValueComponent).isSelected();
-		}
-		if (mValueComponent instanceof JComboBox)
-		{
-			return ((JComboBox)mValueComponent).getSelectedItem();
-		}
-
-		return mValueComponent;
-	}
-
-
 	public boolean isCollapsed()
 	{
 		return mCollapsed;
@@ -116,7 +94,7 @@ public abstract class Property implements Comparable<Property>, Cloneable
 	}
 
 
-	protected JComponent getValueComponent()
+	protected T getValueComponent()
 	{
 		return mValueComponent;
 	}
@@ -153,13 +131,6 @@ public abstract class Property implements Comparable<Property>, Cloneable
 	}
 
 
-//	@Override
-//	public String toString()
-//	{
-//		return "{\"" + mLabel + "\": \"" + mValue + "\"}";
-//	}
-
-
 	@Override
 	public int compareTo(Property aProperty)
 	{
@@ -194,87 +165,12 @@ public abstract class Property implements Comparable<Property>, Cloneable
 	}
 
 
-	protected abstract JComponent createValueComponent();
+	protected abstract T createValueComponent();
 
 
-//	protected JComponent createValueComponent()
-//	{
-//		JComponent valueComponent;
-//
-//		if (this instanceof PropertyList)
-//		{
-//			valueComponent = (JComponent)mValueComponent;
-//		}
-//		else if (mValue instanceof JComponent)
-//		{
-//			valueComponent = (JComponent)mValue;
-//		}
-//		else if (mValue instanceof Boolean)
-//		{
-//			valueComponent = new JCheckBox("", (Boolean)mValue);
-//		}
-//		else if (mValue.getClass().isArray())
-//		{
-//			valueComponent = new JComboBox((Object[])mValue);
-//		}
-//		else if (mValue instanceof Function)
-//		{
-//			valueComponent = new JTextField(((Function<Property,String>)mValue).apply(this));
-//		}
-//		else if (mValue instanceof PropertyPopup)
-//		{
-//			valueComponent = ((PropertyPopup)mValue).getComponent();
-//		}
-//		else
-//		{
-//			valueComponent = new JTextField(mValue.toString());
-//		}
-//
-//		configureValueComponent(valueComponent);
-//
-//		return valueComponent;
-//	}
-//
-//
-//	protected void configureValueComponent(JComponent aComponent)
-//	{
-//		StyleSheet styleSheet = mPropertyGrid.getStyleSheet();
-//
-//		if (aComponent instanceof JTextField)
-//		{
-//			JTextField c = (JTextField)aComponent;
-//
-//			c.setBorder(null);
-//			c.setCaretColor(styleSheet.getColor("text_foreground"));
-//			c.addActionListener(e -> mValueComponent.repaint());
-//		}
-//		else if (aComponent instanceof JCheckBox)
-//		{
-//			JCheckBox c = (JCheckBox)aComponent;
-//			c.setOpaque(false);
-//			c.addActionListener(e -> mValueComponent.repaint());
-//		}
-//		else if (aComponent instanceof JComboBox)
-//		{
-//			JComboBox c = (JComboBox)aComponent;
-//			c.setOpaque(false);
-//			c.setCursor(Cursor.getDefaultCursor());
-//			c.addActionListener(e -> mValueComponent.repaint());
-//			c.setUI(new BasicComboBoxUI() {
-//				@Override
-//				protected ComboPopup createPopup() {
-//					BasicComboPopup basicComboPopup = new BasicComboPopup(comboBox);
-//					basicComboPopup.setBorder(new LineBorder(Color.GRAY));
-//					return basicComboPopup;
-//				}
-//			});
-//		}
-//
-//		aComponent.setForeground(styleSheet.getColor("text_foreground"));
-//		aComponent.setBackground(styleSheet.getColor("text_background"));
-//	}
-//
-//
+	public abstract R getValue();
+
+
 //	@Override
 //	protected Property clone() throws CloneNotSupportedException
 //	{

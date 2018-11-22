@@ -3,12 +3,12 @@ package org.terifan.ui.propertygrid;
 import javax.swing.JTextField;
 
 
-public class TextProperty extends Property<JTextField,String>
+public class NumberProperty extends Property<JTextField, Number>
 {
-	protected Object mValue;
+	protected Number mValue;
 
 
-	public TextProperty(String aLabel, Object aValue)
+	public NumberProperty(String aLabel, Number aValue)
 	{
 		super(aLabel);
 
@@ -20,20 +20,20 @@ public class TextProperty extends Property<JTextField,String>
 	protected JTextField createValueComponent()
 	{
 		JTextField c = new JTextField(mValue.toString());
-		c.setBorder(null);
 		c.setCaretColor(mPropertyGrid.mStyleSheet.getColor("text_foreground"));
-		c.addActionListener(e -> mValueComponent.repaint());
 		c.setForeground(mPropertyGrid.mStyleSheet.getColor("text_foreground"));
 		c.setBackground(mPropertyGrid.mStyleSheet.getColor("text_background"));
+		c.addActionListener(e -> mValueComponent.repaint());
+		c.setBorder(null);
 
 		return c;
 	}
 
 
 	@Override
-	public String getValue()
+	public Number getValue()
 	{
-		return mValueComponent.getText();
+		return mValue;
 	}
 
 

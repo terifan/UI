@@ -1,11 +1,11 @@
 package org.terifan.ui.propertygrid;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.terifan.ui.Utilities;
-import org.terifan.util.Strings;
 
 
 public class Test
@@ -33,7 +33,7 @@ public class Test
 						)
 					)
 					.addProperty("Number", 17)
-					.addProperty(new ColorChooser("Color", "ff8000"))
+					.addProperty(new ColorChooserProperty("Color", new Color(0xff8000)))
 				)
 				.addProperty(new PropertyList(true, "Region Settings")
 					.addProperty("Language", "Swedish")

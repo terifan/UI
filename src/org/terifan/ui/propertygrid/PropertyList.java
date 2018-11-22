@@ -6,14 +6,12 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.Function;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import org.terifan.ui.Anchor;
 import org.terifan.ui.TextBox;
 
 
-public class PropertyList extends Property implements Iterable<Property>, Cloneable
+public class PropertyList extends Property<JLabel, String> implements Iterable<Property>, Cloneable
 {
 	protected ArrayList<Property> mChildren;
 
@@ -53,10 +51,28 @@ public class PropertyList extends Property implements Iterable<Property>, Clonea
 
 	public PropertyList addProperty(String aLabel, Object aValue)
 	{
+		if (aValue == null)
+		{
+			throw new IllegalArgumentException("aValue is null");
+		}
+
 		if (aValue instanceof Boolean)
 		{
 			return addProperty(new CheckBoxProperty(aLabel, (boolean)aValue));
 		}
+		if (aValue instanceof Number)
+		{
+			return addProperty(new NumberProperty(aLabel, (Number)aValue));
+		}
+		if (aValue instanceof Color)
+		{
+			return addProperty(new ColorChooserProperty(aLabel, (Color)aValue));
+		}
+		if (aValue.getClass().isArray())
+		{
+			return addProperty(new ComboBoxProperty(aLabel, (Object[])aValue, 0));
+		}
+
 		return addProperty(new TextProperty(aLabel, aValue));
 	}
 
@@ -82,7 +98,7 @@ public class PropertyList extends Property implements Iterable<Property>, Clonea
 
 
 	@Override
-	protected JComponent createValueComponent()
+	protected JLabel createValueComponent()
 	{
 		return new JLabel()
 		{
@@ -115,6 +131,13 @@ public class PropertyList extends Property implements Iterable<Property>, Clonea
 				new TextBox(PropertyList.this.toString()).setFont(font).setForeground(foregound).setBackground(background).setBounds(0, 0, getWidth(), getHeight()).setAnchor(Anchor.WEST).setMargins(0, mGroup ? 4 : 0, 0, 0).render(aGraphics);
 			}
 		};
+	}
+
+
+	@Override
+	public String getValue()
+	{
+		return mValueComponent.getText();
 	}
 
 
