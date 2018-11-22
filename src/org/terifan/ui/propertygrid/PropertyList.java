@@ -3,6 +3,7 @@ package org.terifan.ui.propertygrid;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.Function;
@@ -11,8 +12,10 @@ import org.terifan.ui.Anchor;
 import org.terifan.ui.TextBox;
 
 
-public class PropertyList extends Property<JLabel, String> implements Iterable<Property>, Cloneable
+public class PropertyList extends Property<JLabel, String> implements Iterable<Property>, Cloneable, Serializable
 {
+	private static final long serialVersionUID = 1L;
+
 	protected ArrayList<Property> mChildren;
 	protected boolean mCollapsed;
 

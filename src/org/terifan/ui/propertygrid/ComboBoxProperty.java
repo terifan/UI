@@ -1,10 +1,13 @@
 package org.terifan.ui.propertygrid;
 
+import java.io.Serializable;
 import javax.swing.JComboBox;
 
 
-public class ComboBoxProperty extends Property<JComboBox, Object>
+public class ComboBoxProperty extends Property<JComboBox, Object> implements Serializable
 {
+	private static final long serialVersionUID = 1L;
+
 	private int mSelectedIndex;
 	private Object[] mOptions;
 

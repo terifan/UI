@@ -2,6 +2,7 @@ package org.terifan.ui.propertygrid;
 
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.io.Serializable;
 import java.util.function.Function;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
@@ -10,12 +11,15 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 
-public abstract class Property<T extends JComponent,R> implements Comparable<Property>, Cloneable
+public abstract class Property<T extends JComponent,R> implements Comparable<Property>, Cloneable, Serializable
 {
+	private static final long serialVersionUID = 1L;
+
 	protected String mLabel;
 	protected boolean mEditable;
-	protected Function<Property,R> mFunction;
+	protected boolean mHasFunction; // this exists in order for the model to recreate functions when being deserisalized
 
+	protected transient Function<Property,R> mFunction;
 	protected transient JButton mActionButton;
 	protected transient PropertyGrid mPropertyGrid;
 	protected transient PropertyGridIndent mIndentComponent;
@@ -67,6 +71,7 @@ public abstract class Property<T extends JComponent,R> implements Comparable<Pro
 	public Property<T, R> setFunction(Function<Property, R> aFunction)
 	{
 		mFunction = aFunction;
+		mHasFunction = mFunction != null;
 		return this;
 	}
 
@@ -195,6 +200,16 @@ public abstract class Property<T extends JComponent,R> implements Comparable<Pro
 		mValueComponent = createValueComponent();
 		mValueComponent.addFocusListener(new PropertyGridEditorListener(this));
 		mValueComponent.setFont(mPropertyGrid.getStyleSheet().getFont("item_font"));
+
+		if (mHasFunction && mFunction == null)
+		{
+			Function<Property, Function<Property, Object>> factory = mPropertyGrid.getFunctionFactory();
+			if (factory != null)
+			{
+				mFunction = (Function<Property,R>)factory.apply(this);
+				mHasFunction = mFunction != null;
+			}
+		}
 
 		aPanel.add(mIndentComponent);
 		aPanel.add(mLabelComponent);

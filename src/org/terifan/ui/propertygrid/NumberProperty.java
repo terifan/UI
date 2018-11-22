@@ -1,10 +1,13 @@
 package org.terifan.ui.propertygrid;
 
+import java.io.Serializable;
 import javax.swing.JTextField;
 
 
-public class NumberProperty extends Property<JTextField, Number>
+public class NumberProperty extends Property<JTextField, Number> implements Serializable
 {
+	private static final long serialVersionUID = 1L;
+
 	protected Number mValue;
 
 

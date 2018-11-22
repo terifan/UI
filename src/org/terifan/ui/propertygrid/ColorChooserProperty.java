@@ -4,11 +4,14 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.io.Serializable;
 import javax.swing.JTextField;
 
 
-public class ColorChooserProperty extends Property<JTextField, Color> implements Cloneable
+public class ColorChooserProperty extends Property<JTextField, Color> implements Cloneable, Serializable
 {
+	private static final long serialVersionUID = 1L;
+
 	protected Color mColor;
 
 

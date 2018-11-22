@@ -2,6 +2,11 @@ package org.terifan.ui.propertygrid;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.function.Function;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -45,7 +50,23 @@ public class Test
 				;
 
 			PropertyGrid prop1 = new PropertyGrid(model);
-			PropertyGrid prop2 = new PropertyGrid(model.clone(), new StyleSheet(PropertyGrid.class, PropertyGrid.class.getResource("resources/stylesheet_dark.json")));
+//			PropertyGrid prop2 = new PropertyGrid(model.clone(), new StyleSheet(PropertyGrid.class, PropertyGrid.class.getResource("resources/stylesheet_dark.json")));
+
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			try (ObjectOutputStream oos = new ObjectOutputStream(baos))
+			{
+				oos.writeObject(model);
+			}
+			ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));
+			PropertyGridModel modelCopy = (PropertyGridModel)ois.readObject();
+			Function<Property, Function<Property, Object>> funcFact = e->{
+				if (e.getLabel().equals("Path"))
+				{
+					return prop->JOptionPane.showInputDialog("Value", prop.getValue());
+				}
+				return null;
+			};
+			PropertyGrid prop2 = new PropertyGrid(modelCopy, funcFact, new StyleSheet(PropertyGrid.class, PropertyGrid.class.getResource("resources/stylesheet_dark.json")));
 
 			JPanel panel = new JPanel(new BorderLayout());
 			panel.add(prop1, BorderLayout.NORTH);

@@ -1,12 +1,15 @@
 package org.terifan.ui.propertygrid;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
 
-public class PropertyGridModel implements Iterable<Property>, Cloneable
+public class PropertyGridModel implements Iterable<Property>, Cloneable, Serializable
 {
+	private static final long serialVersionUID = 1L;
+
 	protected ArrayList<Property> mChildren;
 
 

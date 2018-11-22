@@ -1,10 +1,14 @@
 package org.terifan.ui.propertygrid;
 
+import java.io.Serializable;
 import javax.swing.JCheckBox;
 
 
-public class CheckBoxProperty extends Property<JCheckBox, Boolean>
+public class CheckBoxProperty extends Property<JCheckBox, Boolean> implements Serializable
 {
+	private static final long serialVersionUID = 1L;
+
+
 	public CheckBoxProperty(String aLabel, boolean aSelected)
 	{
 		super(aLabel);

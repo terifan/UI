@@ -3,6 +3,7 @@ package org.terifan.ui.propertygrid;
 import java.awt.BorderLayout;
 import java.awt.font.FontRenderContext;
 import java.util.ArrayList;
+import java.util.function.Function;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.ChangeEvent;
@@ -18,22 +19,42 @@ public class PropertyGrid extends JPanel
 	protected PropertyGridListPane mPanel;
 	protected Property mSelectedProperty;
 	protected StyleSheet mStyleSheet;
+	protected Function<Property,Function<Property,Object>> mFunctionFactory;
 
 
 	public PropertyGrid(PropertyGridModel aPropertyGridModel)
 	{
-		this(aPropertyGridModel, new StyleSheet(PropertyGrid.class, PropertyGrid.class.getResource("resources/stylesheet.json")));
+		this(aPropertyGridModel, null, null);
+	}
+
+
+	public PropertyGrid(PropertyGridModel aPropertyGridModel, Function<Property, Function<Property, Object>> aFunctionFactory)
+	{
+		this(aPropertyGridModel, aFunctionFactory, null);
 	}
 
 
 	public PropertyGrid(PropertyGridModel aModel, StyleSheet aStyleSheet)
 	{
+		this(aModel, null, aStyleSheet);
+	}
+
+
+	public PropertyGrid(PropertyGridModel aModel, Function<Property, Function<Property, Object>> aFunctionFactory, StyleSheet aStyleSheet)
+	{
 		super(new BorderLayout());
+
+		mListeners = new ArrayList<>();
+		mFunctionFactory = aFunctionFactory;
+
+		if (aStyleSheet == null)
+		{
+			aStyleSheet = new StyleSheet(PropertyGrid.class, PropertyGrid.class.getResource("resources/stylesheet.json"));
+		}
 
 		setStyleSheet(aStyleSheet);
 
 		mPanel = new PropertyGridListPane(this);
-		mListeners = new ArrayList<>();
 		mScrollPane = new JScrollPane(mPanel);
 		mScrollPane.setBorder(null);
 
@@ -55,6 +76,12 @@ public class PropertyGrid extends JPanel
 		mStyleSheet = aStyleSheet;
 
 		mDividerPosition = mStyleSheet.getInt("divider_position");
+	}
+
+
+	public Function<Property, Function<Property, Object>> getFunctionFactory()
+	{
+		return mFunctionFactory;
 	}
 
 
@@ -88,6 +115,9 @@ public class PropertyGrid extends JPanel
 	}
 
 
+	/**
+	 * Sets the model without changing the function factory property of this PropertyGrid.
+	 */
 	public void setModel(PropertyGridModel aPropertyGridModel)
 	{
 		mModel = aPropertyGridModel;
@@ -95,6 +125,13 @@ public class PropertyGrid extends JPanel
 		mPanel.removeAll();
 
 		buildComponentTree(mModel.getChildren(), 0);
+	}
+
+
+	public void setModel(PropertyGridModel aPropertyGridModel, Function<Property, Function<Property, Object>> aFunctionFactory)
+	{
+		mFunctionFactory = aFunctionFactory;
+		setModel(aPropertyGridModel);
 	}
 
 
