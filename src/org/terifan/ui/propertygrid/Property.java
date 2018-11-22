@@ -165,63 +165,17 @@ public abstract class Property<T extends JComponent,R> implements Comparable<Pro
 	}
 
 
+	protected Property cloneImpl() throws CloneNotSupportedException
+	{
+		return (Property)super.clone();
+	}
+
+
 	protected abstract T createValueComponent();
 
 
 	public abstract R getValue();
 
 
-//	@Override
-//	protected Property clone() throws CloneNotSupportedException
-//	{
-//		Property clone = (Property)super.clone();
-//		clone.mPropertyGrid = null;
-//		clone.mLabelComponent = null;
-//		clone.mValueComponent = null;
-//		clone.mActionButton = null;
-//		clone.mIndentComponent = new PropertyGridIndent(clone);
-//
-//		if (mValue instanceof ColorChooser)
-//		{
-//			ColorChooser c = (ColorChooser)mValue;
-//			clone.setValue(new ColorChooser(c.getText()));
-//		}
-//		else if (mValue instanceof Cloneable)
-//		{
-//			try
-//			{
-//				System.out.println(mValue.getClass());
-//				Method method = mValue.getClass().getMethod("clone");
-//				method.setAccessible(true);
-//				clone.mValue = method.invoke(mValue);
-//			}
-//			catch (Exception e)
-//			{
-//				System.out.println(e);
-//			}
-//		}
-//		else if (mValue instanceof JTextField)
-//		{
-//			JTextField c = (JTextField)mValue;
-//			clone.setValue(c.getText());
-//		}
-//		else if (mValue instanceof JCheckBox)
-//		{
-//			JCheckBox c = (JCheckBox)mValue;
-//			clone.setValue(new JCheckBox(c.getText(), c.isSelected()));
-//		}
-//		else if (mValue instanceof JComboBox)
-//		{
-//			JComboBox c = (JComboBox)mValue;
-//			ComboBoxModel model = c.getModel();
-//			DefaultComboBoxModel modelCopy = new DefaultComboBoxModel();
-//			for (int i = 0; i < model.getSize(); i++)
-//			{
-//				modelCopy.addElement(model.getElementAt(i));
-//			}
-//			clone.setValue(new JComboBox(modelCopy));
-//		}
-//
-//		return clone;
-//	}
+	public abstract Property clone() throws CloneNotSupportedException;
 }

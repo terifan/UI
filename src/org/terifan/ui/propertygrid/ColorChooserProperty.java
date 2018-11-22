@@ -146,6 +146,13 @@ public class ColorChooserProperty extends Property<JTextField, Color> implements
 
 
 	@Override
+	public Property clone() throws CloneNotSupportedException
+	{
+		return cloneImpl();
+	}
+
+
+	@Override
 	public String toString()
 	{
 		return "[" + getText() + "]";

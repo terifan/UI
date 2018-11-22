@@ -71,6 +71,13 @@ public class PropertyPopup extends Property<JTextField,Object> implements Clonea
 
 
 	@Override
+	public Property clone() throws CloneNotSupportedException
+	{
+		return cloneImpl();
+	}
+
+
+	@Override
 	protected JTextField createValueComponent()
 	{
 		JTextField c = new JTextField(mValue.toString());

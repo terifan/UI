@@ -148,19 +148,19 @@ public class PropertyList extends Property<JLabel, String> implements Iterable<P
 	}
 
 
-//	@Override
-//	protected PropertyList clone() throws CloneNotSupportedException
-//	{
-//		PropertyList clone = (PropertyList)super.clone();
-//
-//		clone.mChildren = new ArrayList<>();
-//		for (Property item : mChildren)
-//		{
-//			clone.mChildren.add(item.clone());
-//		}
-//
-//		return clone;
-//	}
+	@Override
+	public PropertyList clone() throws CloneNotSupportedException
+	{
+		PropertyList clone = (PropertyList)cloneImpl();
+
+		clone.mChildren = new ArrayList<>();
+		for (Property item : mChildren)
+		{
+			clone.mChildren.add(item.clone());
+		}
+
+		return clone;
+	}
 
 
 	protected void getRecursiveElements(ArrayList<Property> aList)

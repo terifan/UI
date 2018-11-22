@@ -38,6 +38,13 @@ public class TextProperty extends Property<JTextField,String>
 
 
 	@Override
+	public Property clone() throws CloneNotSupportedException
+	{
+		return cloneImpl();
+	}
+
+
+	@Override
 	public String toString()
 	{
 		return ((JTextField)mValueComponent).getText();

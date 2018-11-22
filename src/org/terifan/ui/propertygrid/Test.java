@@ -45,11 +45,11 @@ public class Test
 				;
 
 			PropertyGrid prop1 = new PropertyGrid(model);
-//			PropertyGrid prop2 = new PropertyGrid(model.clone(), new StyleSheet(PropertyGrid.class, PropertyGrid.class.getResource("resources/stylesheet_dark.json")));
+			PropertyGrid prop2 = new PropertyGrid(model.clone(), new StyleSheet(PropertyGrid.class, PropertyGrid.class.getResource("resources/stylesheet_dark.json")));
 
 			JPanel panel = new JPanel(new BorderLayout());
 			panel.add(prop1, BorderLayout.NORTH);
-//			panel.add(prop2, BorderLayout.SOUTH);
+			panel.add(prop2, BorderLayout.SOUTH);
 
 			JFrame frame = new JFrame();
 			frame.add(panel);
