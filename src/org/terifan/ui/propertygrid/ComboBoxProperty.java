@@ -2,6 +2,7 @@ package org.terifan.ui.propertygrid;
 
 import java.io.Serializable;
 import javax.swing.JComboBox;
+import org.terifan.bundle.Bundle;
 
 
 public class ComboBoxProperty extends Property<JComboBox, Object> implements Serializable
@@ -10,6 +11,7 @@ public class ComboBoxProperty extends Property<JComboBox, Object> implements Ser
 
 	private int mSelectedIndex;
 	private Object[] mOptions;
+	private Object mValue;
 
 
 	public ComboBoxProperty(String aLabel, Object[] aOptions, int aSelectedIndex)
@@ -18,6 +20,7 @@ public class ComboBoxProperty extends Property<JComboBox, Object> implements Ser
 
 		mOptions = aOptions;
 		mSelectedIndex = aSelectedIndex;
+		mValue = mOptions[mSelectedIndex];
 	}
 
 
@@ -36,15 +39,33 @@ public class ComboBoxProperty extends Property<JComboBox, Object> implements Ser
 	@Override
 	public Object getValue()
 	{
-		return mValueComponent.getSelectedItem();
+		return mValue;
 	}
 
 
 	@Override
 	public ComboBoxProperty setValue(Object aValue)
 	{
-		mValueComponent.setSelectedItem(aValue);
+		mValue = aValue;
+		if (mValueComponent != null)
+		{
+			mValueComponent.setSelectedItem(aValue);
+		}
 		return this;
+	}
+
+
+	@Override
+	protected void updateValue()
+	{
+		mValue = mValueComponent.getSelectedItem();
+	}
+
+
+	@Override
+	void marshal(Bundle aBundle)
+	{
+		aBundle.putString(mLabel, mValue.toString());
 	}
 
 

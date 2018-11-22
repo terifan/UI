@@ -49,6 +49,8 @@ public class Test
 				)
 				;
 
+			System.out.println(model.marshal().marshalJSON(false));
+
 			PropertyGrid prop1 = new PropertyGrid(model);
 //			PropertyGrid prop2 = new PropertyGrid(model.clone(), new StyleSheet(PropertyGrid.class, PropertyGrid.class.getResource("resources/stylesheet_dark.json")));
 

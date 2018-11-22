@@ -57,10 +57,9 @@ class PropertyGridLayout implements LayoutManager
 			int width = aTarget.getWidth();
 			int indentWidth = style.getInt("indent_width");
 
-			for (Iterator<Property> it = model.getRecursiveIterator(); it.hasNext();)
+			for (Property item : model.getAllProperties())
 			{
-				layoutPropertyComponents(propertyGrid, it.next(), dividerX, y, width, indentWidth, rowHeight);
-
+				layoutPropertyComponents(propertyGrid, item, dividerX, y, width, indentWidth, rowHeight);
 				y += rowHeight;
 			}
 		}

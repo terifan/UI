@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.function.Consumer;
+import org.terifan.bundle.Bundle;
 
 
 public class PropertyGridModel implements Iterable<Property>, Cloneable, Serializable
@@ -53,19 +55,25 @@ public class PropertyGridModel implements Iterable<Property>, Cloneable, Seriali
 	}
 
 
-	public Iterator<Property> getRecursiveIterator()
+	ArrayList<Property> getAllProperties()
 	{
 		ArrayList<Property> out = new ArrayList<>();
+		visit(out::add);
+		return out;
+	}
+
+
+	void visit(Consumer<Property> aConsumer)
+	{
 		for (Property item : mChildren)
 		{
-			out.add(item);
+			aConsumer.accept(item);
+
 			if (item instanceof PropertyList && !((PropertyList)item).isCollapsed())
 			{
-				((PropertyList)item).getRecursiveElements(out);
+				((PropertyList)item).visit(aConsumer);
 			}
 		}
-
-		return out.iterator();
 	}
 
 
@@ -80,5 +88,18 @@ public class PropertyGridModel implements Iterable<Property>, Cloneable, Seriali
 		}
 
 		return clone;
+	}
+
+
+	Bundle marshal()
+	{
+		Bundle bundle = new Bundle();
+
+		for (Property item : mChildren)
+		{
+			item.marshal(bundle);
+		}
+
+		return bundle;
 	}
 }

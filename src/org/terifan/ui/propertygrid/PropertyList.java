@@ -6,8 +6,10 @@ import java.awt.Graphics;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.swing.JLabel;
+import org.terifan.bundle.Bundle;
 import org.terifan.ui.Anchor;
 import org.terifan.ui.TextBox;
 
@@ -18,6 +20,7 @@ public class PropertyList extends Property<JLabel, String> implements Iterable<P
 
 	protected ArrayList<Property> mChildren;
 	protected boolean mCollapsed;
+	protected String mValue;
 
 	private final static Function<PropertyList, String> DEFAULT_VALUE = aList ->
 	{
@@ -77,7 +80,7 @@ public class PropertyList extends Property<JLabel, String> implements Iterable<P
 			return addProperty(new ComboBoxProperty(aLabel, (Object[])aValue, 0));
 		}
 
-		return addProperty(new TextProperty(aLabel, aValue));
+		return addProperty(new TextProperty(aLabel, aValue.toString()));
 	}
 
 
@@ -141,15 +144,40 @@ public class PropertyList extends Property<JLabel, String> implements Iterable<P
 	@Override
 	public String getValue()
 	{
-		return mValueComponent.getText();
+		return mValue;
 	}
 
 
 	@Override
 	public PropertyList setValue(String aValue)
 	{
-		mValueComponent.setText(aValue);
+		mValue = aValue;
+		if (mValueComponent != null)
+		{
+			mValueComponent.setText(aValue);
+		}
 		return this;
+	}
+
+
+	@Override
+	protected void updateValue()
+	{
+		mValue = mValueComponent.getText();
+	}
+
+
+	@Override
+	void marshal(Bundle aBundle)
+	{
+		Bundle bundle = new Bundle();
+
+		for (Property item : mChildren)
+		{
+			item.marshal(bundle);
+		}
+
+		aBundle.putBundle(mLabel, bundle);
 	}
 
 
@@ -175,14 +203,15 @@ public class PropertyList extends Property<JLabel, String> implements Iterable<P
 	}
 
 
-	protected void getRecursiveElements(ArrayList<Property> aList)
+	void visit(Consumer<Property> aConsumer)
 	{
 		for (Property item : mChildren)
 		{
-			aList.add(item);
+			aConsumer.accept(item);
+
 			if (item instanceof PropertyList && !((PropertyList)item).isCollapsed())
 			{
-				((PropertyList)item).getRecursiveElements(aList);
+				((PropertyList)item).visit(aConsumer);
 			}
 		}
 	}

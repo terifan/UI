@@ -2,6 +2,7 @@ package org.terifan.ui.propertygrid;
 
 import java.io.Serializable;
 import javax.swing.JTextField;
+import org.terifan.bundle.Bundle;
 
 
 public class NumberProperty extends Property<JTextField, Number> implements Serializable
@@ -44,8 +45,36 @@ public class NumberProperty extends Property<JTextField, Number> implements Seri
 	public NumberProperty setValue(Number aValue)
 	{
 		mValue = aValue;
-		mValueComponent.setText(mValue.toString());
+		if (mValueComponent != null)
+		{
+			mValueComponent.setText(mValue.toString());
+		}
 		return this;
+	}
+
+
+	@Override
+	protected void updateValue()
+	{
+		if (mValue instanceof Integer)
+		{
+			mValue = Integer.parseInt(mValueComponent.getText());
+		}
+		else if (mValue instanceof Long)
+		{
+			mValue = Long.parseLong(mValueComponent.getText());
+		}
+		else
+		{
+			mValue = Double.parseDouble(mValueComponent.getText());
+		}
+	}
+
+
+	@Override
+	void marshal(Bundle aBundle)
+	{
+		aBundle.putNumber(mLabel, mValue);
 	}
 
 

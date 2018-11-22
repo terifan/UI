@@ -2,16 +2,17 @@ package org.terifan.ui.propertygrid;
 
 import java.io.Serializable;
 import javax.swing.JTextField;
+import org.terifan.bundle.Bundle;
 
 
 public class TextProperty extends Property<JTextField,String> implements Serializable
 {
 	private static final long serialVersionUID = 1L;
 
-	protected Object mValue;
+	protected String mValue;
 
 
-	public TextProperty(String aLabel, Object aValue)
+	public TextProperty(String aLabel, String aValue)
 	{
 		super(aLabel);
 
@@ -22,7 +23,7 @@ public class TextProperty extends Property<JTextField,String> implements Seriali
 	@Override
 	protected JTextField createValueComponent()
 	{
-		JTextField c = new JTextField(mValue.toString());
+		JTextField c = new JTextField(mValue);
 		c.setBorder(null);
 		c.setCaretColor(mPropertyGrid.mStyleSheet.getColor("text_foreground"));
 		c.addActionListener(e -> mValueComponent.repaint());
@@ -36,15 +37,33 @@ public class TextProperty extends Property<JTextField,String> implements Seriali
 	@Override
 	public String getValue()
 	{
-		return mValueComponent.getText();
+		return mValue;
 	}
 
 
 	@Override
 	public TextProperty setValue(String aValue)
 	{
-		mValueComponent.setText(aValue);
+		mValue = aValue;
+		if (mValueComponent != null)
+		{
+			mValueComponent.setText(aValue);
+		}
 		return this;
+	}
+
+
+	@Override
+	protected void updateValue()
+	{
+		mValue = mValueComponent.getText();
+	}
+
+
+	@Override
+	void marshal(Bundle aBundle)
+	{
+		aBundle.putString(mLabel, mValue);
 	}
 
 

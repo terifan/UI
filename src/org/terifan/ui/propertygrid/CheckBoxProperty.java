@@ -2,16 +2,21 @@ package org.terifan.ui.propertygrid;
 
 import java.io.Serializable;
 import javax.swing.JCheckBox;
+import org.terifan.bundle.Bundle;
 
 
 public class CheckBoxProperty extends Property<JCheckBox, Boolean> implements Serializable
 {
 	private static final long serialVersionUID = 1L;
 
+	private boolean mSelected;
+
 
 	public CheckBoxProperty(String aLabel, boolean aSelected)
 	{
 		super(aLabel);
+
+		mSelected = aSelected;
 	}
 
 
@@ -21,6 +26,7 @@ public class CheckBoxProperty extends Property<JCheckBox, Boolean> implements Se
 		JCheckBox c = new JCheckBox();
 		c.setOpaque(false);
 		c.addActionListener(e -> mValueComponent.repaint());
+		c.setSelected(mSelected);
 
 		return c;
 	}
@@ -29,15 +35,33 @@ public class CheckBoxProperty extends Property<JCheckBox, Boolean> implements Se
 	@Override
 	public Boolean getValue()
 	{
-		return mValueComponent.isSelected();
+		return mSelected;
 	}
 
 
 	@Override
 	public CheckBoxProperty setValue(Boolean aValue)
 	{
-		mValueComponent.setSelected(aValue);
+		mSelected = aValue;
+		if (mValueComponent != null)
+		{
+			mValueComponent.setSelected(aValue);
+		}
 		return this;
+	}
+
+
+	@Override
+	protected void updateValue()
+	{
+		mSelected = mValueComponent.isSelected();
+	}
+
+
+	@Override
+	void marshal(Bundle aBundle)
+	{
+		aBundle.putBoolean(mLabel, mSelected);
 	}
 
 

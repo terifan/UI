@@ -2,10 +2,10 @@ package org.terifan.ui.propertygrid;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.io.Serializable;
 import javax.swing.JTextField;
+import org.terifan.bundle.Array;
+import org.terifan.bundle.Bundle;
 
 
 public class ColorChooserProperty extends Property<JTextField, Color> implements Cloneable, Serializable
@@ -35,10 +35,9 @@ public class ColorChooserProperty extends Property<JTextField, Color> implements
 	{
 		mColor = aColor;
 
-		JTextField comp = (JTextField)mValueComponent;
-		if (comp != null)
+		if (mValueComponent != null)
 		{
-			comp.setText(toColorString());
+			mValueComponent.setText(toColorString());
 		}
 
 		return this;
@@ -46,74 +45,9 @@ public class ColorChooserProperty extends Property<JTextField, Color> implements
 
 
 	@Override
-	public String toString()
+	protected void updateValue()
 	{
-		return "[" + getText() + "]";
-	}
-
-
-	@Override
-	protected JTextField createValueComponent()
-	{
-		JTextField c = new JTextField(toColorString())
-		{
-			@Override
-			protected void paintComponent(Graphics aGraphics)
-			{
-				if (isFocusOwner())
-				{
-					super.paintComponent(aGraphics);
-					return;
-				}
-
-				aGraphics.setColor(getBackground());
-				aGraphics.fillRect(0, 0, getWidth(), getHeight());
-				aGraphics.setColor(mColor);
-				aGraphics.fillRect(0, 1, 12, 12);
-				aGraphics.setColor(getForeground());
-				aGraphics.drawRect(0, 1, 12, 12);
-				aGraphics.drawString("[" + getText() + "]", 18, 11);
-			}
-		};
-
-		c.setBorder(null);
-		c.setCaretColor(mPropertyGrid.mStyleSheet.getColor("text_foreground"));
-		c.addActionListener(e -> mValueComponent.repaint());
-		c.setForeground(mPropertyGrid.mStyleSheet.getColor("text_foreground"));
-		c.setBackground(mPropertyGrid.mStyleSheet.getColor("text_background"));
-		c.addFocusListener(new FocusAdapter()
-		{
-			@Override
-			public void focusLost(FocusEvent aE)
-			{
-				decodeColor();
-			}
-		});
-
-		return c;
-	}
-
-
-	private String getText()
-	{
-		return ((JTextField)mValueComponent).getText();
-	}
-
-
-	private String toColorString()
-	{
-		if (mColor.getAlpha() != 255)
-		{
-			return mColor.getRed() + "," + mColor.getGreen() + "," + mColor.getBlue() + "," + mColor.getAlpha();
-		}
-
-		return mColor.getRed() + "," + mColor.getGreen() + "," + mColor.getBlue();
-	}
-
-
-	private void decodeColor()
-	{
-		String text = getText();
+		String text = mValueComponent.getText();
 
 		try
 		{
@@ -153,5 +87,71 @@ public class ColorChooserProperty extends Property<JTextField, Color> implements
 		catch (Exception e)
 		{
 		}
+	}
+
+
+	@Override
+	void marshal(Bundle aBundle)
+	{
+		if (mColor.getAlpha() != 255)
+		{
+			aBundle.putArray(mLabel, new Array().add(mColor.getRed(), mColor.getGreen(), mColor.getBlue(), mColor.getAlpha()));
+		}
+		else
+		{
+			aBundle.putArray(mLabel, new Array().add(mColor.getRed(), mColor.getGreen(), mColor.getBlue()));
+		}
+	}
+
+
+	@Override
+	public String toString()
+	{
+		return "[" + mValueComponent.getText() + "]";
+	}
+
+
+	@Override
+	protected JTextField createValueComponent()
+	{
+		JTextField c = new JTextField(toColorString())
+		{
+			@Override
+			protected void paintComponent(Graphics aGraphics)
+			{
+				if (isFocusOwner())
+				{
+					super.paintComponent(aGraphics);
+					return;
+				}
+
+				aGraphics.setColor(getBackground());
+				aGraphics.fillRect(0, 0, getWidth(), getHeight());
+				aGraphics.setColor(mColor);
+				aGraphics.fillRect(0, 1, 12, 12);
+				aGraphics.setColor(getForeground());
+				aGraphics.drawRect(0, 1, 12, 12);
+				aGraphics.drawString("[" + mValueComponent.getText() + "]", 18, 11);
+			}
+		};
+
+		c.setBorder(null);
+		c.setCaretColor(mPropertyGrid.mStyleSheet.getColor("text_foreground"));
+		c.addActionListener(e -> mValueComponent.repaint());
+		c.setForeground(mPropertyGrid.mStyleSheet.getColor("text_foreground"));
+		c.setBackground(mPropertyGrid.mStyleSheet.getColor("text_background"));
+
+		return c;
+	}
+
+
+	private String toColorString()
+	{
+		if (mColor.getAlpha() != 255)
+		{
+			return mColor.getRed() + "," + mColor.getGreen() + "," + mColor.getBlue() + "," + mColor.getAlpha();
+		}
+
+		return mColor.getRed() + "," + mColor.getGreen() + "," + mColor.getBlue();
 	}
 }

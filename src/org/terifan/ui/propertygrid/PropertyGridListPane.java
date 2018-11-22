@@ -32,9 +32,9 @@ class PropertyGridListPane extends JPanel implements Scrollable
 		int width = 0;
 		int height = 0;
 
-		for (Iterator<Property> it = mPropertyGrid.getModel().getRecursiveIterator(); it.hasNext();)
+		for (Property item : mPropertyGrid.getModel().getAllProperties())
 		{
-			Component component = it.next().getValueComponent();
+			Component component = item.getValueComponent();
 
 			if (component != null)
 			{
@@ -60,10 +60,8 @@ class PropertyGridListPane extends JPanel implements Scrollable
 		aGraphics.setColor(style.getColor("grid"));
 
 		int y = 0;
-		for (Iterator<Property> it = mPropertyGrid.getModel().getRecursiveIterator(); it.hasNext();)
+		for (Property item : mPropertyGrid.getModel().getAllProperties())
 		{
-			it.next();
-
 			y += rowHeight;
 			aGraphics.drawLine(0, y - 1, getWidth() - 1, y - 1);
 		}
