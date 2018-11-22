@@ -20,7 +20,7 @@ public class Test
 				.addProperty(new PropertyList(true, "(General)")
 					.addProperty("Text", "value")
 					.addProperty(new PropertyList("Icon")
-						.addProperty(new PropertyPopup("Path", "d:\\", e->JOptionPane.showInputDialog("Value", e.getValue())))
+						.addProperty(new TextProperty("Path", "d:\\").setFunction(e->JOptionPane.showInputDialog("Value", e.getValue())))
 						.addProperty(new PropertyList("Size")
 							.addProperty("Width", 32)
 							.addProperty("Height", 32)

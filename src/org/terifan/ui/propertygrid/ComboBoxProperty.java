@@ -46,13 +46,6 @@ public class ComboBoxProperty extends Property<JComboBox, Object>
 
 
 	@Override
-	public Property clone() throws CloneNotSupportedException
-	{
-		return cloneImpl();
-	}
-
-
-	@Override
 	public String toString()
 	{
 		return ((JComboBox)mValueComponent).getSelectedItem().toString();

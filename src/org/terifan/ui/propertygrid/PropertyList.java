@@ -160,7 +160,7 @@ public class PropertyList extends Property<JLabel, String> implements Iterable<P
 	@Override
 	public PropertyList clone() throws CloneNotSupportedException
 	{
-		PropertyList clone = (PropertyList)cloneImpl();
+		PropertyList clone = (PropertyList)super.clone();
 
 		clone.mChildren = new ArrayList<>();
 		for (Property item : mChildren)

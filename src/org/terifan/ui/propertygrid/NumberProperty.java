@@ -47,13 +47,6 @@ public class NumberProperty extends Property<JTextField, Number>
 
 
 	@Override
-	public Property clone() throws CloneNotSupportedException
-	{
-		return cloneImpl();
-	}
-
-
-	@Override
 	public String toString()
 	{
 		return ((JTextField)mValueComponent).getText();

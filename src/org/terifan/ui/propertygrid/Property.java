@@ -8,7 +8,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 
 public abstract class Property<T extends JComponent,R> implements Comparable<Property>, Cloneable
@@ -55,6 +54,19 @@ public abstract class Property<T extends JComponent,R> implements Comparable<Pro
 	public Property<T, R> setEditable(boolean aEditable)
 	{
 		mEditable = aEditable;
+		return this;
+	}
+
+
+	public Function<Property, R> getFunction()
+	{
+		return mFunction;
+	}
+
+
+	public Property<T, R> setFunction(Function<Property, R> aFunction)
+	{
+		mFunction = aFunction;
 		return this;
 	}
 
@@ -196,7 +208,7 @@ public abstract class Property<T extends JComponent,R> implements Comparable<Pro
 	}
 
 
-	protected Property cloneImpl() throws CloneNotSupportedException
+	protected Property clone() throws CloneNotSupportedException
 	{
 		Property clone = (Property)super.clone();
 		clone.mActionButton = null;
@@ -212,7 +224,4 @@ public abstract class Property<T extends JComponent,R> implements Comparable<Pro
 
 
 	public abstract Property<T,R> setValue(R aValue);
-
-
-	public abstract Property clone() throws CloneNotSupportedException;
 }

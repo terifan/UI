@@ -38,13 +38,6 @@ public class CheckBoxProperty extends Property<JCheckBox, Boolean>
 
 
 	@Override
-	public Property clone() throws CloneNotSupportedException
-	{
-		return cloneImpl();
-	}
-
-
-	@Override
 	public String toString()
 	{
 		return Boolean.toString(((JCheckBox)mValueComponent).isSelected());
