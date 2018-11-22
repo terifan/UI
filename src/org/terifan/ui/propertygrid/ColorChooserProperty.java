@@ -6,6 +6,9 @@ import java.io.Serializable;
 import javax.swing.JTextField;
 import org.terifan.bundle.Array;
 import org.terifan.bundle.Bundle;
+import org.terifan.ui.Anchor;
+import org.terifan.ui.TextBox;
+import org.terifan.ui.Utilities;
 
 
 public class ColorChooserProperty extends Property<JTextField, Color> implements Cloneable, Serializable
@@ -116,6 +119,8 @@ public class ColorChooserProperty extends Property<JTextField, Color> implements
 	{
 		JTextField c = new JTextField(toColorString())
 		{
+			TextBox textBox = new TextBox("").setAnchor(Anchor.WEST).setFont(mPropertyGrid.mStyleSheet.getFont("item_font")).setPadding(0, 2, 0, 0).setBackground(mPropertyGrid.mStyleSheet.getColor("text_background")).setForeground(mPropertyGrid.mStyleSheet.getColor("text_foreground"));
+			
 			@Override
 			protected void paintComponent(Graphics aGraphics)
 			{
@@ -125,13 +130,18 @@ public class ColorChooserProperty extends Property<JTextField, Color> implements
 					return;
 				}
 
+				Utilities.enableTextAntialiasing(aGraphics);
+
+				int s = getHeight() - 4;
+
 				aGraphics.setColor(getBackground());
 				aGraphics.fillRect(0, 0, getWidth(), getHeight());
 				aGraphics.setColor(mColor);
-				aGraphics.fillRect(0, 1, 12, 12);
-				aGraphics.setColor(getForeground());
-				aGraphics.drawRect(0, 1, 12, 12);
-				aGraphics.drawString("[" + mValueComponent.getText() + "]", 18, 11);
+				aGraphics.fillRect(2, 2, s, s);
+				aGraphics.setColor(mPropertyGrid.mStyleSheet.getColor("colorbox"));
+				aGraphics.drawRect(2, 2, s, s);
+
+				textBox.setText("[" + mValueComponent.getText() + "]").setBounds(getHeight(), 0, getWidth() - getHeight(), getHeight()).render(aGraphics);
 			}
 		};
 

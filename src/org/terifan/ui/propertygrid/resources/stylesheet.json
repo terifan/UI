@@ -12,16 +12,17 @@
 	"text_background_selected": "3399FF",
 	"indent_foreground_label": [0,0,0],
 	"indent_foreground_value": [128,128,128],
-	"indent_background": [244,247,252],
-	"grid": [244,247,252],
+	"indent_background": [224,234,249],
+	"---indent_background": [244,247,252],
+	"grid": [224,234,249],
+	"---grid": [244,247,252],
+	
+	"colorbox": [128,128,128],
 
 	"item_font": ["arial","plain",11],
 	"item_changed": ["arial","bold",11],
 	"group_font": ["arial","bold",11],
 	"group_font_value": ["arial","plain",11],
-
-	"show_description": true,
-	"show_indent": true,
 
 	"divider_position": 150,
 	"indent_width": 16,

@@ -3,9 +3,7 @@ package org.terifan.ui.propertygrid;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.util.Iterator;
 import javax.swing.JPanel;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
@@ -51,22 +49,13 @@ class PropertyGridListPane extends JPanel implements Scrollable
 	protected void paintComponent(Graphics aGraphics)
 	{
 		StyleSheet style = mPropertyGrid.getStyleSheet();
-		int rowHeight = mPropertyGrid.getRowHeight();
 
-		Graphics2D g = (Graphics2D)aGraphics;
-		g.setColor(style.getColor("text_background"));
-		g.fillRect(0, 0, getWidth(), getHeight());
+//		aGraphics.setColor(style.getColor("text_background"));
+		aGraphics.setColor(style.getColor("grid"));
+		aGraphics.fillRect(0, 0, getWidth(), getHeight());
 
 		aGraphics.setColor(style.getColor("grid"));
-
-		int y = 0;
-		for (Property item : mPropertyGrid.getModel().getAllProperties())
-		{
-			y += rowHeight;
-			aGraphics.drawLine(0, y - 1, getWidth() - 1, y - 1);
-		}
-
-		aGraphics.drawLine(mPropertyGrid.getDividerPosition(), 0, mPropertyGrid.getDividerPosition(), y - 1);
+		aGraphics.drawLine(mPropertyGrid.getDividerPosition(), 0, mPropertyGrid.getDividerPosition(), getHeight());
 	}
 
 

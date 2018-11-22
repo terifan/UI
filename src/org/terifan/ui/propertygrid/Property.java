@@ -1,6 +1,5 @@
 package org.terifan.ui.propertygrid;
 
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.io.Serializable;
 import java.util.function.Function;
@@ -18,6 +17,7 @@ public abstract class Property<T extends JComponent,R> implements Comparable<Pro
 
 	protected String mLabel;
 	protected boolean mEditable;
+	protected boolean mGroup;
 	protected boolean mHasFunction; // this exists in order for the model to recreate functions when being deserisalized
 
 	protected transient Function<Property,R> mFunction;
@@ -26,7 +26,6 @@ public abstract class Property<T extends JComponent,R> implements Comparable<Pro
 	protected transient PropertyGridIndent mIndentComponent;
 	protected transient PropertyGridLabel mLabelComponent;
 	protected transient T mValueComponent;
-	protected transient boolean mGroup;
 	protected transient int mIndent;
 
 
@@ -179,7 +178,6 @@ public abstract class Property<T extends JComponent,R> implements Comparable<Pro
 		};
 
 		JButton button = new JButton(action);
-		button.setMargin(new Insets(0, 0, 0, 0));
 		button.setOpaque(false);
 		button.setFocusable(false);
 		button.setIcon(new ImageIcon(mPropertyGrid.getStyleSheet().getImage("popup_icon")));
