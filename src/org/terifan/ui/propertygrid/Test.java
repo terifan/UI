@@ -76,7 +76,7 @@ public class Test
 
 			JFrame frame = new JFrame();
 			frame.add(panel);
-			frame.setSize(400, 768);
+			frame.setSize(400, 800);
 			frame.setLocationRelativeTo(null);
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			frame.setVisible(true);

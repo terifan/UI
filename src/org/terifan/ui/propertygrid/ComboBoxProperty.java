@@ -28,8 +28,9 @@ public class ComboBoxProperty extends Property<JComboBox, Object> implements Ser
 	protected JComboBox createValueComponent()
 	{
 		JComboBox c = new JComboBox(mOptions);
+//		c.setBackground(mPropertyGrid.mStyleSheet.getColor("text_background"));
+//		c.setForeground(mPropertyGrid.mStyleSheet.getColor("text_foreground"));
 		c.setSelectedIndex(mSelectedIndex);
-		c.setOpaque(false);
 		c.addActionListener(e -> mValueComponent.repaint());
 
 		return c;

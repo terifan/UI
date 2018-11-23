@@ -4,7 +4,6 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.LayoutManager;
-import java.util.Iterator;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 
@@ -68,9 +67,11 @@ class PropertyGridLayout implements LayoutManager
 
 	protected void layoutPropertyComponents(PropertyGrid aPropertyGrid, Property aItem, int aDividerX, int aY, int aWidth, int aIndentWidth, int aRowHeight)
 	{
+		aRowHeight--;
+		
 		int indent = aItem.getIndent() + 1;
 
-		aItem.getIndentComponent().setBounds(0, aY, indent * aIndentWidth, aRowHeight - 1);
+		aItem.getIndentComponent().setBounds(0, aY, indent * aIndentWidth, aRowHeight);
 
 		int btnWidth = 0;
 
@@ -78,14 +79,13 @@ class PropertyGridLayout implements LayoutManager
 		if (button != null)
 		{
 			btnWidth = aRowHeight;
-			button.setBounds(aWidth - btnWidth, aY, btnWidth, aRowHeight - 1);
-			btnWidth += 4;
+			button.setBounds(aWidth - btnWidth, aY, btnWidth, aRowHeight);
 		}
 
 		JComponent component = aItem.getValueComponent();
-		component.setBounds(aDividerX + (aItem.isGroup() ? 0 : 4), aY, aWidth - aDividerX - btnWidth - (aItem.isGroup() ? 0 : 4), aRowHeight - 1);
+		component.setBounds(aDividerX + 1, aY, aWidth - aDividerX - btnWidth - 1, aRowHeight);
 
 		component = aItem.getLabelComponent();
-		component.setBounds(indent * aIndentWidth, aY, aDividerX - (indent * aIndentWidth), aRowHeight - 1);
+		component.setBounds(indent * aIndentWidth, aY, aDividerX - (indent * aIndentWidth), aRowHeight);
 	}
 }

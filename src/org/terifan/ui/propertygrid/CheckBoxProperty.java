@@ -24,7 +24,8 @@ public class CheckBoxProperty extends Property<JCheckBox, Boolean> implements Se
 	protected JCheckBox createValueComponent()
 	{
 		JCheckBox c = new JCheckBox();
-		c.setOpaque(false);
+		c.setBackground(mPropertyGrid.mStyleSheet.getColor("text_background"));
+		c.setForeground(mPropertyGrid.mStyleSheet.getColor("text_foreground"));
 		c.addActionListener(e -> mValueComponent.repaint());
 		c.setSelected(mSelected);
 

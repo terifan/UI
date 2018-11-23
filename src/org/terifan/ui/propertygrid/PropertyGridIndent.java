@@ -3,6 +3,7 @@ package org.terifan.ui.propertygrid;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import org.terifan.ui.Utilities;
 
