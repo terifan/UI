@@ -56,10 +56,10 @@ public class StyleSheet
 	{
 		mClass = aClass;
 
-		try (aScript)
+		try (Reader in = aScript)
 		{
 			mBundle = new Bundle();
-			mBundle.unmarshalJSON(aScript);
+			mBundle.unmarshalJSON(in);
 		}
 	}
 
