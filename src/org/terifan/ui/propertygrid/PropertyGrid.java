@@ -125,6 +125,8 @@ public class PropertyGrid extends JPanel
 		mPanel.removeAll();
 
 		buildComponentTree(mModel.getChildren(), 0);
+		
+		validate();
 	}
 
 

@@ -15,6 +15,19 @@ import org.terifan.ui.Utilities;
 
 public class Test
 {
+	private static enum MyEnum
+	{
+		left,
+		center,
+		right;
+
+		@Override
+		public String toString()
+		{
+			return name().toUpperCase();
+		}
+	};
+
 	public static void main(String ... args)
 	{
 		try
@@ -24,6 +37,8 @@ public class Test
 			PropertyGridModel model = new PropertyGridModel()
 				.addProperty(new PropertyList(true, "(General)")
 					.addProperty("Text", "value")
+					.addProperty(new ComboBoxProperty("Null Enum", MyEnum.class, null))
+					.addProperty(new ComboBoxProperty("Enum", MyEnum.class, MyEnum.center))
 					.addProperty(new PropertyList("Icon")
 						.addProperty(new TextProperty("Path", "d:\\").setFunction(e->JOptionPane.showInputDialog("Value", e.getValue())))
 						.addProperty(new PropertyList("Size")
@@ -76,7 +91,7 @@ public class Test
 
 			JFrame frame = new JFrame();
 			frame.add(panel);
-			frame.setSize(400, 800);
+			frame.setSize(400, 850);
 			frame.setLocationRelativeTo(null);
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			frame.setVisible(true);

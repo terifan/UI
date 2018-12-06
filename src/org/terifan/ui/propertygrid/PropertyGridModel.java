@@ -34,6 +34,12 @@ public class PropertyGridModel implements Iterable<Property>, Cloneable, Seriali
 	}
 
 
+	public void removeAll()
+	{
+		mChildren.clear();
+	}
+
+
 	public int size()
 	{
 		return mChildren.size();

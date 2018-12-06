@@ -135,7 +135,10 @@ public class PropertyList extends Property<JLabel, String> implements Iterable<P
 					foregound = style.getColor("text_foreground_readonly");
 				}
 
-				new TextBox(PropertyList.this.toString()).setFont(font).setForeground(foregound).setBackground(background).setBounds(0, 0, getWidth(), getHeight()).setAnchor(Anchor.WEST).setMargins(0, mGroup ? 4 : 0, 0, 0).render(aGraphics);
+				aGraphics.setColor(background);
+				aGraphics.fillRect(0, 0, getWidth(), getHeight());
+
+//				new TextBox(PropertyList.this.toString()).setFont(font).setForeground(foregound).setBackground(background).setBounds(0, 0, getWidth(), getHeight()).setAnchor(Anchor.WEST).setMargins(0, mGroup ? 4 : 0, 0, 0).render(aGraphics);
 			}
 		};
 	}
