@@ -78,19 +78,42 @@ public class ComboBoxProperty extends Property<JPanel, Object> implements Serial
 		combobox.addFocusListener(new FocusAdapter()
 		{
 			@Override
-			public void focusGained(FocusEvent aE)
+			public void focusGained(FocusEvent aEvent)
 			{
-				mPropertyGrid.setSelectedProperty(ComboBoxProperty.this);
+				if (combobox == aEvent.getComponent())
+				{
+					synchronized (this)
+					{
+						getPropertyGrid().setSelectedProperty(ComboBoxProperty.this);
+					}
+
+					getPropertyGrid().repaint();
+				}
 			}
+
 
 			@Override
 			public void focusLost(FocusEvent aEvent)
 			{
-				if (aEvent.getOppositeComponent() != panel)
+				if (combobox == aEvent.getComponent() && aEvent.getOppositeComponent() != panel)
 				{
-			panel.setFocusable(true);
+					PropertyGrid propertyGrid = getPropertyGrid();
+
+					synchronized (this)
+					{
+						if (propertyGrid.getSelectedProperty() == ComboBoxProperty.this)
+						{
+							propertyGrid.updateValue(ComboBoxProperty.this);
+							propertyGrid.setSelectedProperty(null);
+						}
+					}
+
 					label.setText(combobox.getSelectedItem() == null ? "" : combobox.getSelectedItem().toString());
 					((CardLayout)panel.getLayout()).show(panel, "label");
+
+					propertyGrid.repaint();
+
+					panel.setFocusable(true);
 				}
 			}
 		});
@@ -100,7 +123,8 @@ public class ComboBoxProperty extends Property<JPanel, Object> implements Serial
 			@Override
 			public void focusGained(FocusEvent aEvent)
 			{
-		panel.setFocusable(false);
+				panel.setFocusable(false);
+
 				((CardLayout)panel.getLayout()).show(panel, "combobox");
 				combobox.grabFocus();
 			}
@@ -135,7 +159,15 @@ public class ComboBoxProperty extends Property<JPanel, Object> implements Serial
 	@Override
 	protected void updateValue()
 	{
-		mValue = getComboBox().getSelectedItem();
+		JComboBox comboBox = getComboBox();
+		mValue = comboBox.getSelectedItem();
+		mSelectedIndex = comboBox.getSelectedIndex();
+	}
+
+
+	public int getSelectedIndex()
+	{
+		return mSelectedIndex;
 	}
 
 

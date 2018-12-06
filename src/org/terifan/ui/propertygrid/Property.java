@@ -214,6 +214,7 @@ public abstract class Property<T extends JComponent,R> implements Comparable<Pro
 				if (value != null)
 				{
 					setValue(value);
+					mPropertyGrid.updateValue(Property.this);
 					mPropertyGrid.repaint();
 				}
 			}
@@ -239,8 +240,11 @@ public abstract class Property<T extends JComponent,R> implements Comparable<Pro
 		mLabelComponent = new PropertyGridLabel(this);
 
 		mValueComponent = createValueComponent();
-		mValueComponent.addFocusListener(new PropertyGridEditorListener(this));
 		mValueComponent.setFont(mPropertyGrid.getStyleSheet().getFont("item_font"));
+		if (!(mValueComponent instanceof JPanel))
+		{
+			mValueComponent.addFocusListener(new PropertyGridEditorListener(this));
+		}
 
 		if (mHasPopup && mPopup == null)
 		{

@@ -157,17 +157,17 @@ public class PropertyGrid extends JPanel
 
 	protected void setSelectedProperty(Property aProperty)
 	{
-		if (mSelectedProperty != null && mSelectedProperty != aProperty)
-		{
-			if (mListeners.size() > 0)
-			{
-				PropertyChangeEvent event = new PropertyChangeEvent(this, mSelectedProperty);
-				for (PropertyChangeListener o : mListeners)
-				{
-					o.stateChanged(event);
-				}
-			}
-		}
+//		if (mSelectedProperty != null && mSelectedProperty != aProperty)
+//		{
+//			if (mListeners.size() > 0)
+//			{
+//				PropertyChangeEvent event = new PropertyChangeEvent(this, mSelectedProperty);
+//				for (PropertyChangeListener o : mListeners)
+//				{
+//					o.stateChanged(event);
+//				}
+//			}
+//		}
 
 		mSelectedProperty = aProperty;
 
