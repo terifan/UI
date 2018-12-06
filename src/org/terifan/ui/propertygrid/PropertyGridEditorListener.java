@@ -35,17 +35,18 @@ class PropertyGridEditorListener implements FocusListener
 	{
 		if (mProperty.getValueComponent() == aEvent.getComponent())
 		{
+			PropertyGrid propertyGrid = mProperty.getPropertyGrid();
+
 			synchronized (this)
 			{
-				if (mProperty.getPropertyGrid().getSelectedProperty() == mProperty)
+				if (propertyGrid.getSelectedProperty() == mProperty)
 				{
-					mProperty.getPropertyGrid().setSelectedProperty(null);
-
-					mProperty.updateValue();
+					propertyGrid.updateValue(mProperty);
+					propertyGrid.setSelectedProperty(null);
 				}
 			}
 
-			mProperty.getPropertyGrid().repaint();
+			propertyGrid.repaint();
 		}
 	}
 }

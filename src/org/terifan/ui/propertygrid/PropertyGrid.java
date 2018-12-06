@@ -6,20 +6,18 @@ import java.util.ArrayList;
 import java.util.function.Function;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 
 public class PropertyGrid extends JPanel
 {
-	protected ArrayList<ChangeListener> mListeners;
+	protected ArrayList<PropertyChangeListener> mListeners;
 	protected PropertyGridModel mModel;
 	protected int mDividerPosition;
 	protected JScrollPane mScrollPane;
 	protected PropertyGridListPane mPanel;
 	protected Property mSelectedProperty;
 	protected StyleSheet mStyleSheet;
-	protected Function<Property,Function<Property,Object>> mFunctionFactory;
+	protected Function<Property,Function<Property,Object>> mPopupFactory;
 
 
 	public PropertyGrid(PropertyGridModel aPropertyGridModel)
@@ -28,9 +26,9 @@ public class PropertyGrid extends JPanel
 	}
 
 
-	public PropertyGrid(PropertyGridModel aPropertyGridModel, Function<Property, Function<Property, Object>> aFunctionFactory)
+	public PropertyGrid(PropertyGridModel aPropertyGridModel, Function<Property, Function<Property, Object>> aPopupFactory)
 	{
-		this(aPropertyGridModel, aFunctionFactory, null);
+		this(aPropertyGridModel, aPopupFactory, null);
 	}
 
 
@@ -40,12 +38,12 @@ public class PropertyGrid extends JPanel
 	}
 
 
-	public PropertyGrid(PropertyGridModel aModel, Function<Property, Function<Property, Object>> aFunctionFactory, StyleSheet aStyleSheet)
+	public PropertyGrid(PropertyGridModel aModel, Function<Property, Function<Property, Object>> aPopupFactory, StyleSheet aStyleSheet)
 	{
 		super(new BorderLayout());
 
 		mListeners = new ArrayList<>();
-		mFunctionFactory = aFunctionFactory;
+		mPopupFactory = aPopupFactory;
 
 		if (aStyleSheet == null)
 		{
@@ -79,9 +77,9 @@ public class PropertyGrid extends JPanel
 	}
 
 
-	public Function<Property, Function<Property, Object>> getFunctionFactory()
+	public Function<Property, Function<Property, Object>> getPopupFactory()
 	{
-		return mFunctionFactory;
+		return mPopupFactory;
 	}
 
 
@@ -97,13 +95,13 @@ public class PropertyGrid extends JPanel
 	}
 
 
-	public void addChangeListener(ChangeListener aChangeListener)
+	public void addChangeListener(PropertyChangeListener aChangeListener)
 	{
 		mListeners.add(aChangeListener);
 	}
 
 
-	public void removeChangeListener(ChangeListener aChangeListener)
+	public void removeChangeListener(PropertyChangeListener aChangeListener)
 	{
 		mListeners.remove(aChangeListener);
 	}
@@ -116,7 +114,7 @@ public class PropertyGrid extends JPanel
 
 
 	/**
-	 * Sets the model without changing the function factory property of this PropertyGrid.
+	 * Sets the model without changing the popup factory property of this PropertyGrid.
 	 */
 	public void setModel(PropertyGridModel aPropertyGridModel)
 	{
@@ -125,14 +123,14 @@ public class PropertyGrid extends JPanel
 		mPanel.removeAll();
 
 		buildComponentTree(mModel.getChildren(), 0);
-		
+
 		validate();
 	}
 
 
-	public void setModel(PropertyGridModel aPropertyGridModel, Function<Property, Function<Property, Object>> aFunctionFactory)
+	public void setModel(PropertyGridModel aPropertyGridModel, Function<Property, Function<Property, Object>> aPopupFactory)
 	{
-		mFunctionFactory = aFunctionFactory;
+		mPopupFactory = aPopupFactory;
 		setModel(aPropertyGridModel);
 	}
 
@@ -159,19 +157,22 @@ public class PropertyGrid extends JPanel
 
 	protected void setSelectedProperty(Property aProperty)
 	{
-		mSelectedProperty = aProperty;
-
-		if (aProperty != null)
+		if (mSelectedProperty != null && mSelectedProperty != aProperty)
 		{
 			if (mListeners.size() > 0)
 			{
-				ChangeEvent event = new ChangeEvent(aProperty);
-				for (ChangeListener o : mListeners)
+				PropertyChangeEvent event = new PropertyChangeEvent(this, mSelectedProperty);
+				for (PropertyChangeListener o : mListeners)
 				{
 					o.stateChanged(event);
 				}
 			}
+		}
 
+		mSelectedProperty = aProperty;
+
+		if (mSelectedProperty != null)
+		{
 			mSelectedProperty.getValueComponent().requestFocus();
 		}
 	}
@@ -192,5 +193,21 @@ public class PropertyGrid extends JPanel
 	public int getRowHeight()
 	{
 		return mStyleSheet.getInt("row_padding") + (int)mStyleSheet.getFont("item_font").getLineMetrics("Aj]", new FontRenderContext(null, true, false)).getHeight();
+	}
+
+
+	void updateValue(Property aProperty)
+	{
+		aProperty.updateValue();
+
+		if (mListeners.size() > 0)
+		{
+			PropertyChangeEvent event = new PropertyChangeEvent(this, aProperty);
+
+			for (PropertyChangeListener o : mListeners)
+			{
+				o.stateChanged(event);
+			}
+		}
 	}
 }

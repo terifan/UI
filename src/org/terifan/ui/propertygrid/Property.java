@@ -18,15 +18,18 @@ public abstract class Property<T extends JComponent,R> implements Comparable<Pro
 	protected String mLabel;
 	protected boolean mEditable;
 	protected boolean mGroup;
-	protected boolean mHasFunction; // this exists in order for the model to recreate functions when being deserisalized
+	protected boolean mHasPopup; // this exists in order for the model to recreate popup functions when being deserisalized
+	protected String mKey;
+	protected Object mUserObject;
 
-	protected transient Function<Property,R> mFunction;
+	protected transient Function<Property,R> mPopup;
 	protected transient JButton mActionButton;
 	protected transient PropertyGrid mPropertyGrid;
 	protected transient PropertyGridIndent mIndentComponent;
 	protected transient PropertyGridLabel mLabelComponent;
 	protected transient T mValueComponent;
 	protected transient int mIndent;
+	protected transient PropertyChangeListener mChangeListener;
 
 
 	public Property(String aLabel)
@@ -62,16 +65,55 @@ public abstract class Property<T extends JComponent,R> implements Comparable<Pro
 	}
 
 
-	public Function<Property, R> getFunction()
+	public Function<Property, R> getPopup()
 	{
-		return mFunction;
+		return mPopup;
 	}
 
 
-	public Property<T, R> setFunction(Function<Property, R> aFunction)
+	public Property<T, R> setPopup(Function<Property, R> aFunction)
 	{
-		mFunction = aFunction;
-		mHasFunction = mFunction != null;
+		mPopup = aFunction;
+		mHasPopup = mPopup != null;
+		return this;
+	}
+
+
+	public String getKey()
+	{
+		return mKey;
+	}
+
+
+	public Property<T, R> setKey(String aKey)
+	{
+		mKey = aKey;
+		return this;
+	}
+
+
+	public PropertyChangeListener getChangeListener()
+	{
+		return mChangeListener;
+	}
+
+
+	public Property<T, R> setChangeListener(PropertyChangeListener aChangeListener)
+	{
+		mChangeListener = aChangeListener;
+		return this;
+	}
+
+
+	public Object getUserObject()
+	{
+		return mUserObject;
+	}
+
+
+	public Property<T, R> setUserObject(Object aUserObject)
+	{
+		mUserObject = aUserObject;
 		return this;
 	}
 
@@ -157,7 +199,7 @@ public abstract class Property<T extends JComponent,R> implements Comparable<Pro
 
 	protected JButton createActionButton()
 	{
-		if (mFunction == null)
+		if (mPopup == null)
 		{
 			return null;
 		}
@@ -167,7 +209,7 @@ public abstract class Property<T extends JComponent,R> implements Comparable<Pro
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				R value = mFunction.apply(Property.this);
+				R value = mPopup.apply(Property.this);
 
 				if (value != null)
 				{
@@ -200,13 +242,13 @@ public abstract class Property<T extends JComponent,R> implements Comparable<Pro
 		mValueComponent.addFocusListener(new PropertyGridEditorListener(this));
 		mValueComponent.setFont(mPropertyGrid.getStyleSheet().getFont("item_font"));
 
-		if (mHasFunction && mFunction == null)
+		if (mHasPopup && mPopup == null)
 		{
-			Function<Property, Function<Property, Object>> factory = mPropertyGrid.getFunctionFactory();
+			Function<Property, Function<Property, Object>> factory = mPropertyGrid.getPopupFactory();
 			if (factory != null)
 			{
-				mFunction = (Function<Property,R>)factory.apply(this);
-				mHasFunction = mFunction != null;
+				mPopup = (Function<Property,R>)factory.apply(this);
+				mHasPopup = mPopup != null;
 			}
 		}
 

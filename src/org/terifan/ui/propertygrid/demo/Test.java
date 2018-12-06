@@ -1,4 +1,4 @@
-package org.terifan.ui.propertygrid;
+package org.terifan.ui.propertygrid.demo;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -11,6 +11,16 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.terifan.ui.Utilities;
+import org.terifan.ui.propertygrid.PropertyChangeEvent;
+import org.terifan.ui.propertygrid.ComboBoxProperty;
+import org.terifan.ui.propertygrid.NumberProperty;
+import org.terifan.ui.propertygrid.Property;
+import org.terifan.ui.propertygrid.PropertyGrid;
+import org.terifan.ui.propertygrid.PropertyGridModel;
+import org.terifan.ui.propertygrid.PropertyList;
+import org.terifan.ui.propertygrid.StyleSheet;
+import org.terifan.ui.propertygrid.TextProperty;
+import org.terifan.ui.propertygrid.PropertyChangeListener;
 
 
 public class Test
@@ -40,12 +50,12 @@ public class Test
 					.addProperty(new ComboBoxProperty("Null Enum", MyEnum.class, null))
 					.addProperty(new ComboBoxProperty("Enum", MyEnum.class, MyEnum.center))
 					.addProperty(new PropertyList("Icon")
-						.addProperty(new TextProperty("Path", "d:\\").setFunction(e->JOptionPane.showInputDialog("Value", e.getValue())))
+						.addProperty(new TextProperty("Path", "d:\\").setPopup(e->JOptionPane.showInputDialog("Value", e.getValue())))
 						.addProperty(new PropertyList("Size")
 							.addProperty("Width", 32)
 							.addProperty("Height", 32)
 							.addProperty(new PropertyList("DPI")
-								.addProperty("X", 100)
+								.addProperty(new NumberProperty("X", 100).setKey("dpiX"))
 								.addProperty("Y", 100)
 							)
 							.addProperty("ComboBox", new String[]{"aaa","bbbbb"})
@@ -64,10 +74,20 @@ public class Test
 				)
 				;
 
-			System.out.println(model.marshal().marshalJSON(false));
+			System.out.println(model.toBundle().marshalJSON(false));
 
 			PropertyGrid prop1 = new PropertyGrid(model);
 //			PropertyGrid prop2 = new PropertyGrid(model.clone(), new StyleSheet(PropertyGrid.class, PropertyGrid.class.getResource("resources/stylesheet_dark.json")));
+
+			prop1.addChangeListener(new PropertyChangeListener()
+			{
+				@Override
+				public void stateChanged(PropertyChangeEvent aEvent)
+				{
+					System.out.println(aEvent);
+				}
+			});
+
 
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			try (ObjectOutputStream oos = new ObjectOutputStream(baos))
@@ -76,14 +96,24 @@ public class Test
 			}
 			ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));
 			PropertyGridModel modelCopy = (PropertyGridModel)ois.readObject();
-			Function<Property, Function<Property, Object>> funcFact = e->{
+			Function<Property, Function<Property, Object>> popupFactory = e->{
 				if (e.getLabel().equals("Path"))
 				{
 					return prop->JOptionPane.showInputDialog("Value", prop.getValue());
 				}
 				return null;
 			};
-			PropertyGrid prop2 = new PropertyGrid(modelCopy, funcFact, new StyleSheet(PropertyGrid.class, PropertyGrid.class.getResource("resources/stylesheet_dark.json")));
+
+			PropertyGrid prop2 = new PropertyGrid(modelCopy, popupFactory, new StyleSheet(PropertyGrid.class, PropertyGrid.class.getResource("resources/stylesheet_dark.json")));
+
+			prop2.addChangeListener(new PropertyChangeListener()
+			{
+				@Override
+				public void stateChanged(PropertyChangeEvent aEvent)
+				{
+					System.out.println(aEvent);
+				}
+			});
 
 			JPanel panel = new JPanel(new BorderLayout());
 			panel.add(prop1, BorderLayout.NORTH);

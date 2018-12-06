@@ -13,6 +13,7 @@ public class PropertyGridModel implements Iterable<Property>, Cloneable, Seriali
 	private static final long serialVersionUID = 1L;
 
 	protected ArrayList<Property> mChildren;
+	protected Object mUserObject;
 
 
 	public PropertyGridModel()
@@ -31,6 +32,19 @@ public class PropertyGridModel implements Iterable<Property>, Cloneable, Seriali
 	public Property getProperty(int aIndex)
 	{
 		return mChildren.get(aIndex);
+	}
+
+
+	public Object getUserObject()
+	{
+		return mUserObject;
+	}
+
+
+	public PropertyGridModel setUserObject(Object aUserObject)
+	{
+		mUserObject = aUserObject;
+		return this;
 	}
 
 
@@ -97,7 +111,7 @@ public class PropertyGridModel implements Iterable<Property>, Cloneable, Seriali
 	}
 
 
-	Bundle marshal()
+	public Bundle toBundle()
 	{
 		Bundle bundle = new Bundle();
 
