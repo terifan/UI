@@ -580,4 +580,10 @@ public class InputDialog
 	{
 		return mDialog;
 	}
+
+
+	public JPanel getContentPanel()
+	{
+		return mContentPanel;
+	}
 }
