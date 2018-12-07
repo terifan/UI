@@ -2,19 +2,13 @@ package org.terifan.ui.inputdialog;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dialog;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
-import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -27,17 +21,11 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.border.Border;
 import javax.swing.text.JTextComponent;
-import org.terifan.ui.Anchor;
-import org.terifan.ui.TextBox;
-import org.terifan.ui.Utilities;
 
 
 /**
- * The InputDialog is an easy to use dialog that allow custom fields to be
- * added in groups and columns.
+ * The InputDialog is an easy to use dialog that allow custom fields to be added in groups and columns.
  */
 public class InputDialog
 {
@@ -49,7 +37,7 @@ public class InputDialog
 	private String mSubtitle;
 	private JPanel mContentPanel;
 	private JPanel mCurrentGroup;
-	private JPanel [] mColumns;
+	private JPanel[] mColumns;
 	private int mColumnIndex;
 	private boolean mInsideColumn;
 	private boolean mInsideGroup;
@@ -72,7 +60,7 @@ public class InputDialog
 
 	public InputDialog(Component aParent, String aWindowTitle, String aTitle, String aSubtitle)
 	{
-        Window window = aParent == null ? null : SwingUtilities.windowForComponent(aParent);
+		Window window = aParent == null ? null : SwingUtilities.windowForComponent(aParent);
 		if (window instanceof Frame)
 		{
 			mDialog = new JDialog((Frame)window, aWindowTitle, true);
@@ -96,19 +84,18 @@ public class InputDialog
 	/**
 	 * Adds a row to the InputDialog with a field label and one or more fields.
 	 *
-	 * Note: JTextArea components should be added without a JScrollPane for best
-	 *       result.
+	 * Note: JTextArea components should be added without a JScrollPane for best result.
 	 *
-	 * @param aLabel
-	 *   the field label
-	 * @param aComponent
-	 *   the components that will be associated with the field
+	 * @param aLabel the field label
+	 * @param aComponent the components that will be associated with the field
 	 */
-	public void add(String aLabel, JComponent ... aComponent)
+	public void add(String aLabel, JComponent... aComponent)
 	{
 		add(aLabel, null, aComponent);
 	}
-	public void add(String aLabel, ButtonGroup aButtonGroup, JComponent ... aComponent)
+
+
+	public void add(String aLabel, ButtonGroup aButtonGroup, JComponent... aComponent)
 	{
 		GridBagConstraints c;
 
@@ -202,7 +189,7 @@ public class InputDialog
 		// swap column
 		if (mInsideColumn && !mInsideGroup)
 		{
-			mColumnIndex = 1-mColumnIndex;
+			mColumnIndex = 1 - mColumnIndex;
 			mCurrentGroup = mColumns[mColumnIndex];
 		}
 	}
@@ -213,9 +200,7 @@ public class InputDialog
 	 *
 	 * Note: Groups can not contain other groups.
 	 *
-	 * @param aTitle
-	 *   if specified then a titled border will surround the group. If null
-	 *   then the group will be slightly indented.
+	 * @param aTitle if specified then a titled border will surround the group. If null then the group will be slightly indented.
 	 */
 	public void beginGroup(String aTitle)
 	{
@@ -224,7 +209,7 @@ public class InputDialog
 			throw new IllegalStateException("A group can't contain other groups.");
 		}
 
-		beginGroup(aTitle, null);
+		beginGroup(aTitle, null, true, true);
 	}
 
 
@@ -233,25 +218,33 @@ public class InputDialog
 	 *
 	 * Note: Groups can not contain other groups.
 	 *
-	 * @param aTitle
-	 *   if specified then a titled border will surround the group. If null
-	 *   then the group will be slightly indented.
-	 * @param aEnableCheckBox
-	 *   a JCheckBox component that will be used to enable/disable the group
-	 *   and all it's child components. The CheckBox is added before the group.
+	 * @param aTitle if specified then a titled border will surround the group. If null then the group will be slightly indented.
+	 * @param aEnableCheckBox a JCheckBox component that will be used to enable/disable the group and all it's child components. The
+	 * CheckBox is added before the group.
 	 */
+	public void beginGroup(String aTitle, boolean aBorder)
+	{
+		beginGroup(aTitle, null, aBorder, true);
+	}
+
 	public void beginGroup(String aTitle, JCheckBox aEnableCheckBox)
+	{
+		beginGroup(aTitle, aEnableCheckBox, true, true);
+	}
+
+	public void beginGroup(String aTitle, JCheckBox aEnableCheckBox, boolean aBorder, boolean aIndent)
 	{
 		JPanel group = new JPanel(new GridBagLayout());
 //		group.setBackground(Color.blue);
 
-		if (aTitle != null)
+		if (aBorder && aTitle != null && !aTitle.isEmpty())
 		{
 			group.setBorder(BorderFactory.createTitledBorder(aTitle));
 		}
 		else
 		{
-			group.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 5));
+			group.setBorder(null);
+//			group.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 5));
 		}
 
 		GridBagConstraints c, d;
@@ -283,24 +276,54 @@ public class InputDialog
 			}
 		}
 
-		// add group panel
-		d = new GridBagConstraints();
-		d.gridx = 0;
-
-		c = new GridBagConstraints();
-		c.anchor = GridBagConstraints.NORTHWEST;
-		c.gridx = 1;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.weightx = 1;
-
 		if (mInsideColumn)
 		{
-			mColumns[mColumnIndex].add(new JLabel(""), d);
-			mColumns[mColumnIndex].add(group, c);
-			mColumnIndex = 1-mColumnIndex;
+			// add group panel
+			d = new GridBagConstraints();
+			d.gridx = 0;
+
+			c = new GridBagConstraints();
+			c.anchor = GridBagConstraints.NORTHWEST;
+			c.gridx = 1;
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.weightx = 1;
+
+			if (!aIndent)
+			{
+				d.gridwidth = 2;
+				d.weightx = 1;
+				d.fill = GridBagConstraints.HORIZONTAL;
+
+				mColumns[mColumnIndex].add(group, d);
+			}
+			else if (!aBorder)
+			{
+				d.anchor = GridBagConstraints.NORTHWEST;
+				d.insets = new Insets(3, 10, 0, 5);
+
+				mColumns[mColumnIndex].add(new JLabel(aTitle), d);
+				mColumns[mColumnIndex].add(group, c);
+			}
+			else
+			{
+				mColumns[mColumnIndex].add(new JLabel(""), d);
+				mColumns[mColumnIndex].add(group, c);
+			}
+
+			mColumnIndex = 1 - mColumnIndex;
 		}
 		else
 		{
+			// add group panel
+			d = new GridBagConstraints();
+			d.gridx = 0;
+
+			c = new GridBagConstraints();
+			c.anchor = GridBagConstraints.NORTHWEST;
+			c.gridx = 1;
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.weightx = 1;
+
 			mContentPanel.add(new JLabel(""), d);
 			mContentPanel.add(group, c);
 		}
@@ -328,8 +351,8 @@ public class InputDialog
 
 
 	/**
-	 * Begins column mode. Every odd indexed component added then in column mode
-	 * will be added to the left column and evenly indexed to the right column.
+	 * Begins column mode. Every odd indexed component added then in column mode will be added to the left column and evenly indexed to the
+	 * right column.
 	 *
 	 * Note: columns can not contain other columns.
 	 */
@@ -344,14 +367,14 @@ public class InputDialog
 			throw new IllegalStateException("Already inside a column.");
 		}
 
-		mColumns = new JPanel[]{
+		mColumns = new JPanel[]
+		{
 			new JPanel(new GridBagLayout()),
 			new JPanel(new GridBagLayout())
 		};
 
 //		mColumns[0].setBackground(Color.red);
 //		mColumns[1].setBackground(Color.green);
-
 		GridBagConstraints c;
 
 		JPanel panel = new JPanel(new GridBagLayout());
@@ -401,8 +424,7 @@ public class InputDialog
 	/**
 	 * Begins a new section.
 	 *
-	 * @param aLabel
-	 *   the section label
+	 * @param aLabel the section label
 	 */
 	public void addSection(String aLabel)
 	{
@@ -425,7 +447,6 @@ public class InputDialog
 	private void finish()
 	{
 		GridBagConstraints c;
-
 
 		// setup title panel
 		JPanel titlePanel = null;
@@ -456,7 +477,6 @@ public class InputDialog
 			titlePanel.setBorder(new BevelBorder(true));
 		}
 
-
 		// setup button panel
 		JPanel buttonPanel = new JPanel(new GridBagLayout());
 
@@ -467,7 +487,7 @@ public class InputDialog
 		c.gridy = 0;
 		c.ipadx = 25;
 		c.insets = new Insets(0, 0, 0, 3);
-		buttonPanel.add(new JButton(new ButtonAction("OK", OK_OPTION)), c);
+		buttonPanel.add(new JButton(new ButtonAction(this, "OK", OK_OPTION)), c);
 
 		c = new GridBagConstraints();
 		c.anchor = GridBagConstraints.SOUTH;
@@ -475,10 +495,9 @@ public class InputDialog
 		c.gridy = 0;
 		c.ipadx = 10;
 		c.insets = new Insets(0, 0, 0, 3);
-		buttonPanel.add(new JButton(new ButtonAction("Cancel", CANCEL_OPTION)), c);
+		buttonPanel.add(new JButton(new ButtonAction(this, "Cancel", CANCEL_OPTION)), c);
 
 		buttonPanel.setBorder(new BevelBorder(false));
-
 
 		// setup dialog
 		if (titlePanel != null)
@@ -522,8 +541,7 @@ public class InputDialog
 	/**
 	 * Displays the dialog.
 	 *
-	 * @return
-	 *   the OK_OPTION or CANCEL_OPTION option made by the user.
+	 * @return the OK_OPTION or CANCEL_OPTION option made by the user.
 	 */
 	public int show()
 	{
@@ -552,139 +570,14 @@ public class InputDialog
 	}
 
 
-	private class ButtonAction extends AbstractAction
+	protected void setOption(int aOption)
 	{
-		private int mValue;
-
-
-		public ButtonAction(String aName, int aValue)
-		{
-			super(aName);
-			mValue = aValue;
-		}
-
-
-		@Override
-		public void actionPerformed(ActionEvent e)
-		{
-			mOption = mValue;
-			mDialog.setVisible(false);
-		}
+		mOption = aOption;
 	}
 
 
-	private static class SectionHeader extends JComponent
+	public JDialog getDialog()
 	{
-		private Border mBorder;
-		private String mLabel;
-
-
-		public SectionHeader(String aLabel)
-		{
-			mBorder = UIManager.getBorder("TitledBorder.border");
-			mLabel = aLabel;
-		}
-
-
-		@Override
-		protected void paintComponent(Graphics g)
-		{
-			Utilities.enableTextAntialiasing(g);
-
-			int y = getHeight()/2;
-
-			if (mBorder == null) // cant find the correct shadow color of the titled border
-			{
-				g.setColor(getBackground().darker());
-				g.drawLine(0,y,getWidth(),y);
-				g.setColor(Color.WHITE);
-				g.drawLine(0,y+1,getWidth(),y+1);
-			}
-			else // this code can fail on other then Windows PLAF.
-			{
-				int h = mBorder.getBorderInsets(this).top;
-				Graphics g2 = g.create(0, y-h/2, getWidth(), h);
-				mBorder.paintBorder(this, g2, -10, 0, getWidth()+20, 100);
-				g2.dispose();
-			}
-
-			new TextBox(" "+mLabel+" ").setPadding(0,2,0,2).setBounds(5, 0, getWidth(), getHeight()).setAnchor(Anchor.WEST).setForeground(Color.BLACK).setHighlight(getBackground()).setMaxLineCount(1).render(g);
-		}
-
-
-		@Override
-		public Dimension getPreferredSize()
-		{
-			return new Dimension(1,20);
-		}
-	}
-
-
-	private static class GroupEnableTriggered implements ActionListener
-	{
-		JPanel group;
-
-
-		public GroupEnableTriggered(JPanel group)
-		{
-			this.group = group;
-		}
-
-
-		@Override
-		public void actionPerformed(ActionEvent e)
-		{
-			setEnable(group, ((JCheckBox) e.getSource()).isSelected());
-		}
-
-
-		public void setEnable(Container aComponent, boolean aState)
-		{
-			aComponent.setEnabled(aState);
-			for (int i = 0; i < aComponent.getComponentCount(); i++)
-			{
-				setEnable((Container) aComponent.getComponent(i), aState);
-			}
-		}
-	}
-
-
-	private static class BevelBorder implements Border
-	{
-		boolean top;
-
-
-		public BevelBorder(boolean top)
-		{
-			this.top = top;
-		}
-
-
-		@Override
-		public Insets getBorderInsets(Component c)
-		{
-			return new Insets(0, top ? 2 : 0, 0, top ? 0 : 2);
-		}
-
-
-		@Override
-		public boolean isBorderOpaque()
-		{
-			return true;
-		}
-
-
-		@Override
-		public void paintBorder(Component c, Graphics g, int x, int y, int width, int height)
-		{
-			if (top)
-			{
-				y += height - 2;
-			}
-			g.setColor(c.getBackground().darker());
-			g.drawLine(x, y, x + width, y);
-			g.setColor(Color.WHITE);
-			g.drawLine(x, y + 1, x + width, y + 1);
-		}
+		return mDialog;
 	}
 }
