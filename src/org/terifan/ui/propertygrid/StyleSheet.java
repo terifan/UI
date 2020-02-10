@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
+import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import org.terifan.bundle.Array;
 import org.terifan.bundle.Bundle;
@@ -72,16 +73,16 @@ public class StyleSheet
 			return new Color(Integer.parseInt((String)s, 16));
 		}
 
-		Integer[] values = mBundle.getIntArray(aKey);
+		ArrayList<Integer> values = mBundle.getIntArray(aKey);
 		if (values == null)
 		{
 			throw new IllegalArgumentException("Key not found: " + aKey);
 		}
-		if (values.length == 3)
+		if (values.size() == 3)
 		{
-			return new Color(values[0], values[1], values[2]);
+			return new Color(values.get(0), values.get(1), values.get(2));
 		}
-		return new Color(values[0], values[1], values[2], values[3]);
+		return new Color(values.get(0), values.get(1), values.get(2), values.get(3));
 	}
 
 

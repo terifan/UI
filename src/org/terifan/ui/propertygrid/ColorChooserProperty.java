@@ -120,7 +120,7 @@ public class ColorChooserProperty extends Property<JTextField, Color> implements
 		JTextField c = new JTextField(toColorString())
 		{
 			TextBox textBox = new TextBox("").setAnchor(Anchor.WEST).setFont(mPropertyGrid.mStyleSheet.getFont("item_font")).setPadding(0, 2, 0, 0).setBackground(mPropertyGrid.mStyleSheet.getColor("text_background")).setForeground(mPropertyGrid.mStyleSheet.getColor("text_foreground"));
-			
+
 			@Override
 			protected void paintComponent(Graphics aGraphics)
 			{
