@@ -10,7 +10,7 @@ import org.terifan.bundle.Bundlable;
 import org.terifan.bundle.Bundle;
 
 
-public class DashboardTile extends JPanel implements Bundlable
+public class DashboardTile extends JPanel// implements Bundlable
 {
 	private static final long serialVersionUID = 1L;
 
@@ -152,24 +152,24 @@ public class DashboardTile extends JPanel implements Bundlable
 	}
 
 
-	@Override
-	public void writeExternal(Bundle aBundle)
-	{
-		int gs = mDashboard.getGridSize();
-
-		aBundle.putString("title", mTitle).putNumber("x", mBounds.x / gs).putNumber("y", mBounds.y / gs).putNumber("width", mBounds.width / gs).putNumber("height", mBounds.height / gs);
-	}
-
-
-	@Override
-	public void readExternal(Bundle aBundle)
-	{
-		int gs = mDashboard.getGridSize();
-
-		mTitle = aBundle.getString("title");
-		mBounds.x = gs * aBundle.getInt("x");
-		mBounds.y = gs * aBundle.getInt("y");
-		mBounds.width = gs * aBundle.getInt("width");
-		mBounds.height = gs * aBundle.getInt("height");
-	}
+//	@Override
+//	public void writeExternal(Bundle aBundle)
+//	{
+//		int gs = mDashboard.getGridSize();
+//
+//		aBundle.putString("title", mTitle).putNumber("x", mBounds.x / gs).putNumber("y", mBounds.y / gs).putNumber("width", mBounds.width / gs).putNumber("height", mBounds.height / gs);
+//	}
+//
+//
+//	@Override
+//	public void readExternal(Bundle aBundle)
+//	{
+//		int gs = mDashboard.getGridSize();
+//
+//		mTitle = aBundle.getString("title");
+//		mBounds.x = gs * aBundle.getInt("x");
+//		mBounds.y = gs * aBundle.getInt("y");
+//		mBounds.width = gs * aBundle.getInt("width");
+//		mBounds.height = gs * aBundle.getInt("height");
+//	}
 }
