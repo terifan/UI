@@ -11,7 +11,7 @@ import org.terifan.bundle.Bundlable;
 import org.terifan.bundle.Bundle;
 
 
-public class Dashboard extends JPanel implements Bundlable
+public class Dashboard extends JPanel
 {
 	private static final long serialVersionUID = 1L;
 
@@ -96,27 +96,27 @@ public class Dashboard extends JPanel implements Bundlable
 	}
 
 
-	@Override
-	public void writeExternal(Bundle aBundle)
-	{
-		aBundle.putArray("tiles", Array.of((Object[])getComponents()));
-	}
-
-
-	@Override
-	public void readExternal(Bundle aBundle)
-	{
-		for (Component c : getComponents())
-		{
-			DashboardTile tile = (DashboardTile)c;
-
-			for (Bundle b : aBundle.getBundleArray("tiles"))
-			{
-				if (tile.getTitle().equals(b.getString("title")))
-				{
-					tile.readExternal(b);
-				}
-			}
-		}
-	}
+//	@Override
+//	public void writeExternal(Bundle aBundle)
+//	{
+//		aBundle.putArray("tiles", Array.of((Object[])getComponents()));
+//	}
+//
+//
+//	@Override
+//	public void readExternal(Bundle aBundle)
+//	{
+//		for (Component c : getComponents())
+//		{
+//			DashboardTile tile = (DashboardTile)c;
+//
+//			for (Bundle b : aBundle.getBundleArray("tiles"))
+//			{
+//				if (tile.getTitle().equals(b.getString("title")))
+//				{
+//					tile.readExternal(b);
+//				}
+//			}
+//		}
+//	}
 }

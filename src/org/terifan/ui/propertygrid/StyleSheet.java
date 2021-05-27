@@ -72,16 +72,16 @@ public class StyleSheet
 			return new Color(Integer.parseInt((String)s, 16));
 		}
 
-		Integer[] values = mBundle.getIntArray(aKey);
+		Array values = mBundle.getArray(aKey);
 		if (values == null)
 		{
 			throw new IllegalArgumentException("Key not found: " + aKey);
 		}
-		if (values.length == 3)
+		if (values.size() == 3)
 		{
-			return new Color(values[0], values[1], values[2]);
+			return new Color(values.getInt(0), values.getInt(1), values.getInt(2));
 		}
-		return new Color(values[0], values[1], values[2], values[3]);
+		return new Color(values.getInt(0), values.getInt(1), values.getInt(2), values.getInt(3));
 	}
 
 
