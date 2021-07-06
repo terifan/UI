@@ -73,7 +73,7 @@ public class StyleSheet
 			return new Color(Integer.parseInt((String)s, 16));
 		}
 
-		ArrayList<Integer> values = mBundle.getIntArray(aKey);
+		ArrayList<Integer> values = mBundle.getIntArrayList(aKey);
 		if (values == null)
 		{
 			throw new IllegalArgumentException("Key not found: " + aKey);
