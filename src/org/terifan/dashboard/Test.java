@@ -7,10 +7,10 @@ import org.terifan.bundle.Bundle;
 
 public class Test
 {
-	public static void main(String... args)
-	{
-		try
-		{
+//	public static void main(String... args)
+//	{
+//		try
+//		{
 //			JTextArea comp1 = new JTextArea("a");
 //			JTextArea comp2 = new JTextArea("b");
 //			JTextArea comp3 = new JTextArea("c");
@@ -44,10 +44,10 @@ public class Test
 //			frame.setLocationRelativeTo(null);
 //			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //			frame.setVisible(true);
-		}
-		catch (Throwable e)
-		{
-			e.printStackTrace(System.out);
-		}
-	}
+//		}
+//		catch (Throwable e)
+//		{
+//			e.printStackTrace(System.out);
+//		}
+//	}
 }

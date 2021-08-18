@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
+import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import org.terifan.bundle.Array;
 import org.terifan.bundle.Bundle;
