@@ -11,7 +11,7 @@ import org.terifan.bundle.Bundlable;
 import org.terifan.bundle.Bundle;
 
 
-public class Dashboard extends JPanel// implements Bundlable
+public class Dashboard extends JPanel
 {
 	private static final long serialVersionUID = 1L;
 
