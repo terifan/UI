@@ -24,7 +24,7 @@ public class Form extends JPanel
 			TreeNode n4 = new TreeNode("Eeee", iconA);
 			TreeNode n5 = new TreeNode("Fffffff", iconA);
 			TreeNode n6 = new TreeNode("Ggggggg", iconA);
-			TreeNode n7 = new TreeNode("Hhhhhhh", iconA);
+			TreeNode n7 = new TreeNode("Hhhhhhh", iconA).setRowHeight(50);
 			TreeNode n8 = new TreeNode("Iiiiiii", iconA);
 			TreeNode n9 = new TreeNode("Jjjjj", iconA);
 			TreeNode n10 = new TreeNode("Kkkkkkkk", iconA);

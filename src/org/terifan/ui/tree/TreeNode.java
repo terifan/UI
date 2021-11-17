@@ -22,6 +22,7 @@ public class TreeNode
 	protected BufferedImage mIcon;
 	protected boolean mRollover;
 	protected boolean mSelected;
+	protected Integer mRowHeight;
 
 
 	public TreeNode(String aLabel)
@@ -53,6 +54,13 @@ public class TreeNode
 	}
 
 
+	public TreeNode setRowHeight(Integer aRowHeight)
+	{
+		mRowHeight = aRowHeight;
+		return this;
+	}
+
+
 	public TreeNode add(TreeNode aNode)
 	{
 		mChildren.add(aNode);
@@ -69,9 +77,9 @@ public class TreeNode
 			int x = aTree.mIndent * aLevel;
 
 			aGraphics.setColor(focused ? mRollover ? mSelected ? new Color(0xD1E8FF) : new Color(0xE5F3FB) : mSelected ? new Color(0xCBE8F6) : new Color(0xFFFFFF) : mSelected ? new Color(0xF7F7F7) : new Color(0xFFFFFF));
-			aGraphics.fillRect(x, aY, aWidth, aTree.mRowHeight);
+			aGraphics.fillRect(x, aY, aWidth, getRowHeight(aTree));
 			aGraphics.setColor(focused ? mRollover ? mSelected ? new Color(0x66A7E8) : new Color(0x70C0E7) : mSelected ? new Color(0x26A0DA) : new Color(0xFFFFFF) : mSelected ? new Color(0xDEDEDE) : new Color(0xFFFFFF));
-			aGraphics.drawRect(x, aY, aWidth - 1, aTree.mRowHeight - 1);
+			aGraphics.drawRect(x, aY, aWidth - 1, getRowHeight(aTree) - 1);
 
 			for (int columnIndex = 0, x0 = 0; columnIndex < aTree.getColumns().size(); columnIndex++)
 			{
@@ -81,20 +89,20 @@ public class TreeNode
 
 				if (columnIndex == 0 && mIcon != null)
 				{
-					aGraphics.drawImage(mIcon, cx, aY + (aTree.mRowHeight - mIcon.getHeight()) / 2, null);
+					aGraphics.drawImage(mIcon, cx, aY + (getRowHeight(aTree) - mIcon.getHeight()) / 2, null);
 
 					cx += aTree.mIconWidth;
 				}
 
 				aGraphics.setColor(Color.BLACK);
-				aGraphics.drawString(mLabel, cx, aY + aTree.mRowHeight - 5);
+				aGraphics.drawString(mLabel, cx, aY + getRowHeight(aTree) - 5);
 
 				x0 += w;
 			}
 
 			if (!mChildren.isEmpty())
 			{
-				aGraphics.drawImage(mExpanded ? COLLAPSE_ICON : EXPAND_ICON, x - aTree.mIndent / 2 - EXPAND_ICON.getWidth() / 2, aY + aTree.mRowHeight / 2 - EXPAND_ICON.getWidth() / 2, null);
+				aGraphics.drawImage(mExpanded ? COLLAPSE_ICON : EXPAND_ICON, x - aTree.mIndent / 2 - EXPAND_ICON.getWidth() / 2, aY + getRowHeight(aTree) / 2 - EXPAND_ICON.getWidth() / 2, null);
 			}
 
 			if (aTree.isPaintIndentLines())
@@ -105,12 +113,12 @@ public class TreeNode
 				{
 					int x0 = aTree.mIndent * i + aTree.mIndent / 2;
 					int y0 = aY - aTree.mGap / 2;
-					int y1 = aY + aTree.mRowHeight + aTree.mGap - aTree.mGap / 2;
+					int y1 = aY + getRowHeight(aTree) + aTree.mGap - aTree.mGap / 2;
 					aGraphics.drawLine(x0, y0, x0, y1);
 				}
 			}
 
-			aY += aTree.mRowHeight + aTree.mGap;
+			aY += getRowHeight(aTree) + aTree.mGap;
 		}
 
 		if (mExpanded)
@@ -125,13 +133,19 @@ public class TreeNode
 	}
 
 
+	protected int getRowHeight(Tree aTree)
+	{
+		return mRowHeight != null ? mRowHeight : aTree.mRowHeight;
+	}
+
+
 	protected Dimension getPreferredSize(Tree aTree, int aLevel)
 	{
 		Dimension result = new Dimension(0, 0);
 
 		if (aLevel > 0 || aTree.isPaintRootNode())
 		{
-			result.height += aTree.mRowHeight + aTree.mGap;
+			result.height += getRowHeight(aTree) + aTree.mGap;
 		}
 
 		for (int columnIndex = 0, x = 0; columnIndex < aTree.getColumns().size(); columnIndex++)
@@ -159,12 +173,12 @@ public class TreeNode
 	{
 		if (aTree.isPaintRootNode() || aTree.getRoot() != this)
 		{
-			if (aEvent.getY() >= aOffsetY.get() && aEvent.getY() < aOffsetY.get() + aTree.mRowHeight)
+			if (aEvent.getY() >= aOffsetY.get() && aEvent.getY() < aOffsetY.get() + getRowHeight(aTree))
 			{
 				return this;
 			}
 
-			aOffsetY.addAndGet(aTree.mRowHeight + aTree.mGap);
+			aOffsetY.addAndGet(getRowHeight(aTree) + aTree.mGap);
 		}
 
 		if (mExpanded)
