@@ -52,8 +52,10 @@ public class TreeNode
 			try
 			{
 				BufferedImage icons = ImageIO.read(TreeNode.class.getResource("icons.png"));
-				EXPAND_ICON = icons.getSubimage(3 * 16, 0, 16, 16);
-				COLLAPSE_ICON = icons.getSubimage(4 * 16, 0, 16, 16);
+				EXPAND_ICON = icons.getSubimage(10 * 16, 0, 16, 16);
+				COLLAPSE_ICON = icons.getSubimage(11 * 16, 0, 16, 16);
+//				EXPAND_ICON = icons.getSubimage(3 * 16, 0, 16, 16);
+//				COLLAPSE_ICON = icons.getSubimage(4 * 16, 0, 16, 16);
 			}
 			catch (IOException e)
 			{
@@ -178,9 +180,9 @@ public class TreeNode
 			if (mSelectable && (mRollover || mSelected))
 			{
 				aGraphics.setColor(aTree.mWindowFocused ? mRollover ? mSelected ? new Color(0xD1E8FF) : new Color(0xE5F3FB) : mSelected ? new Color(0xCBE8F6) : new Color(0xFFFFFF) : mRollover ? mSelected ? new Color(0xD1E8FF) : new Color(0xE5F3FB) : mSelected ? new Color(0xF7F7F7) : new Color(0xFFFFFF));
-				aGraphics.fillRect(x, aY, aWidth, h);
+				aGraphics.fillRect(x, aY, aWidth - x, h);
 				aGraphics.setColor(aTree.mWindowFocused ? mRollover ? mSelected ? new Color(0x66A7E8) : new Color(0x70C0E7) : mSelected ? new Color(0x26A0DA) : new Color(0xFFFFFF) : mRollover ? mSelected ? new Color(0x66A7E8) : new Color(0x70C0E7) : mSelected ? new Color(0xDEDEDE) : new Color(0xFFFFFF));
-				aGraphics.drawRect(x, aY, aWidth - 1, h - 1);
+				aGraphics.drawRect(x, aY, aWidth - x - 1, h - 1);
 			}
 
 			for (int i = drawRoot?0:1, j = 0; i < aLevel; i++, j++)
@@ -202,7 +204,7 @@ public class TreeNode
 					int y0 = aY - aTree.mGap / 2;
 					int y1 = aY + h + aTree.mGap - aTree.mGap / 2;
 
-					aGraphics.setColor(new Color(255, 130, 130));
+					aGraphics.setColor(new Color(240, 240, 240));
 					aGraphics.drawLine(x0, y0, x0, y1);
 				}
 			}
