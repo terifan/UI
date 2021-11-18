@@ -10,6 +10,7 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -24,6 +25,7 @@ import javax.swing.SwingUtilities;
 
 public class Tree extends JPanel implements Scrollable
 {
+	protected HashMap<Integer, Color> mIndentBackgroundColor;
 	protected ArrayList<Column> mColumns;
 	protected TreeNode mTreeRoot;
 	protected TreeNode mRolloverNode;
@@ -35,6 +37,9 @@ public class Tree extends JPanel implements Scrollable
 	protected int mIconWidth;
 	protected boolean mPaintRootNode;
 	protected boolean mPaintIndentLines;
+	protected boolean mPaintHeaderRow;
+	protected boolean PaintHorizontalLines;
+	protected boolean PaintVerticalLines;
 	protected boolean mWindowFocused;
 
 
@@ -46,6 +51,7 @@ public class Tree extends JPanel implements Scrollable
 		mColumnHeaderHeight = 20;
 		mIconWidth = 20;
 		mPaintRootNode = true;
+		mPaintHeaderRow = true;
 		mColumns = new ArrayList<>();
 
 		super.setBackground(Color.WHITE);
@@ -70,6 +76,8 @@ public class Tree extends JPanel implements Scrollable
 		super.registerKeyboardAction(action, KeyStroke.getKeyStroke(KeyEvent.VK_END, 0), JComponent.WHEN_FOCUSED);
 		super.registerKeyboardAction(action, KeyStroke.getKeyStroke(KeyEvent.VK_HOME, InputEvent.CTRL_MASK), JComponent.WHEN_FOCUSED);
 		super.registerKeyboardAction(action, KeyStroke.getKeyStroke(KeyEvent.VK_END, InputEvent.CTRL_MASK), JComponent.WHEN_FOCUSED);
+
+
 
 		MouseAdapter mouseAdapter = new TreeMouseListener(this);
 		addMouseListener(mouseAdapter);
@@ -122,6 +130,62 @@ public class Tree extends JPanel implements Scrollable
 	public void setPaintIndentLines(boolean aPaintIndentLines)
 	{
 		mPaintIndentLines = aPaintIndentLines;
+	}
+
+
+	public boolean isPaintHeaderRow()
+	{
+		return mPaintHeaderRow;
+	}
+
+
+	public Tree setPaintHeaderRow(boolean aPaintHeaderRow)
+	{
+		mPaintHeaderRow = aPaintHeaderRow;
+		configureEnclosingScrollPane();
+		return this;
+	}
+
+
+	public boolean isPaintHorizontalLines()
+	{
+		return PaintHorizontalLines;
+	}
+
+
+	public Tree setPaintHorizontalLines(boolean aPaintHorizontalLines)
+	{
+		PaintHorizontalLines = aPaintHorizontalLines;
+		return this;
+	}
+
+
+	public boolean isPaintVerticalLines()
+	{
+		return PaintVerticalLines;
+	}
+
+
+	public Tree setPaintVerticalLines(boolean aPaintVerticalLines)
+	{
+		PaintVerticalLines = aPaintVerticalLines;
+		return this;
+	}
+
+
+	public Color getIndentBackgroundColor(int aIndex)
+	{
+		return mIndentBackgroundColor.get(aIndex);
+	}
+
+
+	public void setIndentBackgroundColor(int aIndex, Color aColor)
+	{
+		if (mIndentBackgroundColor == null)
+		{
+			mIndentBackgroundColor = new HashMap<>();
+		}
+		mIndentBackgroundColor.put(aIndex, aColor);
 	}
 
 
@@ -231,11 +295,19 @@ public class Tree extends JPanel implements Scrollable
 			JViewport viewport = scrollPane.getViewport();
 			viewport.setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
 
-			JPanel columnHeaderView = new JPanel(new BorderLayout());
-			columnHeaderView.add(new TreeColumnHeader(this), BorderLayout.NORTH);
+			if (mPaintHeaderRow)
+			{
+				JPanel columnHeaderView = new JPanel(new BorderLayout());
+				columnHeaderView.add(new TreeColumnHeader(this), BorderLayout.NORTH);
 
-			scrollPane.setColumnHeaderView(columnHeaderView);
-			scrollPane.setBorder(null);
+				scrollPane.setColumnHeaderView(columnHeaderView);
+				scrollPane.setBorder(null);
+			}
+			else
+			{
+				scrollPane.setColumnHeaderView(null);
+				scrollPane.setBorder(null);
+			}
 
 			JScrollBar vsb = scrollPane.getVerticalScrollBar();
 			vsb.setUnitIncrement(mRowHeight);
@@ -251,11 +323,14 @@ public class Tree extends JPanel implements Scrollable
 			mSelectedNode.mSelected = false;
 		}
 
-		mSelectedNode = aNode;
-
-		if (mSelectedNode != null)
+		if (aNode == null || aNode.isSelectable())
 		{
-			mSelectedNode.mSelected = true;
+			mSelectedNode = aNode;
+
+			if (mSelectedNode != null)
+			{
+				mSelectedNode.mSelected = true;
+			}
 		}
 	}
 }
