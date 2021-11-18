@@ -3,12 +3,14 @@ package org.terifan.ui.tree;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Window;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.imageio.ImageIO;
+import javax.swing.SwingUtilities;
 
 
 public class TreeNode
@@ -72,13 +74,11 @@ public class TreeNode
 	{
 		if (aLevel > 0 || aTree.isPaintRootNode())
 		{
-			boolean focused = aTree.isFocusOwner();
-//			boolean focused = SwingUtilities.getAncestorOfClass(Frame.class, aTree).isFocusOwner();
 			int x = aTree.mIndent * aLevel;
 
-			aGraphics.setColor(focused ? mRollover ? mSelected ? new Color(0xD1E8FF) : new Color(0xE5F3FB) : mSelected ? new Color(0xCBE8F6) : new Color(0xFFFFFF) : mSelected ? new Color(0xF7F7F7) : new Color(0xFFFFFF));
+			aGraphics.setColor(aTree.mWindowFocused ? mRollover ? mSelected ? new Color(0xD1E8FF) : new Color(0xE5F3FB) : mSelected ? new Color(0xCBE8F6) : new Color(0xFFFFFF) : mRollover ? mSelected ? new Color(0xD1E8FF) : new Color(0xE5F3FB) : mSelected ? new Color(0xF7F7F7) : new Color(0xFFFFFF));
 			aGraphics.fillRect(x, aY, aWidth, getRowHeight(aTree));
-			aGraphics.setColor(focused ? mRollover ? mSelected ? new Color(0x66A7E8) : new Color(0x70C0E7) : mSelected ? new Color(0x26A0DA) : new Color(0xFFFFFF) : mSelected ? new Color(0xDEDEDE) : new Color(0xFFFFFF));
+			aGraphics.setColor(aTree.mWindowFocused ? mRollover ? mSelected ? new Color(0x66A7E8) : new Color(0x70C0E7) : mSelected ? new Color(0x26A0DA) : new Color(0xFFFFFF) : mRollover ? mSelected ? new Color(0x66A7E8) : new Color(0x70C0E7) : mSelected ? new Color(0xDEDEDE) : new Color(0xFFFFFF));
 			aGraphics.drawRect(x, aY, aWidth - 1, getRowHeight(aTree) - 1);
 
 			for (int columnIndex = 0, x0 = 0; columnIndex < aTree.getColumns().size(); columnIndex++)

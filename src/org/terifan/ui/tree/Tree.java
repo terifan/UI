@@ -35,6 +35,7 @@ public class Tree extends JPanel implements Scrollable
 	protected int mIconWidth;
 	protected boolean mPaintRootNode;
 	protected boolean mPaintIndentLines;
+	protected boolean mWindowFocused;
 
 
 	public Tree()

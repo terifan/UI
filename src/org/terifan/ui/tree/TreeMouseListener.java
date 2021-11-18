@@ -40,18 +40,18 @@ public class TreeMouseListener extends MouseAdapter
 
 
 	@Override
-	public void mouseEntered(MouseEvent aEvent)
-	{
-		mouseMoved(aEvent);
-	}
-
-
-	@Override
 	public void mouseExited(MouseEvent aEvent)
 	{
 		mTree.setRollover(null);
 		mTree.invalidate();
 		mTree.repaint();
+	}
+
+
+	@Override
+	public void mouseDragged(MouseEvent aEvent)
+	{
+		mouseMoved(aEvent);
 	}
 
 

@@ -1,6 +1,12 @@
 package org.terifan.ui.tree;
 
 import java.awt.BorderLayout;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
+import java.awt.event.WindowStateListener;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -69,6 +75,23 @@ public class Form extends JPanel
 			panel.add(tree, BorderLayout.CENTER);
 
 			JFrame frame = new JFrame();
+			frame.addWindowFocusListener(new WindowFocusListener()
+			{
+				@Override
+				public void windowGainedFocus(WindowEvent aEvent)
+				{
+					tree.mWindowFocused = true;
+					frame.repaint();
+				}
+
+
+				@Override
+				public void windowLostFocus(WindowEvent aEvent)
+				{
+					tree.mWindowFocused = false;
+					frame.repaint();
+				}
+			});
 			frame.add(new JScrollPane(panel));
 			frame.setSize(1024, 768);
 			frame.setLocationRelativeTo(null);
