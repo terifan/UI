@@ -19,16 +19,17 @@ public class Form extends JPanel
 		try
 		{
 			BufferedImage icons = ImageIO.read(TreeNode.class.getResource("icons.png"));
-			BufferedImage iconA = icons.getSubimage(16, 16, 16, 16);
+//			BufferedImage iconA = icons.getSubimage(16, 16, 16, 16);
+			BufferedImage iconA = null;
 
 			TreeNode n0 = new TreeNode("Aaaaaa", iconA);
-			TreeNode n1 = new TreeNode("Bbbbbbbb", iconA).setBackground(new Color(0xE0EAF9)).setSelectable(false).setFont(new Font("arial", Font.BOLD, 12));
-			TreeNode n2 = new TreeNode("Cccc", iconA).setBackground(new Color(0xE0EAF9)).setSelectable(false).setFont(new Font("arial", Font.BOLD, 12));
+			TreeNode n1 = new TreeNode("Bbbbbbbb", iconA).setRowBackground(new Color(0xE0EAF9)).setSelectable(false).setFont(new Font("arial", Font.BOLD, 12));
+			TreeNode n2 = new TreeNode("Cccc", iconA).setRowBackground(new Color(0xE0EAF9)).setSelectable(false).setFont(new Font("arial", Font.BOLD, 12));
 			TreeNode n3 = new TreeNode("Ddddd", iconA);
-			TreeNode n4 = new TreeNode("Eeee", iconA);
+			TreeNode n4 = new TreeNode("Eeee", iconA).setRowHeight(50);
 			TreeNode n5 = new TreeNode("Fffffff", iconA);
 			TreeNode n6 = new TreeNode("Ggggggg", iconA);
-			TreeNode n7 = new TreeNode("Hhhhhhh", iconA).setRowHeight(50);
+			TreeNode n7 = new TreeNode("Hhhhhhh", iconA);
 			TreeNode n8 = new TreeNode("Iiiiiii", iconA);
 			TreeNode n9 = new TreeNode("Jjjjj", iconA);
 			TreeNode n10 = new TreeNode("Kkkkkkkk", iconA);
@@ -36,7 +37,7 @@ public class Form extends JPanel
 			TreeNode n12 = new TreeNode("Mmmmmmm", iconA);
 			TreeNode n13 = new TreeNode("Nnnnnnnn", iconA);
 			TreeNode n14 = new TreeNode("Ooooooo", iconA);
-			TreeNode n15 = new TreeNode("Ppppppp", iconA).setBackground(new Color(0xE0EAF9)).setSelectable(false).setFont(new Font("arial", Font.BOLD, 12));
+			TreeNode n15 = new TreeNode("Ppppppp", iconA).setRowBackground(new Color(0xE0EAF9)).setSelectable(false).setFont(new Font("arial", Font.BOLD, 12));
 			TreeNode n16 = new TreeNode("Qqqqqqq", iconA);
 			TreeNode n17 = new TreeNode("Rrrrrrr", iconA);
 			TreeNode n18 = new TreeNode("Sss", iconA);
@@ -66,12 +67,15 @@ public class Form extends JPanel
 			tree.addColumn(new Column("Value").setWidth(200));
 			tree.addColumn(new Column("Type"));
 			tree.setRoot(n0);
-			tree.setPaintHorizontalLines(true);
+//			tree.setPaintHorizontalLines(true);
 //			tree.setPaintVerticalLines(true);
-			tree.setPaintIndentLines(true);
+//			tree.setPaintIndentLines(true);
 			tree.setPaintRootNode(false);
 //			tree.setPaintHeaderRow(false);
-			tree.setIndentBackgroundColor(0, new Color(0xE0EAF9));
+			tree.setIndentWidth(20);
+			tree.setIndentBackgroundColor(1, new Color(0xE0EAF9));
+			tree.setIconWidth(20);
+			tree.setIconTextSpacing(4);
 
 			JPanel panel = new JPanel(new BorderLayout());
 			panel.add(tree, BorderLayout.CENTER);

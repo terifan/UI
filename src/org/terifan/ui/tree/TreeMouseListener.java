@@ -24,7 +24,7 @@ public class TreeMouseListener extends MouseAdapter
 		TreeNode node = mTree.getRoot().intersect(mTree, aEvent, new AtomicInteger(), level);
 		if (node != null)
 		{
-			if (aEvent.getX() < level.get() * mTree.mIndent)
+			if (aEvent.getX() < level.get() * mTree.mIndentWidth)
 			{
 				node.mExpanded = !node.mExpanded;
 			}

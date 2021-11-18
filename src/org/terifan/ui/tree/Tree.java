@@ -31,25 +31,29 @@ public class Tree extends JPanel implements Scrollable
 	protected TreeNode mRolloverNode;
 	protected TreeNode mSelectedNode;
 	protected int mGap;
-	protected int mIndent;
+	protected int mIndentWidth;
 	protected int mRowHeight;
 	protected int mColumnHeaderHeight;
 	protected int mIconWidth;
+	protected int mIconTextSpacing;
 	protected boolean mPaintRootNode;
 	protected boolean mPaintIndentLines;
 	protected boolean mPaintHeaderRow;
 	protected boolean PaintHorizontalLines;
 	protected boolean PaintVerticalLines;
 	protected boolean mWindowFocused;
+	protected int mExpandWidth;
 
 
 	public Tree()
 	{
 		mGap = 0 * 5;
 		mRowHeight = 20;
-		mIndent = 20;
+		mIndentWidth = 20;
 		mColumnHeaderHeight = 20;
 		mIconWidth = 20;
+		mExpandWidth = 20;
+		mIconTextSpacing = 4;
 		mPaintRootNode = true;
 		mPaintHeaderRow = true;
 		mColumns = new ArrayList<>();
@@ -175,7 +179,7 @@ public class Tree extends JPanel implements Scrollable
 
 	public Color getIndentBackgroundColor(int aIndex)
 	{
-		return mIndentBackgroundColor.get(aIndex);
+		return mIndentBackgroundColor == null ? null : mIndentBackgroundColor.get(aIndex);
 	}
 
 
@@ -186,6 +190,45 @@ public class Tree extends JPanel implements Scrollable
 			mIndentBackgroundColor = new HashMap<>();
 		}
 		mIndentBackgroundColor.put(aIndex, aColor);
+	}
+
+
+	public int getIconWidth()
+	{
+		return mIconWidth;
+	}
+
+
+	public Tree setIconWidth(int aIconWidth)
+	{
+		mIconWidth = aIconWidth;
+		return this;
+	}
+
+
+	public int getIconTextSpacing()
+	{
+		return mIconTextSpacing;
+	}
+
+
+	public Tree setIconTextSpacing(int aIconTextSpacing)
+	{
+		mIconTextSpacing = aIconTextSpacing;
+		return this;
+	}
+
+
+	public int getIndentWidth()
+	{
+		return mIndentWidth;
+	}
+
+
+	public Tree setIndentWidth(int aIndentWidth)
+	{
+		mIndentWidth = aIndentWidth;
+		return this;
 	}
 
 

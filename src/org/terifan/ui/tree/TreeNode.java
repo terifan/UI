@@ -27,6 +27,7 @@ public class TreeNode
 	protected Integer mRowHeight;
 	protected Color mForeground;
 	protected Color mBackground;
+	protected Color mRowBackground;
 	protected Font mFont;
 
 
@@ -75,6 +76,19 @@ public class TreeNode
 	}
 
 
+	public Color getForeground()
+	{
+		return mForeground;
+	}
+
+
+	public TreeNode setForeground(Color aColor)
+	{
+		mForeground = aColor;
+		return this;
+	}
+
+
 	public Color getBackground()
 	{
 		return mBackground;
@@ -85,6 +99,25 @@ public class TreeNode
 	{
 		mBackground = aColor;
 		return this;
+	}
+
+
+	public Color getRowBackground()
+	{
+		return mRowBackground;
+	}
+
+
+	public TreeNode setRowBackground(Color aColor)
+	{
+		mRowBackground = aColor;
+		return this;
+	}
+
+
+	public Integer getRowHeight()
+	{
+		return mRowHeight;
 	}
 
 
@@ -119,14 +152,21 @@ public class TreeNode
 	{
 		if (aLevel > 0 || aTree.isPaintRootNode())
 		{
-			int indent = aTree.mIndent;
-			int x = indent * aLevel;
+			boolean drawRoot = aTree.isPaintRootNode();
+			int indent = aTree.mIndentWidth;
+			int x = indent * (drawRoot?aLevel:aLevel-1);
 			int h = getRowHeight(aTree);
+			int adjustX = EXPAND_ICON.getWidth() / 2;
 
+			if (mRowBackground != null)
+			{
+				aGraphics.setColor(mRowBackground);
+				aGraphics.fillRect(0, aY, aWidth, h);
+			}
 			if (mBackground != null)
 			{
 				aGraphics.setColor(mBackground);
-				aGraphics.fillRect(x, aY, aWidth, h);
+				aGraphics.fillRect(x, aY, aWidth - x, h);
 			}
 
 			if (aTree.isPaintHorizontalLines())
@@ -143,14 +183,27 @@ public class TreeNode
 				aGraphics.drawRect(x, aY, aWidth - 1, h - 1);
 			}
 
-			for (int i = 0, j = aLevel; i < j; i++)
+			for (int i = drawRoot?0:1, j = 0; i < aLevel; i++, j++)
 			{
 				Color color = aTree.getIndentBackgroundColor(i);
 
 				if (color != null)
 				{
 					aGraphics.setColor(color);
-					aGraphics.fillRect(indent * i, aY, indent, h);
+					aGraphics.fillRect(indent * j, aY, indent, h);
+				}
+			}
+
+			if (aTree.isPaintIndentLines())
+			{
+				for (int i = drawRoot?0:1, j = 0; i < aLevel; i++, j++)
+				{
+					int x0 = indent * j + adjustX;
+					int y0 = aY - aTree.mGap / 2;
+					int y1 = aY + h + aTree.mGap - aTree.mGap / 2;
+
+					aGraphics.setColor(new Color(255, 130, 130));
+					aGraphics.drawLine(x0, y0, x0, y1);
 				}
 			}
 
@@ -158,13 +211,23 @@ public class TreeNode
 			{
 				int w = aTree.getColumns().get(columnIndex).getWidth();
 
-				int cx = columnIndex == 0 ? 5 + x : x0;
+				int cx = columnIndex == 0 ? x : x0;
 
-				if (columnIndex == 0 && mIcon != null)
+				if (columnIndex == 0)
 				{
-					aGraphics.drawImage(mIcon, cx, aY + (h - mIcon.getHeight()) / 2, null);
+					if (!mChildren.isEmpty())
+					{
+						aGraphics.drawImage(mExpanded ? COLLAPSE_ICON : EXPAND_ICON, cx - aTree.mExpandWidth, aY + h / 2 - EXPAND_ICON.getHeight() / 2, null);
+					}
 
-					cx += aTree.mIconWidth;
+					if (mIcon != null)
+					{
+						cx += aTree.mIconWidth;
+
+						aGraphics.drawImage(mIcon, cx - mIcon.getWidth(), aY + (h - mIcon.getHeight()) / 2, null);
+					}
+
+					cx += aTree.mIconTextSpacing;
 				}
 
 				if (aTree.isPaintVerticalLines())
@@ -175,32 +238,9 @@ public class TreeNode
 
 				aGraphics.setColor(mForeground);
 				aGraphics.setFont(mFont);
-				aGraphics.drawString(mLabel, cx + 5, aY + h / 2 + 5);
+				aGraphics.drawString(mLabel, cx, aY + h / 2 + 5);
 
 				x0 += w;
-			}
-
-			if (!mChildren.isEmpty())
-			{
-				aGraphics.drawImage(mExpanded ? COLLAPSE_ICON : EXPAND_ICON, x - indent / 2 - EXPAND_ICON.getWidth() / 2, aY + h / 2 - EXPAND_ICON.getWidth() / 2, null);
-			}
-
-			if (aTree.isPaintIndentLines())
-			{
-				for (int i = 0, j = aLevel - (mChildren.isEmpty() ? 0 : 1); i < j; i++)
-				{
-					Color color = aTree.getIndentBackgroundColor(i);
-
-					if (color == null)
-					{
-						int x0 = indent * i + indent / 2;
-						int y0 = aY - aTree.mGap / 2;
-						int y1 = aY + h + aTree.mGap - aTree.mGap / 2;
-
-						aGraphics.setColor(new Color(230, 230, 230));
-						aGraphics.drawLine(x0, y0, x0, y1);
-					}
-				}
 			}
 
 			aY += h + aTree.mGap;
