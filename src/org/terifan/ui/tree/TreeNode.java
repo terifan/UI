@@ -223,7 +223,7 @@ public class TreeNode<T>
 					cx += aTree.mCellLeftMargin;
 				}
 
-				new TextBox(aTree.getText(columnIndex, mValue)).setForeground(mForeground).setFont(mFont).setBounds(cx, aY + hg, (lastColumn ? aWidth - cx : cw - cx + x0) - aTree.mCellRightMargin, h).setMaxLineCount(1).setBreakChars(null).setAnchor(Anchor.WEST).render(aGraphics);
+				new TextBox(aTree.getFieldValueProvider().getText(aTree, columnIndex, mValue)).setForeground(mForeground).setFont(mFont).setBounds(cx, aY + hg, (lastColumn ? aWidth - cx : cw - cx + x0) - aTree.mCellRightMargin, h).setMaxLineCount(1).setBreakChars(null).setAnchor(Anchor.WEST).render(aGraphics);
 
 				x0 += cw;
 			}

@@ -11,7 +11,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
@@ -53,6 +52,7 @@ public class Tree<T> extends JPanel implements Scrollable
 	protected int mIconStyle;
 	protected int mCellRightMargin;
 	protected int mCellLeftMargin;
+	protected FieldValueProvider<T> mFieldValueProvider;
 
 
 	public Tree()
@@ -69,6 +69,7 @@ public class Tree<T> extends JPanel implements Scrollable
 		mPaintRootNode = true;
 		mPaintHeaderRow = true;
 		mColumns = new ArrayList<>();
+		mFieldValueProvider = new FieldValueProvider<>();
 
 		super.setBackground(Color.WHITE);
 		super.setOpaque(true);
@@ -153,7 +154,7 @@ public class Tree<T> extends JPanel implements Scrollable
 	}
 
 
-	public Tree setPaintHeaderRow(boolean aPaintHeaderRow)
+	public Tree<T> setPaintHeaderRow(boolean aPaintHeaderRow)
 	{
 		mPaintHeaderRow = aPaintHeaderRow;
 		configureEnclosingScrollPane();
@@ -167,7 +168,7 @@ public class Tree<T> extends JPanel implements Scrollable
 	}
 
 
-	public Tree setPaintHorizontalLines(boolean aPaintHorizontalLines)
+	public Tree<T> setPaintHorizontalLines(boolean aPaintHorizontalLines)
 	{
 		PaintHorizontalLines = aPaintHorizontalLines;
 		return this;
@@ -180,7 +181,7 @@ public class Tree<T> extends JPanel implements Scrollable
 	}
 
 
-	public Tree setPaintVerticalLines(boolean aPaintVerticalLines)
+	public Tree<T> setPaintVerticalLines(boolean aPaintVerticalLines)
 	{
 		PaintVerticalLines = aPaintVerticalLines;
 		return this;
@@ -225,7 +226,7 @@ public class Tree<T> extends JPanel implements Scrollable
 	}
 
 
-	public Tree setIconWidth(int aIconWidth)
+	public Tree<T> setIconWidth(int aIconWidth)
 	{
 		mIconWidth = aIconWidth;
 		return this;
@@ -238,7 +239,7 @@ public class Tree<T> extends JPanel implements Scrollable
 	}
 
 
-	public Tree setIconTextSpacing(int aIconTextSpacing)
+	public Tree<T> setIconTextSpacing(int aIconTextSpacing)
 	{
 		mIconTextSpacing = aIconTextSpacing;
 		return this;
@@ -251,7 +252,7 @@ public class Tree<T> extends JPanel implements Scrollable
 	}
 
 
-	public Tree setIndentWidth(int aIndentWidth)
+	public Tree<T> setIndentWidth(int aIndentWidth)
 	{
 		mIndentWidth = aIndentWidth;
 		return this;
@@ -264,9 +265,22 @@ public class Tree<T> extends JPanel implements Scrollable
 	}
 
 
-	public Tree setColumnHeaderHeight(int aColumnHeaderHeight)
+	public Tree<T> setColumnHeaderHeight(int aColumnHeaderHeight)
 	{
 		mColumnHeaderHeight = aColumnHeaderHeight;
+		return this;
+	}
+
+
+	public FieldValueProvider<T> getFieldValueProvider()
+	{
+		return mFieldValueProvider;
+	}
+
+
+	public Tree<T> setFieldValueProvider(FieldValueProvider aFieldValueProvider)
+	{
+		mFieldValueProvider = aFieldValueProvider;
 		return this;
 	}
 
@@ -416,7 +430,7 @@ public class Tree<T> extends JPanel implements Scrollable
 	}
 
 
-	public Tree setIconStyle(int aIconStyle)
+	public Tree<T> setIconStyle(int aIconStyle)
 	{
 		mIconStyle = aIconStyle;
 		mExpandIcon = null;
@@ -449,48 +463,5 @@ public class Tree<T> extends JPanel implements Scrollable
 		}
 
 		return aExpand ? mExpandIcon : mCollapseIcon;
-	}
-
-
-	protected String getText(int aColumnIndex, T aValue)
-	{
-		Column column = mColumns.get(aColumnIndex);
-
-		try
-		{
-			String name = column.getFieldName();
-			if (name == null)
-			{
-				name = column.getName();
-			}
-
-			Class<? extends Object> cls = aValue.getClass();
-
-			Field field = null;
-			try
-			{
-				field = cls.getField(name);
-			}
-			catch (Exception e)
-			{
-				try
-				{
-					field = cls.getDeclaredField(name);
-				}
-				catch (Exception ee)
-				{
-				}
-			}
-
-			field.setAccessible(true);
-			Object o = field.get(aValue);
-
-			return o == null ? "" : o.toString();
-		}
-		catch (Exception e)
-		{
-			System.out.println("No field for column: " + column);
-			return "";
-		}
 	}
 }
