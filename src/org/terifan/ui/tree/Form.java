@@ -282,7 +282,7 @@ public class Form extends JPanel
 
 		public Entity(String aKey, BufferedImage aImage)
 		{
-			int i = new Random().nextInt(12);
+			int i = new Random().nextInt(11);
 			icon = new ImageIcon(aImage.getSubimage(i * 16, 16, 16, 16));
 
 			key = aKey;
