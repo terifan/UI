@@ -206,11 +206,17 @@ public class TreeNode<T>
 						aGraphics.drawImage(icon, cx - indent + (indent - icon.getWidth()) / 2, aY + hg + h / 2 - icon.getHeight() / 2, null);
 					}
 
-					if (mIcon != null)
+					Icon icon = mIcon;
+					if (icon == null)
+					{
+						icon = aTree.getFieldValueProvider().getIcon(aTree, mValue);
+					}
+
+					if (icon != null)
 					{
 						cx += aTree.mIconWidth;
 
-						mIcon.paintIcon(aTree, aGraphics, cx - indent + (indent - mIcon.getIconWidth()) / 2, aY + hg + (h - mIcon.getIconHeight()) / 2);
+						icon.paintIcon(aTree, aGraphics, cx - indent + (indent - icon.getIconWidth()) / 2, aY + hg + (h - icon.getIconHeight()) / 2);
 					}
 
 					cx += aTree.mIconTextSpacing;
