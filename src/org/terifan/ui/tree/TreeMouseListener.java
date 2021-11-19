@@ -22,9 +22,10 @@ public class TreeMouseListener extends MouseAdapter
 		AtomicInteger level = new AtomicInteger();
 
 		TreeNode node = mTree.getRoot().intersect(mTree, aEvent, new AtomicInteger(), level);
+
 		if (node != null)
 		{
-			if (aEvent.getX() < level.get() * mTree.mIndentWidth)
+			if (!node.getChildren().isEmpty() && aEvent.getX() > (level.get() - 1) * mTree.mIndentWidth && aEvent.getX() < level.get() * mTree.mIndentWidth)
 			{
 				node.mExpanded = !node.mExpanded;
 			}

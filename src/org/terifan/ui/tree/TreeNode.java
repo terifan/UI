@@ -150,55 +150,35 @@ public class TreeNode
 	}
 
 
+	public ArrayList<TreeNode> getChildren()
+	{
+		return mChildren;
+	}
+
+
 	protected int paintComponent(Tree aTree, Graphics aGraphics, int aWidth, int aY, int aLevel)
 	{
 		if (aLevel > 0 || aTree.isPaintRootNode())
 		{
-			boolean drawRoot = aTree.isPaintRootNode();
 			int indent = aTree.mIndentWidth;
-			int x = indent * (drawRoot?aLevel:aLevel-1);
+			int x = indent * aLevel;
 			int h = getRowHeight(aTree);
 			int adjustX = EXPAND_ICON.getWidth() / 2;
 
 			if (mRowBackground != null)
 			{
 				aGraphics.setColor(mRowBackground);
-				aGraphics.fillRect(0, aY, aWidth, h);
+				aGraphics.fillRect(0, aY, aWidth, h + aTree.mGap);
 			}
 			if (mBackground != null)
 			{
 				aGraphics.setColor(mBackground);
-				aGraphics.fillRect(x, aY, aWidth - x, h);
-			}
-
-			if (aTree.isPaintHorizontalLines())
-			{
-				aGraphics.setColor(new Color(0xE0EAF9));
-				aGraphics.drawLine(0, aY + h - 1, aWidth, aY + h - 1);
-			}
-
-			if (mSelectable && (mRollover || mSelected))
-			{
-				aGraphics.setColor(aTree.mWindowFocused ? mRollover ? mSelected ? new Color(0xD1E8FF) : new Color(0xE5F3FB) : mSelected ? new Color(0xCBE8F6) : new Color(0xFFFFFF) : mRollover ? mSelected ? new Color(0xD1E8FF) : new Color(0xE5F3FB) : mSelected ? new Color(0xF7F7F7) : new Color(0xFFFFFF));
-				aGraphics.fillRect(x, aY, aWidth - x, h);
-				aGraphics.setColor(aTree.mWindowFocused ? mRollover ? mSelected ? new Color(0x66A7E8) : new Color(0x70C0E7) : mSelected ? new Color(0x26A0DA) : new Color(0xFFFFFF) : mRollover ? mSelected ? new Color(0x66A7E8) : new Color(0x70C0E7) : mSelected ? new Color(0xDEDEDE) : new Color(0xFFFFFF));
-				aGraphics.drawRect(x, aY, aWidth - x - 1, h - 1);
-			}
-
-			for (int i = drawRoot?0:1, j = 0; i < aLevel; i++, j++)
-			{
-				Color color = aTree.getIndentBackgroundColor(i);
-
-				if (color != null)
-				{
-					aGraphics.setColor(color);
-					aGraphics.fillRect(indent * j, aY, indent, h);
-				}
+				aGraphics.fillRect(x, aY, aWidth - x, h + aTree.mGap);
 			}
 
 			if (aTree.isPaintIndentLines())
 			{
-				for (int i = drawRoot?0:1, j = 0; i < aLevel; i++, j++)
+				for (int i = 0, j = 0; i < aLevel; i++, j++)
 				{
 					int x0 = indent * j + adjustX;
 					int y0 = aY - aTree.mGap / 2;
@@ -207,6 +187,31 @@ public class TreeNode
 					aGraphics.setColor(new Color(240, 240, 240));
 					aGraphics.drawLine(x0, y0, x0, y1);
 				}
+			}
+
+			if (aTree.isPaintHorizontalLines())
+			{
+				aGraphics.setColor(new Color(0xE0EAF9));
+				aGraphics.drawLine(0, aY + h + aTree.mGap - 1, aWidth, aY + h + aTree.mGap - 1);
+			}
+
+			for (int i = 0, j = 0; i < aLevel; i++, j++)
+			{
+				Color color = aTree.getIndentBackgroundColor(i);
+
+				if (color != null)
+				{
+					aGraphics.setColor(color);
+					aGraphics.fillRect(indent * j, aY - aTree.mGap / 2, indent, h + aTree.mGap);
+				}
+			}
+
+			if (mSelectable && (mRollover || mSelected))
+			{
+				aGraphics.setColor(aTree.mWindowFocused ? mRollover ? mSelected ? new Color(0xD1E8FF) : new Color(0xE5F3FB) : mSelected ? new Color(0xCBE8F6) : new Color(0xFFFFFF) : mRollover ? mSelected ? new Color(0xD1E8FF) : new Color(0xE5F3FB) : mSelected ? new Color(0xF7F7F7) : new Color(0xFFFFFF));
+				aGraphics.fillRect(x, aY + aTree.mGap / 2, aWidth - x, h);
+				aGraphics.setColor(aTree.mWindowFocused ? mRollover ? mSelected ? new Color(0x66A7E8) : new Color(0x70C0E7) : mSelected ? new Color(0x26A0DA) : new Color(0xFFFFFF) : mRollover ? mSelected ? new Color(0x66A7E8) : new Color(0x70C0E7) : mSelected ? new Color(0xDEDEDE) : new Color(0xFFFFFF));
+				aGraphics.drawRect(x, aY + aTree.mGap / 2, aWidth - x - 1, h - 1);
 			}
 
 			for (int columnIndex = 0, x0 = 0; columnIndex < aTree.getColumns().size(); columnIndex++)
@@ -231,16 +236,17 @@ public class TreeNode
 
 					cx += aTree.mIconTextSpacing;
 				}
-
-				if (aTree.isPaintVerticalLines())
+				else if (aTree.isPaintVerticalLines())
 				{
 					aGraphics.setColor(new Color(0xE0EAF9));
-					aGraphics.drawLine(cx, aY, cx, aY + h - 1);
+					aGraphics.drawLine(cx, aY, cx, aY + aTree.mGap + h - 1);
+
+					cx += 5;
 				}
 
 				aGraphics.setColor(mForeground);
 				aGraphics.setFont(mFont);
-				aGraphics.drawString(mLabel, cx, aY + h / 2 + 5);
+				aGraphics.drawString(mLabel, cx, aY + aTree.mGap / 2 + h / 2 + 5);
 
 				x0 += w;
 			}
@@ -300,7 +306,7 @@ public class TreeNode
 	{
 		if (aTree.isPaintRootNode() || aTree.getRoot() != this)
 		{
-			if (aEvent.getY() >= aOffsetY.get() && aEvent.getY() < aOffsetY.get() + getRowHeight(aTree))
+			if (aEvent.getY() >= aOffsetY.get() + aTree.mGap / 2 && aEvent.getY() < aOffsetY.get() + aTree.mGap / 2 + getRowHeight(aTree))
 			{
 				return this;
 			}

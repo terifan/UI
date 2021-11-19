@@ -243,7 +243,7 @@ public class Form extends JPanel
 		tree.setPaintRootNode(false);
 //		tree.setPaintHeaderRow(false);
 		tree.setIndentWidth(20);
-		tree.setIndentBackgroundColor(1, new Color(0xF4F7FC));
+		tree.setIndentBackgroundColor(0, new Color(0xF4F7FC));
 		tree.setIconWidth(20);
 		tree.setIconTextSpacing(4);
 

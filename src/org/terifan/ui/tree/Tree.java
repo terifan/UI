@@ -47,8 +47,8 @@ public class Tree extends JPanel implements Scrollable
 
 	public Tree()
 	{
-		mGap = 0 * 5;
-		mRowHeight = 20;
+		mGap = 9;
+		mRowHeight = 24;
 		mIndentWidth = 20;
 		mColumnHeaderHeight = 20;
 		mIconWidth = 20;
@@ -80,8 +80,6 @@ public class Tree extends JPanel implements Scrollable
 		super.registerKeyboardAction(action, KeyStroke.getKeyStroke(KeyEvent.VK_END, 0), JComponent.WHEN_FOCUSED);
 		super.registerKeyboardAction(action, KeyStroke.getKeyStroke(KeyEvent.VK_HOME, InputEvent.CTRL_MASK), JComponent.WHEN_FOCUSED);
 		super.registerKeyboardAction(action, KeyStroke.getKeyStroke(KeyEvent.VK_END, InputEvent.CTRL_MASK), JComponent.WHEN_FOCUSED);
-
-
 
 		MouseAdapter mouseAdapter = new TreeMouseListener(this);
 		addMouseListener(mouseAdapter);
