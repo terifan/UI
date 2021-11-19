@@ -69,26 +69,28 @@ public class Form extends JPanel
 
 	public static Tree test1() throws IOException
 	{
-		TreeNode n0 = new TreeNode(new Entity("Aaaaaa"));
-		TreeNode n1 = new TreeNode(new Entity("Bbbbbbbb"));
-		TreeNode n2 = new TreeNode(new Entity("Cccc"));
-		TreeNode n3 = new TreeNode(new Entity("Ddddd"));
-		TreeNode n4 = new TreeNode(new Entity("Eeee"));
-		TreeNode n5 = new TreeNode(new Entity("Fffffff"));
-		TreeNode n6 = new TreeNode(new Entity("Ggggggg"));
-		TreeNode n7 = new TreeNode(new Entity("Hhhhhhh"));
-		TreeNode n8 = new TreeNode(new Entity("Iiiiiii"));
-		TreeNode n9 = new TreeNode(new Entity("Jjjjj"));
-		TreeNode n10 = new TreeNode(new Entity("Kkkkkkkk"));
-		TreeNode n11 = new TreeNode(new Entity("Llllllll"));
-		TreeNode n12 = new TreeNode(new Entity("Mmmmmmm"));
-		TreeNode n13 = new TreeNode(new Entity("Nnnnnnnn"));
-		TreeNode n14 = new TreeNode(new Entity("Ooooooo"));
-		TreeNode n15 = new TreeNode(new Entity("Ppppppp"));
-		TreeNode n16 = new TreeNode(new Entity("Qqqqqqq"));
-		TreeNode n17 = new TreeNode(new Entity("Rrrrrrr"));
-		TreeNode n18 = new TreeNode(new Entity("Sss"));
-		TreeNode n19 = new TreeNode(new Entity("Tttttttttt"));
+		BufferedImage icons = ImageIO.read(TreeNode.class.getResource("icons.png"));
+
+		TreeNode n0 = new TreeNode(new Entity("Aaaaaa", icons));
+		TreeNode n1 = new TreeNode(new Entity("Bbbbbbbb", icons));
+		TreeNode n2 = new TreeNode(new Entity("Cccc", icons));
+		TreeNode n3 = new TreeNode(new Entity("Ddddd", icons));
+		TreeNode n4 = new TreeNode(new Entity("Eeee", icons));
+		TreeNode n5 = new TreeNode(new Entity("Fffffff", icons));
+		TreeNode n6 = new TreeNode(new Entity("Ggggggg", icons));
+		TreeNode n7 = new TreeNode(new Entity("Hhhhhhh", icons));
+		TreeNode n8 = new TreeNode(new Entity("Iiiiiii", icons));
+		TreeNode n9 = new TreeNode(new Entity("Jjjjj", icons));
+		TreeNode n10 = new TreeNode(new Entity("Kkkkkkkk", icons));
+		TreeNode n11 = new TreeNode(new Entity("Llllllll", icons));
+		TreeNode n12 = new TreeNode(new Entity("Mmmmmmm", icons));
+		TreeNode n13 = new TreeNode(new Entity("Nnnnnnnn", icons));
+		TreeNode n14 = new TreeNode(new Entity("Ooooooo", icons));
+		TreeNode n15 = new TreeNode(new Entity("Ppppppp", icons));
+		TreeNode n16 = new TreeNode(new Entity("Qqqqqqq", icons));
+		TreeNode n17 = new TreeNode(new Entity("Rrrrrrr", icons));
+		TreeNode n18 = new TreeNode(new Entity("Sss", icons));
+		TreeNode n19 = new TreeNode(new Entity("Tttttttttt", icons));
 		n0.add(n1);
 		n0.add(n2);
 		n0.add(n15);
@@ -197,7 +199,7 @@ public class Form extends JPanel
 	}
 
 
-	public static Tree test3()
+	public static Tree test3() throws IOException
 	{
 		TreeNode n0 = new TreeNode(new Entity("Aaaaaa"));
 		TreeNode n1 = new TreeNode(new Entity("Bbbbbbbb")).setRowBackground(new Color(0xF4F7FC)).setSelectable(false).setFont(new Font("arial", Font.BOLD, 12));
@@ -259,6 +261,7 @@ public class Form extends JPanel
 
 	private static class Entity
 	{
+		private static String[] TYPES = new String[]{"Unknown","Int32","String","Double","Binary","Boolean","ID","null","DateTime","Array","Object"};
 		String key;
 		String value;
 		String type;
@@ -275,7 +278,7 @@ public class Form extends JPanel
 		{
 			key = aKey;
 			value = Calendar.now();
-			type = "Date";
+			type = TYPES[new Random().nextInt(11)];
 			icon = aIcon;
 		}
 
@@ -287,7 +290,7 @@ public class Form extends JPanel
 
 			key = aKey;
 			value = Calendar.now();
-			type = new String[]{"Unknown","Integer","String","Float","Binary","Boolean","ID","null","DateTime","Array","Object"}[i];
+			type = TYPES[i];
 		}
 	}
 }
