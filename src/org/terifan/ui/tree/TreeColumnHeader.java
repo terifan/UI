@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import javax.swing.JPanel;
+import org.terifan.ui.Anchor;
+import org.terifan.ui.TextBox;
 import org.terifan.ui.Utilities;
 
 
@@ -38,16 +40,13 @@ public class TreeColumnHeader extends JPanel
 		{
 			Column column = columns.get(columnIndex);
 
-			int cw = columnIndex + 1 == columns.size() ? w - x : column.getWidth();
+//			int cw = columnIndex + 1 == columns.size() ? w - x : column.getWidth();
+			int cw = column.getWidth();
 
-			if (columnIndex > 0)
-			{
-				aGraphics.setColor(new Color(0xE8F1FB));
-				aGraphics.drawLine(x, 0, x, h - 1);
-			}
+			aGraphics.setColor(new Color(0xE8F1FB));
+			aGraphics.drawLine(x + cw, 0, x + cw, h - 1);
 
-			aGraphics.setColor(new Color(0, 0, 0));
-			aGraphics.drawString(column.getName(), x + 5, y + 15);
+			new TextBox(column.getName()).setForeground(getForeground()).setBounds(x + 5, y, cw, h).setAnchor(Anchor.WEST).render(aGraphics);
 
 			x += cw;
 		}
@@ -57,6 +56,6 @@ public class TreeColumnHeader extends JPanel
 	@Override
 	public Dimension getPreferredSize()
 	{
-		return new Dimension(10000, mTree.mColumnHeaderHeight);
+		return new Dimension(10000, mTree.getColumnHeaderHeight());
 	}
 }

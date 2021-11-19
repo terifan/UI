@@ -9,8 +9,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -23,9 +27,12 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 
-public class Tree extends JPanel implements Scrollable
+public class Tree<T> extends JPanel implements Scrollable
 {
+	protected BufferedImage mExpandIcon;
+	protected BufferedImage mCollapseIcon;
 	protected HashMap<Integer, Color> mIndentBackgroundColor;
+	protected HashMap<Integer, Color> mIndentLineColor;
 	protected ArrayList<Column> mColumns;
 	protected TreeNode mTreeRoot;
 	protected TreeNode mRolloverNode;
@@ -43,17 +50,22 @@ public class Tree extends JPanel implements Scrollable
 	protected boolean PaintVerticalLines;
 	protected boolean mWindowFocused;
 	protected int mExpandWidth;
+	protected int mIconStyle;
+	protected int mCellRightMargin;
+	protected int mCellLeftMargin;
 
 
 	public Tree()
 	{
 		mGap = 9;
 		mRowHeight = 24;
-		mIndentWidth = 20;
+		mIndentWidth = 19;
 		mColumnHeaderHeight = 20;
 		mIconWidth = 20;
 		mExpandWidth = 20;
 		mIconTextSpacing = 4;
+		mCellLeftMargin = 5;
+		mCellRightMargin = 5;
 		mPaintRootNode = true;
 		mPaintHeaderRow = true;
 		mColumns = new ArrayList<>();
@@ -191,6 +203,22 @@ public class Tree extends JPanel implements Scrollable
 	}
 
 
+	public Color getIndentLineColor(int aIndex)
+	{
+		return mIndentLineColor == null ? null : mIndentLineColor.get(aIndex);
+	}
+
+
+	public void setIndentLineColor(int aIndex, Color aColor)
+	{
+		if (mIndentLineColor == null)
+		{
+			mIndentLineColor = new HashMap<>();
+		}
+		mIndentLineColor.put(aIndex, aColor);
+	}
+
+
 	public int getIconWidth()
 	{
 		return mIconWidth;
@@ -226,6 +254,19 @@ public class Tree extends JPanel implements Scrollable
 	public Tree setIndentWidth(int aIndentWidth)
 	{
 		mIndentWidth = aIndentWidth;
+		return this;
+	}
+
+
+	public int getColumnHeaderHeight()
+	{
+		return mColumnHeaderHeight;
+	}
+
+
+	public Tree setColumnHeaderHeight(int aColumnHeaderHeight)
+	{
+		mColumnHeaderHeight = aColumnHeaderHeight;
 		return this;
 	}
 
@@ -273,7 +314,7 @@ public class Tree extends JPanel implements Scrollable
 	@Override
 	public Dimension getPreferredScrollableViewportSize()
 	{
-		return (Dimension)getPreferredSize().clone();
+		return getPreferredSize();
 	}
 
 
@@ -309,7 +350,7 @@ public class Tree extends JPanel implements Scrollable
 	@Override
 	public boolean getScrollableTracksViewportHeight()
 	{
-		return getParent() instanceof JViewport && (((JViewport)getParent()).getHeight() > getMinimumSize().height);
+		return getParent() instanceof JViewport && (((JViewport)getParent()).getHeight() > getPreferredSize().height);
 	}
 
 
@@ -352,7 +393,6 @@ public class Tree extends JPanel implements Scrollable
 
 			JScrollBar vsb = scrollPane.getVerticalScrollBar();
 			vsb.setUnitIncrement(mRowHeight);
-			vsb.setBlockIncrement(mRowHeight * 10);
 		}
 	}
 
@@ -372,6 +412,85 @@ public class Tree extends JPanel implements Scrollable
 			{
 				mSelectedNode.mSelected = true;
 			}
+		}
+	}
+
+
+	public Tree setIconStyle(int aIconStyle)
+	{
+		mIconStyle = aIconStyle;
+		mExpandIcon = null;
+		return this;
+	}
+
+
+	protected BufferedImage getIcon(boolean aExpand)
+	{
+		if (mExpandIcon == null)
+		{
+			try
+			{
+				BufferedImage icons = ImageIO.read(TreeNode.class.getResource("icons.png"));
+				if (mIconStyle == 0)
+				{
+					mExpandIcon = icons.getSubimage(11 * 16, 0, 16, 16);
+					mCollapseIcon = icons.getSubimage(10 * 16, 0, 16, 16);
+				}
+				else
+				{
+					mExpandIcon = icons.getSubimage(3 * 16, 0, 16, 16);
+					mCollapseIcon = icons.getSubimage(4 * 16, 0, 16, 16);
+				}
+			}
+			catch (IOException e)
+			{
+				throw new IllegalStateException(e);
+			}
+		}
+
+		return aExpand ? mExpandIcon : mCollapseIcon;
+	}
+
+
+	protected String getText(int aColumnIndex, T aValue)
+	{
+		Column column = mColumns.get(aColumnIndex);
+
+		try
+		{
+			String name = column.getFieldName();
+			if (name == null)
+			{
+				name = column.getName();
+			}
+
+			Class<? extends Object> cls = aValue.getClass();
+
+			Field field = null;
+			try
+			{
+				field = cls.getField(name);
+			}
+			catch (Exception e)
+			{
+				try
+				{
+					field = cls.getDeclaredField(name);
+				}
+				catch (Exception ee)
+				{
+				}
+			}
+
+			field.setAccessible(true);
+			Object o = field.get(aValue);
+
+			return o == null ? "" : o.toString();
+		}
+		catch (Exception e)
+		{
+			System.out.println("No field for column: " + column);
+			return "";
 		}
 	}
 }

@@ -4,6 +4,7 @@ package org.terifan.ui.tree;
 public class Column
 {
 	protected String mName;
+	protected String mFieldName;
 	protected int mWidth;
 
 
@@ -20,9 +21,23 @@ public class Column
 	}
 
 
-	public void setName(String aName)
+	public Column setName(String aName)
 	{
-		this.mName = aName;
+		mName = aName;
+		return this;
+	}
+
+
+	public String getFieldName()
+	{
+		return mFieldName;
+	}
+
+
+	public Column setFieldName(String aFieldName)
+	{
+		mFieldName = aFieldName;
+		return this;
 	}
 
 
@@ -36,5 +51,12 @@ public class Column
 	{
 		mWidth = aWidth;
 		return this;
+	}
+
+
+	@Override
+	public String toString()
+	{
+		return "Column{" + "mName=" + mName + ", mFieldName=" + mFieldName + '}';
 	}
 }

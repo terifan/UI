@@ -12,6 +12,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import org.terifan.util.Calendar;
 
 
 public class Form extends JPanel
@@ -66,30 +67,26 @@ public class Form extends JPanel
 
 	public static Tree test1() throws IOException
 	{
-		BufferedImage icons = ImageIO.read(TreeNode.class.getResource("icons.png"));
-//		BufferedImage iconA = icons.getSubimage(16, 16, 16, 16);
-		BufferedImage iconA = null;
-
-		TreeNode n0 = new TreeNode("Aaaaaa", iconA);
-		TreeNode n1 = new TreeNode("Bbbbbbbb", iconA);
-		TreeNode n2 = new TreeNode("Cccc", iconA);
-		TreeNode n3 = new TreeNode("Ddddd", iconA);
-		TreeNode n4 = new TreeNode("Eeee", iconA);
-		TreeNode n5 = new TreeNode("Fffffff", iconA);
-		TreeNode n6 = new TreeNode("Ggggggg", iconA);
-		TreeNode n7 = new TreeNode("Hhhhhhh", iconA);
-		TreeNode n8 = new TreeNode("Iiiiiii", iconA);
-		TreeNode n9 = new TreeNode("Jjjjj", iconA);
-		TreeNode n10 = new TreeNode("Kkkkkkkk", iconA);
-		TreeNode n11 = new TreeNode("Llllllll", iconA);
-		TreeNode n12 = new TreeNode("Mmmmmmm", iconA);
-		TreeNode n13 = new TreeNode("Nnnnnnnn", iconA);
-		TreeNode n14 = new TreeNode("Ooooooo", iconA);
-		TreeNode n15 = new TreeNode("Ppppppp", iconA);
-		TreeNode n16 = new TreeNode("Qqqqqqq", iconA);
-		TreeNode n17 = new TreeNode("Rrrrrrr", iconA);
-		TreeNode n18 = new TreeNode("Sss", iconA);
-		TreeNode n19 = new TreeNode("Tttttttttt", iconA);
+		TreeNode n0 = new TreeNode(new Entity("Aaaaaa"));
+		TreeNode n1 = new TreeNode(new Entity("Bbbbbbbb"));
+		TreeNode n2 = new TreeNode(new Entity("Cccc"));
+		TreeNode n3 = new TreeNode(new Entity("Ddddd"));
+		TreeNode n4 = new TreeNode(new Entity("Eeee"));
+		TreeNode n5 = new TreeNode(new Entity("Fffffff"));
+		TreeNode n6 = new TreeNode(new Entity("Ggggggg"));
+		TreeNode n7 = new TreeNode(new Entity("Hhhhhhh"));
+		TreeNode n8 = new TreeNode(new Entity("Iiiiiii"));
+		TreeNode n9 = new TreeNode(new Entity("Jjjjj"));
+		TreeNode n10 = new TreeNode(new Entity("Kkkkkkkk"));
+		TreeNode n11 = new TreeNode(new Entity("Llllllll"));
+		TreeNode n12 = new TreeNode(new Entity("Mmmmmmm"));
+		TreeNode n13 = new TreeNode(new Entity("Nnnnnnnn"));
+		TreeNode n14 = new TreeNode(new Entity("Ooooooo"));
+		TreeNode n15 = new TreeNode(new Entity("Ppppppp"));
+		TreeNode n16 = new TreeNode(new Entity("Qqqqqqq"));
+		TreeNode n17 = new TreeNode(new Entity("Rrrrrrr"));
+		TreeNode n18 = new TreeNode(new Entity("Sss"));
+		TreeNode n19 = new TreeNode(new Entity("Tttttttttt"));
 		n0.add(n1);
 		n0.add(n2);
 		n0.add(n15);
@@ -111,9 +108,10 @@ public class Form extends JPanel
 		n0.add(n14);
 
 		Tree tree = new Tree();
-		tree.addColumn(new Column("Key").setWidth(200));
-		tree.addColumn(new Column("Value").setWidth(100));
-		tree.addColumn(new Column("Type"));
+		tree.setIconStyle(1);
+		tree.addColumn(new Column("Key").setFieldName("key").setWidth(200));
+		tree.addColumn(new Column("Value").setFieldName("value").setWidth(150));
+		tree.addColumn(new Column("Type").setFieldName("type"));
 		tree.setRoot(n0);
 //		tree.setPaintHorizontalLines(true);
 //		tree.setPaintVerticalLines(true);
@@ -123,6 +121,7 @@ public class Form extends JPanel
 		tree.setIndentWidth(20);
 		tree.setIconWidth(20);
 		tree.setIconTextSpacing(4);
+		tree.setColumnHeaderHeight(28);
 
 		return tree;
 	}
@@ -131,28 +130,28 @@ public class Form extends JPanel
 	public static Tree test2() throws IOException
 	{
 		BufferedImage icons = ImageIO.read(TreeNode.class.getResource("icons.png"));
-		BufferedImage iconA = icons.getSubimage(16, 16, 16, 16);
+		BufferedImage iconA = icons.getSubimage(0, 0, 16, 16);
 
-		TreeNode n0 = new TreeNode("Aaaaaa", iconA);
-		TreeNode n1 = new TreeNode("Bbbbbbbb", iconA).setSelectable(false).setFont(new Font("arial", Font.BOLD, 12));
-		TreeNode n2 = new TreeNode("Cccc", iconA).setSelectable(false).setFont(new Font("arial", Font.BOLD, 12));
-		TreeNode n3 = new TreeNode("Ddddd", iconA);
-		TreeNode n4 = new TreeNode("Eeee", iconA);
-		TreeNode n5 = new TreeNode("Fffffff", iconA);
-		TreeNode n6 = new TreeNode("Ggggggg", iconA);
-		TreeNode n7 = new TreeNode("Hhhhhhh", iconA);
-		TreeNode n8 = new TreeNode("Iiiiiii", iconA);
-		TreeNode n9 = new TreeNode("Jjjjj", iconA);
-		TreeNode n10 = new TreeNode("Kkkkkkkk", iconA);
-		TreeNode n11 = new TreeNode("Llllllll", iconA);
-		TreeNode n12 = new TreeNode("Mmmmmmm", iconA);
-		TreeNode n13 = new TreeNode("Nnnnnnnn", iconA);
-		TreeNode n14 = new TreeNode("Ooooooo", iconA);
-		TreeNode n15 = new TreeNode("Ppppppp", iconA).setSelectable(false).setFont(new Font("arial", Font.BOLD, 12));
-		TreeNode n16 = new TreeNode("Qqqqqqq", iconA);
-		TreeNode n17 = new TreeNode("Rrrrrrr", iconA);
-		TreeNode n18 = new TreeNode("Sss", iconA);
-		TreeNode n19 = new TreeNode("Tttttttttt", iconA);
+		TreeNode n0 = new TreeNode(new Entity("Aaaaaa"));
+		TreeNode n1 = new TreeNode(new Entity("Bbbbbbbb")).setSelectable(false).setFont(new Font("arial", Font.BOLD, 12));
+		TreeNode n2 = new TreeNode(new Entity("Cccc")).setSelectable(false).setFont(new Font("arial", Font.BOLD, 12));
+		TreeNode n3 = new TreeNode(new Entity("Ddddd"));
+		TreeNode n4 = new TreeNode(new Entity("Eeee"));
+		TreeNode n5 = new TreeNode(new Entity("Fffffff"));
+		TreeNode n6 = new TreeNode(new Entity("Ggggggg"));
+		TreeNode n7 = new TreeNode(new Entity("Hhhhhhh"));
+		TreeNode n8 = new TreeNode(new Entity("Iiiiiii"));
+		TreeNode n9 = new TreeNode(new Entity("Jjjjj"));
+		TreeNode n10 = new TreeNode(new Entity("Kkkkkkkk"));
+		TreeNode n11 = new TreeNode(new Entity("Llllllll"));
+		TreeNode n12 = new TreeNode(new Entity("Mmmmmmm"));
+		TreeNode n13 = new TreeNode(new Entity("Nnnnnnnn"));
+		TreeNode n14 = new TreeNode(new Entity("Ooooooo"));
+		TreeNode n15 = new TreeNode(new Entity("Ppppppp")).setSelectable(false).setFont(new Font("arial", Font.BOLD, 12));
+		TreeNode n16 = new TreeNode(new Entity("Qqqqqqq"));
+		TreeNode n17 = new TreeNode(new Entity("Rrrrrrr"));
+		TreeNode n18 = new TreeNode(new Entity("Sss"));
+		TreeNode n19 = new TreeNode(new Entity("Tttttttttt"));
 		n0.add(n1);
 		n0.add(n2);
 		n0.add(n15);
@@ -174,18 +173,24 @@ public class Form extends JPanel
 		n0.add(n14);
 
 		Tree tree = new Tree();
-		tree.addColumn(new Column("Key").setWidth(200));
-		tree.addColumn(new Column("Value").setWidth(100));
-		tree.addColumn(new Column("Type"));
+		tree.addColumn(new Column("Key").setFieldName("key").setWidth(200));
+		tree.addColumn(new Column("Value").setFieldName("value").setWidth(150));
+		tree.addColumn(new Column("Type").setFieldName("type"));
 		tree.setRoot(n0);
 //		tree.setPaintHorizontalLines(true);
 //		tree.setPaintVerticalLines(true);
 		tree.setPaintIndentLines(true);
 //		tree.setPaintRootNode(false);
 //		tree.setPaintHeaderRow(false);
-		tree.setIndentWidth(20);
+		tree.setIndentWidth(19);
 		tree.setIconWidth(20);
 		tree.setIconTextSpacing(4);
+		tree.setIndentBackgroundColor(0, new Color(0xFFAA44));
+		tree.setIndentBackgroundColor(1, new Color(0xFF9933));
+		tree.setIndentBackgroundColor(2, new Color(0xFF8822));
+		tree.setIndentLineColor(0, new Color(0xFF7722));
+		tree.setIndentLineColor(1, new Color(0xFF6611));
+		tree.setIndentLineColor(2, new Color(0xFF5500));
 
 		return tree;
 	}
@@ -193,26 +198,26 @@ public class Form extends JPanel
 
 	public static Tree test3()
 	{
-		TreeNode n0 = new TreeNode("Aaaaaa");
-		TreeNode n1 = new TreeNode("Bbbbbbbb").setRowBackground(new Color(0xF4F7FC)).setSelectable(false).setFont(new Font("arial", Font.BOLD, 12));
-		TreeNode n2 = new TreeNode("Cccc").setRowBackground(new Color(0xF4F7FC)).setSelectable(false).setFont(new Font("arial", Font.BOLD, 12));
-		TreeNode n3 = new TreeNode("Ddddd");
-		TreeNode n4 = new TreeNode("Eeee");
-		TreeNode n5 = new TreeNode("Fffffff");
-		TreeNode n6 = new TreeNode("Ggggggg");
-		TreeNode n7 = new TreeNode("Hhhhhhh");
-		TreeNode n8 = new TreeNode("Iiiiiii");
-		TreeNode n9 = new TreeNode("Jjjjj");
-		TreeNode n10 = new TreeNode("Kkkkkkkk");
-		TreeNode n11 = new TreeNode("Llllllll");
-		TreeNode n12 = new TreeNode("Mmmmmmm");
-		TreeNode n13 = new TreeNode("Nnnnnnnn");
-		TreeNode n14 = new TreeNode("Ooooooo");
-		TreeNode n15 = new TreeNode("Ppppppp").setRowBackground(new Color(0xF4F7FC)).setSelectable(false).setFont(new Font("arial", Font.BOLD, 12));
-		TreeNode n16 = new TreeNode("Qqqqqqq");
-		TreeNode n17 = new TreeNode("Rrrrrrr");
-		TreeNode n18 = new TreeNode("Sss");
-		TreeNode n19 = new TreeNode("Tttttttttt");
+		TreeNode n0 = new TreeNode(new Entity("Aaaaaa"));
+		TreeNode n1 = new TreeNode(new Entity("Bbbbbbbb")).setRowBackground(new Color(0xF4F7FC)).setSelectable(false).setFont(new Font("arial", Font.BOLD, 12));
+		TreeNode n2 = new TreeNode(new Entity("Cccc")).setRowBackground(new Color(0xF4F7FC)).setSelectable(false).setFont(new Font("arial", Font.BOLD, 12));
+		TreeNode n3 = new TreeNode(new Entity("Ddddd"));
+		TreeNode n4 = new TreeNode(new Entity("Eeee"));
+		TreeNode n5 = new TreeNode(new Entity("Fffffff"));
+		TreeNode n6 = new TreeNode(new Entity("Ggggggg"));
+		TreeNode n7 = new TreeNode(new Entity("Hhhhhhh"));
+		TreeNode n8 = new TreeNode(new Entity("Iiiiiii"));
+		TreeNode n9 = new TreeNode(new Entity("Jjjjj"));
+		TreeNode n10 = new TreeNode(new Entity("Kkkkkkkk"));
+		TreeNode n11 = new TreeNode(new Entity("Llllllll"));
+		TreeNode n12 = new TreeNode(new Entity("Mmmmmmm"));
+		TreeNode n13 = new TreeNode(new Entity("Nnnnnnnn"));
+		TreeNode n14 = new TreeNode(new Entity("Ooooooo"));
+		TreeNode n15 = new TreeNode(new Entity("Ppppppp")).setRowBackground(new Color(0xF4F7FC)).setSelectable(false).setFont(new Font("arial", Font.BOLD, 12));
+		TreeNode n16 = new TreeNode(new Entity("Qqqqqqq"));
+		TreeNode n17 = new TreeNode(new Entity("Rrrrrrr"));
+		TreeNode n18 = new TreeNode(new Entity("Sss"));
+		TreeNode n19 = new TreeNode(new Entity("Tttttttttt"));
 		n0.add(n1);
 		n0.add(n2);
 		n0.add(n15);
@@ -234,8 +239,8 @@ public class Form extends JPanel
 		n0.add(n14);
 
 		Tree tree = new Tree();
-		tree.addColumn(new Column("Key").setWidth(200));
-		tree.addColumn(new Column("Value"));
+		tree.addColumn(new Column("Key").setFieldName("key").setWidth(200));
+		tree.addColumn(new Column("Value").setFieldName("value").setWidth(150));
 		tree.setRoot(n0);
 		tree.setPaintHorizontalLines(true);
 		tree.setPaintVerticalLines(true);
@@ -248,5 +253,21 @@ public class Form extends JPanel
 		tree.setIconTextSpacing(4);
 
 		return tree;
+	}
+
+
+	private static class Entity
+	{
+		String key;
+		String value;
+		String type;
+
+
+		public Entity(String aKey)
+		{
+			key = aKey;
+			value = Calendar.now();
+			type = "Date";
+		}
 	}
 }
