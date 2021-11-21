@@ -136,33 +136,24 @@ public class TreeNode<T>
 		if (aLevel > 0 || aTree.isPaintRootNode())
 		{
 			int indent = aTree.mIndentWidth;
-			int x = indent * aLevel;
-			int h = getRowHeight(aTree);
-			int hg = aTree.mGap / 2;
+			int rowHeight = getRowHeight(aTree);
 
 			if (mRowBackground != null)
 			{
 				aGraphics.setColor(mRowBackground);
-				aGraphics.fillRect(0, aY, aWidth, h + aTree.mGap);
+				aGraphics.fillRect(0, aY, aWidth, rowHeight);
 			}
 			if (mBackground != null)
 			{
+				int x = indent * aLevel;
 				aGraphics.setColor(mBackground);
-				aGraphics.fillRect(x, aY, aWidth - x, h + aTree.mGap);
-			}
-
-			if (mSelectable && (mRollover || mSelected))
-			{
-				aGraphics.setColor(aTree.mWindowFocused ? mRollover ? mSelected ? new Color(0xD1E8FF) : new Color(0xE5F3FB) : mSelected ? new Color(0xCBE8F6) : new Color(0xFFFFFF) : mRollover ? mSelected ? new Color(0xD1E8FF) : new Color(0xE5F3FB) : mSelected ? new Color(0xF7F7F7) : new Color(0xFFFFFF));
-				aGraphics.fillRect(x, aY + hg, aWidth - x, h);
-				aGraphics.setColor(aTree.mWindowFocused ? mRollover ? mSelected ? new Color(0x66A7E8) : new Color(0x70C0E7) : mSelected ? new Color(0x26A0DA) : new Color(0xFFFFFF) : mRollover ? mSelected ? new Color(0x66A7E8) : new Color(0x70C0E7) : mSelected ? new Color(0xDEDEDE) : new Color(0xFFFFFF));
-				aGraphics.drawRect(x, aY + hg, aWidth - x - 1, h - 1);
+				aGraphics.fillRect(x, aY, aWidth - x, rowHeight);
 			}
 
 			if (aTree.isPaintHorizontalLines())
 			{
-				aGraphics.setColor(new Color(0xE0EAF9));
-				aGraphics.drawLine(0, aY + h + aTree.mGap - 1, aWidth, aY + h + aTree.mGap - 1);
+				aGraphics.setColor(aTree.getHorizontalLineColor());
+				aGraphics.drawLine(0, aY + rowHeight - 1, aWidth, aY + rowHeight - 1);
 			}
 
 			for (int i = 0, j = 0; i < aLevel; i++, j++)
@@ -172,8 +163,17 @@ public class TreeNode<T>
 				if (color != null)
 				{
 					aGraphics.setColor(color);
-					aGraphics.fillRect(indent * j, aY, indent, h + aTree.mGap);
+					aGraphics.fillRect(indent * j, aY, indent, rowHeight);
 				}
+			}
+
+			if (mSelectable && (mRollover || mSelected))
+			{
+				int x = aTree.isHighlightFullRow() ? 0 : indent * aLevel;
+				aGraphics.setColor(aTree.mWindowFocused ? mRollover ? mSelected ? new Color(0x80D1E8FF,true) : new Color(0x80E5F3FB,true) : mSelected ? new Color(0x80CBE8F6,true) : new Color(0xFFFFFF) : mRollover ? mSelected ? new Color(0x80D1E8FF,true) : new Color(0x80E5F3FB,true) : mSelected ? new Color(0x80F7F7F7,true) : new Color(0xFFFFFF));
+				aGraphics.fillRect(x, aY, aWidth - x, rowHeight);
+				aGraphics.setColor(aTree.mWindowFocused ? mRollover ? mSelected ? new Color(0x8066A7E8,true) : new Color(0x8070C0E7,true) : mSelected ? new Color(0x8026A0DA,true) : new Color(0xFFFFFF) : mRollover ? mSelected ? new Color(0x8066A7E8,true) : new Color(0x8070C0E7,true) : mSelected ? new Color(0x80DEDEDE,true) : new Color(0xFFFFFF));
+				aGraphics.drawRect(x, aY, aWidth - x - 1, rowHeight - 1);
 			}
 
 			if (aTree.isPaintIndentLines())
@@ -187,7 +187,7 @@ public class TreeNode<T>
 						int x0 = indent * j + indent / 2;
 
 						aGraphics.setColor(color);
-						aGraphics.drawLine(x0, aY, x0, aY + h + aTree.mGap - 1);
+						aGraphics.drawLine(x0, aY, x0, aY + rowHeight - 1);
 					}
 				}
 			}
@@ -196,14 +196,14 @@ public class TreeNode<T>
 			{
 				boolean lastColumn = columnIndex == aTree.getColumns().size() - 1;
 				int cw = aTree.getColumns().get(columnIndex).getWidth();
-				int cx = columnIndex == 0 ? x : x0;
+				int cx = columnIndex == 0 ? indent * aLevel : x0;
 
 				if (columnIndex == 0)
 				{
 					if (!mChildren.isEmpty())
 					{
 						BufferedImage icon = aTree.getIcon(mExpanded);
-						aGraphics.drawImage(icon, cx - indent + (indent - icon.getWidth()) / 2, aY + hg + h / 2 - icon.getHeight() / 2, null);
+						aGraphics.drawImage(icon, cx - indent + (indent - icon.getWidth()) / 2, aY + rowHeight / 2 - icon.getHeight() / 2, null);
 					}
 
 					Icon icon = mIcon;
@@ -216,25 +216,25 @@ public class TreeNode<T>
 					{
 						cx += aTree.mIconWidth;
 
-						icon.paintIcon(aTree, aGraphics, cx - indent + (indent - icon.getIconWidth()) / 2, aY + hg + (h - icon.getIconHeight()) / 2);
+						icon.paintIcon(aTree, aGraphics, cx - indent + (indent - icon.getIconWidth()) / 2, aY + (rowHeight - icon.getIconHeight()) / 2);
 					}
 
 					cx += aTree.mIconTextSpacing;
 				}
 				else if (aTree.isPaintVerticalLines())
 				{
-					aGraphics.setColor(new Color(0xE0EAF9));
-					aGraphics.drawLine(cx, aY, cx, aY + aTree.mGap + h - 1);
+					aGraphics.setColor(aTree.getVerticalLineColor());
+					aGraphics.drawLine(cx, aY, cx, aY + rowHeight - 1);
 
 					cx += aTree.mCellLeftMargin;
 				}
 
-				new TextBox(aTree.getFieldValueProvider().getText(aTree, columnIndex, mValue)).setForeground(mForeground).setFont(mFont).setBounds(cx, aY + hg, (lastColumn ? aWidth - cx : cw - cx + x0) - aTree.mCellRightMargin, h).setMaxLineCount(1).setBreakChars(null).setAnchor(Anchor.WEST).render(aGraphics);
+				new TextBox(aTree.getFieldValueProvider().getText(aTree, columnIndex, mValue)).setForeground(mForeground).setFont(mFont).setBounds(cx, aY, (lastColumn ? aWidth - cx : cw - cx + x0) - aTree.mCellRightMargin, rowHeight).setMaxLineCount(1).setBreakChars(null).setAnchor(Anchor.WEST).render(aGraphics);
 
 				x0 += cw;
 			}
 
-			aY += h + aTree.mGap;
+			aY += rowHeight;
 		}
 
 		if (mExpanded)
@@ -261,7 +261,7 @@ public class TreeNode<T>
 
 		if (aLevel > 0 || aTree.isPaintRootNode())
 		{
-			result.height += getRowHeight(aTree) + aTree.mGap;
+			result.height += getRowHeight(aTree);
 		}
 
 		for (int columnIndex = 0, x = 0; columnIndex < aTree.getColumns().size(); columnIndex++)
@@ -289,12 +289,12 @@ public class TreeNode<T>
 	{
 		if (aTree.isPaintRootNode() || aTree.getRoot() != this)
 		{
-			if (aEvent.getY() >= aOffsetY.get() + aTree.mGap / 2 && aEvent.getY() < aOffsetY.get() + aTree.mGap / 2 + getRowHeight(aTree))
+			if (aEvent.getY() >= aOffsetY.get() && aEvent.getY() < aOffsetY.get() + getRowHeight(aTree))
 			{
 				return this;
 			}
 
-			aOffsetY.addAndGet(getRowHeight(aTree) + aTree.mGap);
+			aOffsetY.addAndGet(getRowHeight(aTree));
 		}
 
 		if (mExpanded)

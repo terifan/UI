@@ -180,11 +180,8 @@ public class Form extends JPanel
 		tree.addColumn(new Column("Value").setFieldName("value").setWidth(150));
 		tree.addColumn(new Column("Type").setFieldName("type"));
 		tree.setRoot(n0);
-//		tree.setPaintHorizontalLines(true);
-//		tree.setPaintVerticalLines(true);
 		tree.setPaintIndentLines(true);
-//		tree.setPaintRootNode(false);
-//		tree.setPaintHeaderRow(false);
+		tree.setHighlightFullRow(true);
 		tree.setIndentWidth(19);
 		tree.setIconWidth(20);
 		tree.setIconTextSpacing(4);
@@ -249,7 +246,7 @@ public class Form extends JPanel
 		tree.setPaintVerticalLines(true);
 //		tree.setPaintIndentLines(true);
 		tree.setPaintRootNode(false);
-//		tree.setPaintHeaderRow(false);
+		tree.setPaintHeaderRow(false);
 		tree.setIndentWidth(20);
 		tree.setIndentBackgroundColor(0, new Color(0xF4F7FC));
 		tree.setIconWidth(20);

@@ -36,7 +36,6 @@ public class Tree<T> extends JPanel implements Scrollable
 	protected TreeNode mTreeRoot;
 	protected TreeNode mRolloverNode;
 	protected TreeNode mSelectedNode;
-	protected int mGap;
 	protected int mIndentWidth;
 	protected int mRowHeight;
 	protected int mColumnHeaderHeight;
@@ -48,16 +47,18 @@ public class Tree<T> extends JPanel implements Scrollable
 	protected boolean PaintHorizontalLines;
 	protected boolean PaintVerticalLines;
 	protected boolean mWindowFocused;
+	protected boolean mHighlightFullRow;
 	protected int mExpandWidth;
 	protected int mIconStyle;
 	protected int mCellRightMargin;
 	protected int mCellLeftMargin;
 	protected FieldValueProvider<T> mFieldValueProvider;
+	protected Color mVerticalLineColor;
+	protected Color mHorizontalLineColor;
 
 
 	public Tree()
 	{
-		mGap = 9;
 		mRowHeight = 24;
 		mIndentWidth = 19;
 		mColumnHeaderHeight = 20;
@@ -70,6 +71,7 @@ public class Tree<T> extends JPanel implements Scrollable
 		mPaintHeaderRow = true;
 		mColumns = new ArrayList<>();
 		mFieldValueProvider = new FieldValueProvider<>();
+		mHorizontalLineColor = new Color(0xE0EAF9);
 
 		super.setBackground(Color.WHITE);
 		super.setOpaque(true);
@@ -285,6 +287,32 @@ public class Tree<T> extends JPanel implements Scrollable
 	}
 
 
+	public boolean isHighlightFullRow()
+	{
+		return mHighlightFullRow;
+	}
+
+
+	public Tree<T> setHighlightFullRow(boolean aHighlightFullRow)
+	{
+		mHighlightFullRow = aHighlightFullRow;
+		return this;
+	}
+
+
+	public Color getVerticalLineColor()
+	{
+		return new Color(0xE0EAF9);
+	}
+
+
+	public Tree<T> setVerticalLineColor(Color aVerticalLineColor)
+	{
+		mVerticalLineColor = aVerticalLineColor;
+		return this;
+	}
+
+
 	@Override
 	protected void paintComponent(Graphics aGraphics)
 	{
@@ -463,5 +491,11 @@ public class Tree<T> extends JPanel implements Scrollable
 		}
 
 		return aExpand ? mExpandIcon : mCollapseIcon;
+	}
+
+
+	public Color getHorizontalLineColor()
+	{
+		return mHorizontalLineColor;
 	}
 }
