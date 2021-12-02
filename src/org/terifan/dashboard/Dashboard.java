@@ -1,14 +1,10 @@
 package org.terifan.dashboard;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JPanel;
-import org.terifan.bundle.Array;
-import org.terifan.bundle.Bundlable;
-import org.terifan.bundle.Bundle;
 
 
 public class Dashboard extends JPanel

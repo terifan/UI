@@ -46,7 +46,7 @@ public class Tree<T> extends JPanel implements Scrollable
 	protected boolean mPaintHeaderRow;
 	protected boolean PaintHorizontalLines;
 	protected boolean PaintVerticalLines;
-	protected boolean mWindowFocused;
+	public boolean mWindowFocused;
 	protected boolean mHighlightFullRow;
 	protected int mExpandWidth;
 	protected int mIconStyle;
@@ -323,14 +323,25 @@ public class Tree<T> extends JPanel implements Scrollable
 		aGraphics.setColor(getBackground());
 		aGraphics.fillRect(0, y, w, h - y);
 
-		mTreeRoot.paintComponent(this, aGraphics, w, y, 0);
+		if (mTreeRoot != null)
+		{
+			mTreeRoot.paintComponent(this, aGraphics, w, y, 0);
+		}
 	}
 
 
 	@Override
 	public Dimension getPreferredSize()
 	{
-		Dimension result = mTreeRoot.getPreferredSize(this, 0);
+		Dimension result;
+		if (mTreeRoot == null)
+		{
+			result = new Dimension();
+		}
+		else
+		{
+			result = mTreeRoot.getPreferredSize(this, 0);
+		}
 		return result;
 	}
 

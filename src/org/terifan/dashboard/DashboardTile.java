@@ -6,8 +6,6 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import org.terifan.bundle.Bundlable;
-import org.terifan.bundle.Bundle;
 
 
 public class DashboardTile extends JPanel

@@ -32,9 +32,11 @@ public class TreeNode<T>
 	public TreeNode(T aValue)
 	{
 		mChildren = new ArrayList<>();
-		mValue = aValue;
 		mExpanded = true;
 		mSelectable = true;
+
+		mValue = aValue;
+
 		mForeground = Color.BLACK;
 		mFont = new Font("arial", Font.PLAIN, 12);
 	}

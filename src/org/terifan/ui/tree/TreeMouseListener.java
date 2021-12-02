@@ -19,23 +19,26 @@ public class TreeMouseListener extends MouseAdapter
 	@Override
 	public void mousePressed(MouseEvent aEvent)
 	{
-		AtomicInteger level = new AtomicInteger();
-
-		TreeNode node = mTree.getRoot().intersect(mTree, aEvent, new AtomicInteger(), level);
-
-		if (node != null)
+		if (mTree.getRoot() != null)
 		{
-			if (!node.getChildren().isEmpty() && aEvent.getX() > (level.get() - 1) * mTree.mIndentWidth && aEvent.getX() < level.get() * mTree.mIndentWidth)
-			{
-				node.mExpanded = !node.mExpanded;
-			}
-			else
-			{
-				mTree.setSelectedNode(node);
-			}
+			AtomicInteger level = new AtomicInteger();
 
-			mTree.invalidate();
-			mTree.repaint();
+			TreeNode node = mTree.getRoot().intersect(mTree, aEvent, new AtomicInteger(), level);
+
+			if (node != null)
+			{
+				if (!node.getChildren().isEmpty() && aEvent.getX() > (level.get() - 1) * mTree.mIndentWidth && aEvent.getX() < level.get() * mTree.mIndentWidth)
+				{
+					node.mExpanded = !node.mExpanded;
+				}
+				else
+				{
+					mTree.setSelectedNode(node);
+				}
+
+				mTree.invalidate();
+				mTree.repaint();
+			}
 		}
 	}
 
@@ -59,13 +62,16 @@ public class TreeMouseListener extends MouseAdapter
 	@Override
 	public void mouseMoved(MouseEvent aEvent)
 	{
-		TreeNode node = mTree.getRoot().intersect(mTree, aEvent, new AtomicInteger(), new AtomicInteger());
-
-		if (mTree.mRolloverNode != node)
+		if (mTree.getRoot() != null)
 		{
-			mTree.setRollover(node);
-			mTree.invalidate();
-			mTree.repaint();
+			TreeNode node = mTree.getRoot().intersect(mTree, aEvent, new AtomicInteger(), new AtomicInteger());
+
+			if (mTree.mRolloverNode != node)
+			{
+				mTree.setRollover(node);
+				mTree.invalidate();
+				mTree.repaint();
+			}
 		}
 	}
 }
