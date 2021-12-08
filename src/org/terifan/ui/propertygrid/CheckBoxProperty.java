@@ -2,7 +2,7 @@ package org.terifan.ui.propertygrid;
 
 import java.io.Serializable;
 import javax.swing.JCheckBox;
-import org.terifan.bundle.Bundle;
+import org.terifan.parcel.Parcel;
 
 
 public class CheckBoxProperty extends Property<JCheckBox, Boolean> implements Serializable
@@ -60,7 +60,7 @@ public class CheckBoxProperty extends Property<JCheckBox, Boolean> implements Se
 
 
 	@Override
-	void marshal(Bundle aBundle)
+	void marshal(Parcel aBundle)
 	{
 		aBundle.putBoolean(mLabel, mSelected);
 	}

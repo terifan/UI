@@ -36,12 +36,12 @@ public class TreeColumnHeader extends JPanel
 		aGraphics.setColor(new Color(0xE8F1FB));
 		aGraphics.drawLine(0, h - 1, w, h - 1);
 
+		int[] columnWidths = computeColumnWidths(columns, w);
+
 		for (int columnIndex = 0, x = 0; columnIndex < columns.size(); columnIndex++)
 		{
 			Column column = columns.get(columnIndex);
-
-//			int cw = columnIndex + 1 == columns.size() ? w - x : column.getWidth();
-			int cw = column.getWidth();
+			int cw = columnWidths[columnIndex];
 
 			aGraphics.setColor(new Color(0xE8F1FB));
 			aGraphics.drawLine(x + cw, 0, x + cw, h - 1);
@@ -56,6 +56,50 @@ public class TreeColumnHeader extends JPanel
 	@Override
 	public Dimension getPreferredSize()
 	{
-		return new Dimension(10000, mTree.getColumnHeaderHeight());
+//		int width = 0;
+//		ArrayList<Column> columns = mTree.getColumns();
+//		for (int columnIndex = 0; columnIndex < columns.size(); columnIndex++)
+//		{
+//			width += Math.abs(columns.get(columnIndex).getWidth());
+//		}
+
+		return new Dimension(1, mTree.getColumnHeaderHeight());
+	}
+
+
+	static int[] computeColumnWidths(ArrayList<Column> aColumns, int aWidth)
+	{
+		int[] widths = new int[aColumns.size()];
+
+		int weight = 0;
+		int remainingWidth = aWidth;
+		for (int i = 0; i < aColumns.size(); i++)
+		{
+			Column column = aColumns.get(i);
+			int cw = column.getWidth();
+			if (cw < 0)
+			{
+				weight -= cw;
+			}
+			else
+			{
+				remainingWidth -= cw;
+			}
+		}
+
+		for (int i = 0; i < aColumns.size(); i++)
+		{
+			Column column = aColumns.get(i);
+			int cw = column.getWidth();
+
+			if (cw < 0)
+			{
+				cw = remainingWidth * -cw / weight;
+			}
+
+			widths[i] = Math.max(cw, column.getMinimumWidth());
+		}
+
+		return widths;
 	}
 }

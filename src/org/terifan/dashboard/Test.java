@@ -2,7 +2,7 @@ package org.terifan.dashboard;
 
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
-import org.terifan.bundle.Bundle;
+import org.terifan.parcel.Parcel;
 
 
 public class Test

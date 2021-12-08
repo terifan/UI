@@ -194,10 +194,12 @@ public class TreeNode<T>
 				}
 			}
 
+			int[] columnWidths = TreeColumnHeader.computeColumnWidths(aTree.getColumns(), aWidth);
+
 			for (int columnIndex = 0, x0 = 0; columnIndex < aTree.getColumns().size(); columnIndex++)
 			{
 				boolean lastColumn = columnIndex == aTree.getColumns().size() - 1;
-				int cw = aTree.getColumns().get(columnIndex).getWidth();
+				int cw = columnWidths[columnIndex];
 				int cx = columnIndex == 0 ? indent * aLevel : x0;
 
 				if (columnIndex == 0)
@@ -231,7 +233,18 @@ public class TreeNode<T>
 					cx += aTree.mCellLeftMargin;
 				}
 
-				new TextBox(aTree.getFieldValueProvider().getText(aTree, columnIndex, mValue)).setForeground(mForeground).setFont(mFont).setBounds(cx, aY, (lastColumn ? aWidth - cx : cw - cx + x0) - aTree.mCellRightMargin, rowHeight).setMaxLineCount(1).setBreakChars(null).setAnchor(Anchor.WEST).render(aGraphics);
+				Icon icon = aTree.getFieldValueProvider().getIcon(aTree, columnIndex, mValue);
+
+				if (icon != null)
+				{
+					cx += aTree.mIconWidth;
+
+					icon.paintIcon(aTree, aGraphics, cx - indent + (indent - icon.getIconWidth()) / 2, aY + (rowHeight - icon.getIconHeight()) / 2);
+				}
+
+				String text = aTree.getFieldValueProvider().getText(aTree, columnIndex, mValue);
+
+				new TextBox(text).setForeground(mForeground).setFont(mFont).setBounds(cx, aY, (lastColumn ? aWidth - cx : cw - cx + x0) - aTree.mCellRightMargin, rowHeight).setMaxLineCount(1).setBreakChars(null).setAnchor(Anchor.WEST).render(aGraphics);
 
 				x0 += cw;
 			}
@@ -268,7 +281,8 @@ public class TreeNode<T>
 
 		for (int columnIndex = 0, x = 0; columnIndex < aTree.getColumns().size(); columnIndex++)
 		{
-			int w = aTree.getColumns().get(columnIndex).getWidth();
+			Column column = aTree.getColumns().get(columnIndex);
+			int w = Math.max(column.getWidth(), column.getMinimumWidth());
 
 			result.width += w;
 		}

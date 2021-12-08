@@ -44,6 +44,25 @@ public class FieldValueProvider<T>
 	}
 
 
+	public Icon getIcon(Tree<T> aTree, int aColumnIndex, T aValue)
+	{
+		Field field = getField(aTree, aColumnIndex, aValue);
+
+		try
+		{
+			if (Icon.class.isAssignableFrom(field.getType()))
+			{
+				return (Icon)field.get(aValue);
+			}
+		}
+		catch (Exception e)
+		{
+		}
+
+		return null;
+	}
+
+
 	private Field getField(Tree<T> aTree, int aColumnIndex, T aValue)
 	{
 		Column column = aTree.getColumns().get(aColumnIndex);

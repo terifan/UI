@@ -2,7 +2,7 @@ package org.terifan.ui.propertygrid;
 
 import java.io.Serializable;
 import javax.swing.JTextField;
-import org.terifan.bundle.Bundle;
+import org.terifan.parcel.Parcel;
 
 
 public class TextProperty extends Property<JTextField,String> implements Serializable
@@ -61,7 +61,7 @@ public class TextProperty extends Property<JTextField,String> implements Seriali
 
 
 	@Override
-	void marshal(Bundle aBundle)
+	void marshal(Parcel aBundle)
 	{
 		aBundle.putString(mLabel, mValue);
 	}

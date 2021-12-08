@@ -8,7 +8,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import org.terifan.bundle.Bundle;
+import org.terifan.parcel.Parcel;
 
 
 public abstract class Property<T extends JComponent,R> implements Comparable<Property>, Cloneable, Serializable
@@ -277,7 +277,7 @@ public abstract class Property<T extends JComponent,R> implements Comparable<Pro
 	}
 
 
-	abstract void marshal(Bundle aBundle);
+	abstract void marshal(Parcel aBundle);
 
 
 	protected abstract T createValueComponent();

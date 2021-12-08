@@ -6,6 +6,7 @@ public class Column
 	protected String mName;
 	protected String mFieldName;
 	protected int mWidth;
+	protected int mMinimumWidth;
 
 
 	public Column(String aName)
@@ -50,6 +51,19 @@ public class Column
 	public Column setWidth(int aWidth)
 	{
 		mWidth = aWidth;
+		return this;
+	}
+
+
+	public int getMinimumWidth()
+	{
+		return mMinimumWidth;
+	}
+
+
+	public Column setMinimumWidth(int aMinimumWidth)
+	{
+		mMinimumWidth = aMinimumWidth;
 		return this;
 	}
 
