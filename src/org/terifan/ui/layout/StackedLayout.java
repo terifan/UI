@@ -8,7 +8,6 @@ import java.awt.LayoutManager2;
 import java.awt.Rectangle;
 import java.util.HashMap;
 import javax.swing.JComponent;
-import org.terifan.util.log.Log;
 
 
 public class StackedLayout implements LayoutManager2

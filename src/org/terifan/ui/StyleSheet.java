@@ -14,7 +14,6 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
 import org.terifan.util.cache.Cache;
-import org.terifan.util.log.Log;
 import org.terifan.xml.XmlReader;
 
 

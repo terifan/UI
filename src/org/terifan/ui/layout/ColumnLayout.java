@@ -6,7 +6,6 @@ import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.util.Arrays;
-import org.terifan.util.log.Log;
 
 
 /**
