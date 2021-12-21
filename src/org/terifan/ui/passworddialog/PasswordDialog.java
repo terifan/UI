@@ -1,4 +1,4 @@
-package org.terifan.ui;
+package org.terifan.ui.passworddialog;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

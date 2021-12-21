@@ -1,4 +1,4 @@
-package org.terifan.ui;
+package org.terifan.ui.layout;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -19,6 +19,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import org.terifan.ui.Anchor;
 
 
 public class RelativeLayout implements LayoutManager2
@@ -32,12 +33,20 @@ public class RelativeLayout implements LayoutManager2
 	}
 
 
+	public enum Fill
+	{
+		HORIZONTAL,
+		VERTICAL,
+		BOTH,
+		NONE
+	}
+
+
 	public void add(Component aComponent, Constraints aConstraints)
 	{
 		Element element = new Element(aComponent);
 
 		mElements.put(element, aConstraints == null ? new Constraints(-1, element) : aConstraints);
-
 
 	}
 
@@ -236,17 +245,20 @@ public class RelativeLayout implements LayoutManager2
 		Fill mFill;
 		Anchor mAnchor;
 
+
 		Constraints(int aLayoutRule, Element aRelativeTo)
 		{
 			mLayoutRule = aLayoutRule;
 			mRelativeTo = aRelativeTo;
 		}
 
+
 		Constraints anchorEast()
 		{
 			mAnchor = Anchor.EAST;
 			return this;
 		}
+
 
 		Constraints alignLeft(Component aRelativeTo)
 		{
@@ -259,10 +271,12 @@ public class RelativeLayout implements LayoutManager2
 	{
 		Object mElement;
 
+
 		public Element(Component aElement)
 		{
 			mElement = aElement;
 		}
+
 
 		public Element(Group aElement)
 		{
@@ -379,10 +393,12 @@ public class RelativeLayout implements LayoutManager2
 	{
 		private final Component[] mComponents;
 
+
 		public Group(Component... aComponents)
 		{
 			mComponents = aComponents;
 		}
+
 
 		public int getX()
 		{
@@ -394,6 +410,7 @@ public class RelativeLayout implements LayoutManager2
 			return x;
 		}
 
+
 		public int getY()
 		{
 			int y = Integer.MAX_VALUE;
@@ -403,6 +420,7 @@ public class RelativeLayout implements LayoutManager2
 			}
 			return y;
 		}
+
 
 		public int getWidth()
 		{
@@ -414,6 +432,7 @@ public class RelativeLayout implements LayoutManager2
 			return w;
 		}
 
+
 		public int getHeight()
 		{
 			int h = Integer.MIN_VALUE;
@@ -423,6 +442,7 @@ public class RelativeLayout implements LayoutManager2
 			}
 			return h;
 		}
+
 
 		public Dimension getPreferredSize()
 		{
@@ -505,8 +525,6 @@ public class RelativeLayout implements LayoutManager2
 //
 //		aTabbedPane.add("One", panel);
 //	}
-
-
 	public static void main(String... args)
 	{
 		try

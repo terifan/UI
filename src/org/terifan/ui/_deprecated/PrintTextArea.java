@@ -1,4 +1,4 @@
-package org.terifan.ui;
+package org.terifan.ui._deprecated;
 
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;

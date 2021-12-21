@@ -1,11 +1,12 @@
-package org.terifan.ui;
+package org.terifan.ui._deprecated;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import javax.swing.JComponent;
-import org.terifan.util.log.Log;
+import org.terifan.ui.Anchor;
+import org.terifan.ui.TextBox;
 
 
 /**
@@ -26,7 +27,7 @@ public class TextPanel extends JComponent
 	public TextPanel(TextBox aTextBox, Color aBackgroundColor)
 	{
 		mTextBox = aTextBox;
-		
+
 		super.setBackground(aBackgroundColor);
 		super.setOpaque(aBackgroundColor != null);
 	}
@@ -48,7 +49,7 @@ public class TextPanel extends JComponent
 	{
 		return mAnchor;
 	}
-	
+
 
 	public TextPanel setAnchor(Anchor aAnchor)
 	{
@@ -65,7 +66,7 @@ public class TextPanel extends JComponent
 			aGraphics.setColor(getBackground());
 			aGraphics.fillRect(0, 0, getWidth(), getHeight());
 		}
-		
+
 		if (mAnchor == null)
 		{
 			mTextBox.render(aGraphics);

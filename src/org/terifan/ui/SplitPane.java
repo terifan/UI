@@ -18,7 +18,6 @@ import java.awt.image.BufferedImage;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.UIManager;
-import org.terifan.util.log.Log;
 
 
 public class SplitPane extends JComponent
@@ -28,6 +27,18 @@ public class SplitPane extends JComponent
 		NONE,
 		LEFT,
 		RIGHT
+	}
+
+	public enum ImageScaleFunction
+	{
+		CENTER,
+		RESIZE,
+		REPEAT
+	}
+
+	public enum Orientation
+	{
+		HORIZONTAL, VERTICAL;
 	}
 
 	private int mDividerPosition;

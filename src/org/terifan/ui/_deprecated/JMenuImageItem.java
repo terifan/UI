@@ -1,4 +1,4 @@
-package org.terifan.ui;
+package org.terifan.ui._deprecated;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -10,8 +10,6 @@ import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JMenuItem;
-import javax.swing.MenuSelectionManager;
-import javax.swing.plaf.basic.BasicCheckBoxMenuItemUI;
 
 
 public class JMenuImageItem extends JMenuItem

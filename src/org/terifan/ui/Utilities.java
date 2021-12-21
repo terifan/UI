@@ -22,7 +22,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -39,7 +38,6 @@ import javax.swing.UIManager;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.text.JTextComponent;
 import javax.swing.undo.UndoManager;
-import static org.terifan.ui.TextRenderer.lineBreakText;
 
 
 public final class Utilities

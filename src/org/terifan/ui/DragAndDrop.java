@@ -1,7 +1,5 @@
 package org.terifan.ui;
 
-import java.awt.Container;
-import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -21,16 +19,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTree;
 import javax.swing.TransferHandler;
 import javax.swing.TransferHandler.TransferSupport;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
-import org.terifan.util.log.Log;
 
 
 /**

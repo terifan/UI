@@ -1,4 +1,4 @@
-package org.terifan.ui;
+package org.terifan.ui._deprecated;
 
 public enum Alignment
 {

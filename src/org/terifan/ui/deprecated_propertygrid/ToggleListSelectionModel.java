@@ -1,4 +1,4 @@
-package org.terifan.ui;
+package org.terifan.ui.deprecated_propertygrid;
 
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JList;

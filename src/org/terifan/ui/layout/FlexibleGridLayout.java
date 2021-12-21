@@ -1,4 +1,4 @@
-package org.terifan.ui;
+package org.terifan.ui.layout;
 
 import java.awt.Color;
 import java.awt.Component;

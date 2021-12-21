@@ -1,4 +1,4 @@
-package org.terifan.ui;
+package org.terifan.ui._deprecated;
 
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;

@@ -1,4 +1,4 @@
-package org.terifan.ui;
+package org.terifan.ui.layout;
 
 import java.awt.Component;
 import java.awt.Container;
