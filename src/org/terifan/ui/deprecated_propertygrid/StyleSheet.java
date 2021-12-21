@@ -10,14 +10,14 @@ import java.io.Reader;
 import java.net.URL;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
-import org.terifan.parcel.Array;
-import org.terifan.parcel.Parcel;
+import org.terifan.bundle.Array;
+import org.terifan.bundle.Bundle;
 
 
 public class StyleSheet
 {
 	private Class mClass;
-	private Parcel mBundle;
+	private Bundle mBundle;
 
 
 	public StyleSheet(Class aClass, URL aScript)
@@ -59,7 +59,7 @@ public class StyleSheet
 
 		try (Reader in = aScript)
 		{
-			mBundle = new Parcel();
+			mBundle = new Bundle();
 			mBundle.unmarshalJSON(in);
 		}
 	}

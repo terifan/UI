@@ -8,7 +8,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import org.terifan.parcel.Parcel;
+import org.terifan.bundle.Bundle;
 
 
 public class ComboBoxProperty extends Property<JPanel, Object> implements Serializable
@@ -172,7 +172,7 @@ public class ComboBoxProperty extends Property<JPanel, Object> implements Serial
 
 
 	@Override
-	void marshal(Parcel aBundle)
+	void marshal(Bundle aBundle)
 	{
 		aBundle.putString(mLabel, mValue == null ? null : mValue.toString());
 	}

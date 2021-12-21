@@ -4,8 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.io.Serializable;
 import javax.swing.JTextField;
-import org.terifan.parcel.Array;
-import org.terifan.parcel.Parcel;
+import org.terifan.bundle.Array;
+import org.terifan.bundle.Bundle;
 import org.terifan.ui.Anchor;
 import org.terifan.ui.TextBox;
 import org.terifan.ui.Utilities;
@@ -94,7 +94,7 @@ public class ColorChooserProperty extends Property<JTextField, Color> implements
 
 
 	@Override
-	void marshal(Parcel aBundle)
+	void marshal(Bundle aBundle)
 	{
 		if (mColor.getAlpha() != 255)
 		{

@@ -2,7 +2,7 @@ package org.terifan.ui.deprecated_propertygrid;
 
 import java.io.Serializable;
 import javax.swing.JTextField;
-import org.terifan.parcel.Parcel;
+import org.terifan.bundle.Bundle;
 import org.terifan.util.Calendar;
 
 
@@ -62,7 +62,7 @@ public class DateTimeProperty extends Property<JTextField,String> implements Ser
 
 
 	@Override
-	void marshal(Parcel aBundle)
+	void marshal(Bundle aBundle)
 	{
 		aBundle.putString(mLabel, mValue == null ? null : mValue.toString());
 	}

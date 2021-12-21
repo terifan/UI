@@ -9,7 +9,7 @@ import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.swing.JLabel;
-import org.terifan.parcel.Parcel;
+import org.terifan.bundle.Bundle;
 import org.terifan.ui.Anchor;
 import org.terifan.ui.TextBox;
 
@@ -171,9 +171,9 @@ public class PropertyList extends Property<JLabel, String> implements Iterable<P
 
 
 	@Override
-	void marshal(Parcel aBundle)
+	void marshal(Bundle aBundle)
 	{
-		Parcel bundle = new Parcel();
+		Bundle bundle = new Bundle();
 
 		for (Property item : mChildren)
 		{

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.function.Consumer;
-import org.terifan.parcel.Parcel;
+import org.terifan.bundle.Bundle;
 
 
 public class PropertyGridModel implements Iterable<Property>, Cloneable, Serializable
@@ -111,9 +111,9 @@ public class PropertyGridModel implements Iterable<Property>, Cloneable, Seriali
 	}
 
 
-	public Parcel toBundle()
+	public Bundle toBundle()
 	{
-		Parcel bundle = new Parcel();
+		Bundle bundle = new Bundle();
 
 		for (Property item : mChildren)
 		{
