@@ -148,22 +148,19 @@ public class TableLayout implements LayoutManager2
 	@Override
 	public synchronized void layoutContainer(Container aParent)
 	{
-		ArrayList<Integer> columnWidths = mColumnWidths;
-		ArrayList<Integer> rowHeights = mRowHeights;
-
 		int rowCount = getRowCount();
 
 		int v = 0;
-		for (int y = 0; y < rowHeights.size() && y < rowCount; y++)
+		for (int y = 0; y < mRowHeights.size() && y < rowCount; y++)
 		{
 			int u = 0;
-			for (int x = 0; x < columnWidths.size() && x < mComponents.get(y).size(); x++)
+			for (int x = 0; x < mColumnWidths.size() && x < mComponents.get(y).size(); x++)
 			{
 				Component comp = mComponents.get(y).get(x);
-				comp.setBounds(u, v, columnWidths.get(x), rowHeights.get(y));
-				u += columnWidths.get(x) + mSpacingX;
+				comp.setBounds(u, v, mColumnWidths.get(x), mRowHeights.get(y));
+				u += mColumnWidths.get(x) + mSpacingX;
 			}
-			v += rowHeights.get(y) + mSpacingY;
+			v += mRowHeights.get(y) + mSpacingY;
 		}
 	}
 
