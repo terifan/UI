@@ -4,14 +4,19 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.LayoutManager2;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Random;
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import org.terifan.util.Strings;
+import org.terifan.ui.Anchor;
+import org.terifan.ui.Fill;
 
 
 public class TableLayout implements LayoutManager2
@@ -110,38 +115,39 @@ public class TableLayout implements LayoutManager2
 		int rowCount = getRowCount();
 		int maxColumns = 0;
 
-		for (int y = 0; y < rowCount; y++)
+		for (int iy = 0; iy < rowCount; iy++)
 		{
 			int rowHeight = 0;
-			for (int x = 0; x < mComponents.get(y).size(); x++)
+
+			for (int ix = 0; ix < mComponents.get(iy).size(); ix++)
 			{
-				Component comp = mComponents.get(y).get(x);
-				Dimension d = comp.getPreferredSize();
-				rowHeight = Math.max(rowHeight, d.height);
-				if (x == columnWidths.size())
+				JComponent comp = (JComponent)mComponents.get(iy).get(ix);
+				Dimension dim = comp.getPreferredSize();
+
+				int insetsW = comp.getInsets().left + comp.getInsets().right;
+				int insetsH = comp.getInsets().top + comp.getInsets().bottom;
+
+				rowHeight = Math.max(rowHeight, dim.height + insetsH);
+
+				if (ix == columnWidths.size())
 				{
-					columnWidths.add(d.width);
+					columnWidths.add(dim.width + insetsW);
 				}
 				else
 				{
-					int w = Math.max(d.width, columnWidths.get(x));
-					columnWidths.set(x, w);
+					int w = Math.max(dim.width + insetsW, columnWidths.get(ix));
+					columnWidths.set(ix, w);
 				}
 			}
+
 			rowHeights.add(rowHeight);
-			maxColumns = Math.max(maxColumns, mComponents.get(y).size());
+			maxColumns = Math.max(maxColumns, mComponents.get(iy).size());
 		}
 
 		mColumnWidths = columnWidths;
 		mRowHeights = rowHeights;
 		mWidth = columnWidths.stream().mapToInt(e -> e).sum() + mSpacingX * (maxColumns - 1);
 		mHeight = rowHeights.stream().mapToInt(e -> e).sum() + mSpacingY * (rowCount - 1);
-
-//		System.out.println(rowCount+"/"+mComponents.size());
-//		System.out.println(mColumnWidths);
-//		System.out.println(mRowHeights);
-//		System.out.println(mWidth);
-//		System.out.println(mHeight);
 	}
 
 
@@ -150,17 +156,38 @@ public class TableLayout implements LayoutManager2
 	{
 		int rowCount = getRowCount();
 
-		int v = 0;
-		for (int y = 0; y < mRowHeights.size() && y < rowCount; y++)
+		int rowY = aParent.getInsets().top;
+		for (int iy = 0; iy < mRowHeights.size() && iy < rowCount; iy++)
 		{
-			int u = 0;
-			for (int x = 0; x < mColumnWidths.size() && x < mComponents.get(y).size(); x++)
+			int rowX = aParent.getInsets().left;
+
+			for (int ix = 0; ix < mColumnWidths.size() && ix < mComponents.get(iy).size(); ix++)
 			{
-				Component comp = mComponents.get(y).get(x);
-				comp.setBounds(u, v, mColumnWidths.get(x), mRowHeights.get(y));
-				u += mColumnWidths.get(x) + mSpacingX;
+				JComponent comp = (JComponent)mComponents.get(iy).get(ix);
+				Dimension dim = comp.getPreferredSize();
+				dim.width += comp.getInsets().left + comp.getInsets().right;
+				dim.height += comp.getInsets().top + comp.getInsets().bottom;
+
+				int compX = rowX;
+				int compY = rowY;
+				int cellW = mColumnWidths.get(ix);
+				int cellH = mRowHeights.get(iy);
+
+				Fill fill = Fill.BOTH;
+				Anchor anchor = Anchor.CENTER;
+
+				Rectangle compBounds = new Rectangle(compX, compY, dim.width, dim.height);
+				Rectangle cellBounds = new Rectangle(compX, compY, cellW, cellH);
+
+				fill.scale(compBounds, cellBounds);
+				anchor.translate(compBounds, cellBounds);
+
+				comp.setBounds(compBounds);
+
+				rowX += mColumnWidths.get(ix) + mSpacingX;
 			}
-			v += mRowHeights.get(y) + mSpacingY;
+
+			rowY += mRowHeights.get(iy) + mSpacingY;
 		}
 	}
 
@@ -189,33 +216,58 @@ public class TableLayout implements LayoutManager2
 	{
 		try
 		{
-			TableLayout layout = new TableLayout(5, 5);
-			JPanel panel = new JPanel(layout);
-			Random rnd = new Random(1);
-			for (int r = 0; r < 10; r++)
-			{
-				for (int c = 0, n = rnd.nextInt(20); c < n; c++)
-				{
-					JLabel label = new JLabel("<-" + Strings.repeat("-", rnd.nextInt(10)) + "-" + c + "x" + r + "-" + Strings.repeat("-", rnd.nextInt(10)) + "->");
-					label.setBackground(new Color(Color.HSBtoRGB(rnd.nextFloat(), 1f, 1f)));
-					label.setOpaque(true);
-					panel.add(label);
-				}
-				layout.nextRow();
-			}
+			JPanel panel = createTestTable(0);
 
 			JFrame frame = new JFrame();
 			frame.add(new JScrollPane(panel));
-//			frame.setSize(1024, 768);
 			frame.pack();
 			frame.setLocationRelativeTo(null);
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			frame.setVisible(true);
+			frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		}
 		catch (Throwable e)
 		{
 			e.printStackTrace(System.out);
 			System.exit(0);
 		}
+	}
+
+
+	private static int _testCount=7;
+	private static JPanel createTestTable(int aLevel)
+	{
+		Random rnd = new Random(_testCount++);
+
+		TableLayout layout = new TableLayout(5, 5);
+
+		JPanel panel = new JPanel(layout);
+		Color color = new Color(Color.HSBtoRGB(rnd.nextFloat(), 1f, 0.9f));
+		panel.setBorder(BorderFactory.createLineBorder(color, 10));
+
+		for (int r = 0; r < 4; r++)
+		{
+			for (int c = 0, n = 1+rnd.nextInt(4); c < n; c++)
+			{
+				if (aLevel == 0 && rnd.nextInt(8) == 0)
+				{
+					panel.add(createTestTable(aLevel + 1));
+				}
+				else
+				{
+					JLabel label = new JLabel("<==" + c + "," + r + "==>");
+					color = new Color(Color.HSBtoRGB(rnd.nextFloat(), 1f, 0.9f));
+					label.setFont(new Font("segeo ui",Font.PLAIN,8+rnd.nextInt(50)));
+					label.setBackground(new Color(200,200,200));
+					label.setBorder(BorderFactory.createLineBorder(color, 10));
+					label.setOpaque(true);
+					panel.add(label);
+				}
+			}
+
+			layout.nextRow();
+		}
+
+		return panel;
 	}
 }
