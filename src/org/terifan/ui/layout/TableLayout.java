@@ -6,18 +6,20 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Insets;
 import java.awt.LayoutManager2;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import static java.util.Arrays.fill;
+import java.util.HashMap;
 import java.util.Random;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import org.terifan.ui.Anchor;
 import org.terifan.ui.Fill;
 
@@ -28,10 +30,12 @@ public class TableLayout implements LayoutManager2
 	private ArrayList<ArrayList<Component>> mComponents;
 	private ArrayList<Integer> mColumnWidths;
 	private ArrayList<Integer> mRowHeights;
+	private HashMap<Component,Params> mParams;
 	private int mWidth;
 	private int mHeight;
 	private int mSpacingX;
 	private int mSpacingY;
+	private Params mDefaultParams;
 
 
 	public TableLayout()
@@ -48,27 +52,35 @@ public class TableLayout implements LayoutManager2
 		mSpacingX = aSpacingX;
 		mSpacingY = aSpacingY;
 
+		mParams = new HashMap<>();
 		mCurrentRow = new ArrayList<>();
 		mComponents.add(mCurrentRow);
+
+		mDefaultParams = new Params(Fill.BOTH, Anchor.WEST);
 	}
 
 
 	@Override
-	public synchronized void addLayoutComponent(Component aComp, Object aConstraints)
+	public void addLayoutComponent(Component aComp, Object aConstraints)
+	{
+		mCurrentRow.add(aComp);
+
+		if (aConstraints != null)
+		{
+			mParams.put(aComp, (Params)aConstraints);
+		}
+	}
+
+
+	@Override
+	public void addLayoutComponent(String aName, Component aComp)
 	{
 		mCurrentRow.add(aComp);
 	}
 
 
 	@Override
-	public synchronized void addLayoutComponent(String aName, Component aComp)
-	{
-		mCurrentRow.add(aComp);
-	}
-
-
-	@Override
-	public synchronized void removeLayoutComponent(Component aComp)
+	public void removeLayoutComponent(Component aComp)
 	{
 		mComponents.forEach(e -> e.remove(aComp));
 	}
@@ -77,21 +89,14 @@ public class TableLayout implements LayoutManager2
 	@Override
 	public Dimension minimumLayoutSize(Container aParent)
 	{
-		return preferredLayoutSize(aParent);
+		return layoutSize(aParent, false);
 	}
 
 
 	@Override
-	public Dimension maximumLayoutSize(Container aTarget)
+	public Dimension preferredLayoutSize(Container aParent)
 	{
-		return preferredLayoutSize(aTarget);
-	}
-
-
-	@Override
-	public synchronized Dimension preferredLayoutSize(Container aParent)
-	{
-		return new Dimension(mWidth, mHeight);
+		return layoutSize(aParent, false);
 	}
 
 
@@ -112,101 +117,106 @@ public class TableLayout implements LayoutManager2
 	@Override
 	public synchronized void invalidateLayout(Container aTarget)
 	{
-		ArrayList<Integer> columnWidths = new ArrayList<>();
-		ArrayList<Integer> rowHeights = new ArrayList<>();
+	}
 
-		int rowCount = getRowCount();
-		int maxColumns = 0;
 
-		for (int iy = 0; iy < rowCount; iy++)
+	private Dimension layoutSize(Container aParent, boolean aMinimum)
+	{
+		synchronized (aParent.getTreeLock())
 		{
-			int rowHeight = 0;
+			ArrayList<Integer> columnWidths = new ArrayList<>();
+			ArrayList<Integer> rowHeights = new ArrayList<>();
 
-			for (int ix = 0; ix < mComponents.get(iy).size(); ix++)
+			int rowCount = getRowCount();
+			int maxColumns = 0;
+
+			for (int iy = 0; iy < rowCount; iy++)
 			{
-				JComponent comp = (JComponent)mComponents.get(iy).get(ix);
-				Dimension dim = comp.getPreferredSize();
+				int rowHeight = 0;
 
-				int insetsW = 0*(comp.getInsets().left + comp.getInsets().right);
-				int insetsH = 0*(comp.getInsets().top + comp.getInsets().bottom);
-
-//				if (comp.getLayout() instanceof TableLayout)insetsH=insetsW=0;
-
-				rowHeight = Math.max(rowHeight, dim.height + insetsH);
-
-				if (ix == columnWidths.size())
+				for (int ix = 0; ix < mComponents.get(iy).size(); ix++)
 				{
-					columnWidths.add(dim.width + insetsW);
+					JComponent comp = (JComponent)mComponents.get(iy).get(ix);
+					Dimension dim = comp.getPreferredSize();
+
+					rowHeight = Math.max(rowHeight, dim.height);
+
+					if (ix == columnWidths.size())
+					{
+						columnWidths.add(dim.width);
+					}
+					else
+					{
+						int w = Math.max(dim.width, columnWidths.get(ix));
+						columnWidths.set(ix, w);
+					}
 				}
-				else
-				{
-					int w = Math.max(dim.width + insetsW, columnWidths.get(ix));
-					columnWidths.set(ix, w);
-				}
+
+				rowHeights.add(rowHeight);
+				maxColumns = Math.max(maxColumns, mComponents.get(iy).size());
 			}
 
-			rowHeights.add(rowHeight);
-			maxColumns = Math.max(maxColumns, mComponents.get(iy).size());
+			mColumnWidths = columnWidths;
+			mRowHeights = rowHeights;
+			mWidth = columnWidths.stream().mapToInt(e -> e).sum() + mSpacingX * (maxColumns - 1) + aParent.getInsets().left + aParent.getInsets().right;
+			mHeight = rowHeights.stream().mapToInt(e -> e).sum() + mSpacingY * (rowCount - 1) + aParent.getInsets().top + aParent.getInsets().bottom;
+
+			return new Dimension(mWidth, mHeight);
 		}
-
-		int b = 1;//(aTarget.getParent().getLayout() instanceof TableLayout)?0:1;
-
-		mColumnWidths = columnWidths;
-		mRowHeights = rowHeights;
-		mWidth = columnWidths.stream().mapToInt(e -> e).sum() + mSpacingX * (maxColumns - 1) + b * (aTarget.getInsets().left + aTarget.getInsets().right);
-		mHeight = rowHeights.stream().mapToInt(e -> e).sum() + mSpacingY * (rowCount - 1) + b * (aTarget.getInsets().top + aTarget.getInsets().bottom);
 	}
 
 
 	@Override
 	public synchronized void layoutContainer(Container aParent)
 	{
-		int rowCount = getRowCount();
+		Insets insets = aParent.getInsets();
 
-		int extraW = 0;//aParent.getWidth() - mWidth - aParent.getInsets().left - aParent.getInsets().right;
-		int extraH = 0;//aParent.getHeight() - mHeight - aParent.getInsets().top - aParent.getInsets().bottom;
-
-		int maxCols = 0;
-		for (int iy = 0; iy < mRowHeights.size() && iy < rowCount; iy++)
+		synchronized (aParent.getTreeLock())
 		{
-			maxCols = Math.max(maxCols, mColumnWidths.size());
-		}
+			int rowCount = getRowCount();
 
-		int rowY = aParent.getInsets().top;
+			int extraW = 0;//aParent.getWidth() - mWidth - insets.left - insets.right;
+			int extraH = 0;//aParent.getHeight() - mHeight - insets.top - insets.bottom;
 
-		for (int iy = 0; iy < mRowHeights.size() && iy < rowCount; iy++)
-		{
-			int rowX = aParent.getInsets().left;
-
-			ArrayList<Component> row = mComponents.get(iy);
-
-			for (int ix = 0; ix < mColumnWidths.size() && ix < row.size(); ix++)
+			int maxCols = 0;
+			for (int iy = 0; iy < mRowHeights.size() && iy < rowCount; iy++)
 			{
-				JComponent comp = (JComponent)row.get(ix);
-				Dimension dim = comp.getPreferredSize();
-//				dim.width += comp.getInsets().left + comp.getInsets().right;
-//				dim.height += comp.getInsets().top + comp.getInsets().bottom;
-
-				int compX = rowX;
-				int compY = rowY;
-				int cellW = mColumnWidths.get(ix) + extraW / maxCols;
-				int cellH = mRowHeights.get(iy) + extraH / rowCount;
-
-				Fill fill = Fill.NONE;
-				Anchor anchor = Anchor.CENTER;
-
-				Rectangle compBounds = new Rectangle(0, 0, dim.width, dim.height);
-				Rectangle cellBounds = new Rectangle(compX, compY, cellW, cellH);
-
-				fill.scale(compBounds, cellBounds);
-				anchor.translate(compBounds, cellBounds);
-
-				comp.setBounds(compBounds);
-
-				rowX += mColumnWidths.get(ix) + mSpacingX + extraW / maxCols;
+				maxCols = Math.max(maxCols, mColumnWidths.size());
 			}
 
-			rowY += mRowHeights.get(iy) + mSpacingY + extraH / rowCount;
+			int rowY = insets.top;
+
+			for (int iy = 0; iy < mRowHeights.size() && iy < rowCount; iy++)
+			{
+				int rowX = insets.left;
+
+				ArrayList<Component> row = mComponents.get(iy);
+
+				for (int ix = 0; ix < mColumnWidths.size() && ix < row.size(); ix++)
+				{
+					JComponent comp = (JComponent)row.get(ix);
+					Dimension dim = comp.getPreferredSize();
+
+					int compX = rowX;
+					int compY = rowY;
+					int cellW = mColumnWidths.get(ix) + extraW / maxCols;
+					int cellH = mRowHeights.get(iy) + extraH / rowCount;
+
+					Params params = mParams.getOrDefault(comp, mDefaultParams);
+
+					Rectangle compBounds = new Rectangle(0, 0, dim.width, dim.height);
+					Rectangle cellBounds = new Rectangle(compX, compY, cellW, cellH);
+
+					params.mFill.scale(compBounds, cellBounds);
+					params.mAnchor.translate(compBounds, cellBounds);
+
+					comp.setBounds(compBounds);
+
+					rowX += mColumnWidths.get(ix) + mSpacingX + extraW / maxCols;
+				}
+
+				rowY += mRowHeights.get(iy) + mSpacingY + extraH / rowCount;
+			}
 		}
 	}
 
@@ -227,6 +237,27 @@ public class TableLayout implements LayoutManager2
 		{
 			mCurrentRow = new ArrayList<>();
 			mComponents.add(mCurrentRow);
+		}
+	}
+
+
+	@Override
+	public Dimension maximumLayoutSize(Container aTarget)
+	{
+		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+	}
+
+
+	public static class Params
+	{
+		final Fill mFill;
+		final Anchor mAnchor;
+
+
+		public Params(Fill aFill, Anchor aAnchor)
+		{
+			mFill = aFill;
+			mAnchor = aAnchor;
 		}
 	}
 
