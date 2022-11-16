@@ -125,10 +125,10 @@ public class TableLayout implements LayoutManager2
 				JComponent comp = (JComponent)mComponents.get(iy).get(ix);
 				Dimension dim = comp.getPreferredSize();
 
-				int insetsW = comp.getInsets().left + comp.getInsets().right;
-				int insetsH = comp.getInsets().top + comp.getInsets().bottom;
+				int insetsW = 0*(comp.getInsets().left + comp.getInsets().right);
+				int insetsH = 0*(comp.getInsets().top + comp.getInsets().bottom);
 
-				if (comp.getLayout() instanceof TableLayout)insetsH=insetsW=0;
+//				if (comp.getLayout() instanceof TableLayout)insetsH=insetsW=0;
 
 				rowHeight = Math.max(rowHeight, dim.height + insetsH);
 
@@ -235,8 +235,10 @@ public class TableLayout implements LayoutManager2
 		{
 			JPanel panel = createTestTable(0);
 
-			JPanel outer = new JPanel(new FlowLayout());
+			JPanel outer = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+			outer.setBackground(Color.WHITE);
 			outer.add(panel);
+			outer.add(new JLabel("X"));
 
 			JFrame frame = new JFrame();
 //			frame.add(new JScrollPane(panel));
