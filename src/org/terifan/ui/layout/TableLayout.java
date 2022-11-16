@@ -56,7 +56,7 @@ public class TableLayout implements LayoutManager2
 		mCurrentRow = new ArrayList<>();
 		mComponents.add(mCurrentRow);
 
-		mDefaultParams = new Params(Fill.BOTH, Anchor.WEST);
+		mDefaultParams = new Params(Fill.BOTH, Anchor.WEST, new Dimension(0, 0));
 	}
 
 
@@ -252,12 +252,14 @@ public class TableLayout implements LayoutManager2
 	{
 		final Fill mFill;
 		final Anchor mAnchor;
+		final Dimension mPadding;
 
 
-		public Params(Fill aFill, Anchor aAnchor)
+		public Params(Fill aFill, Anchor aAnchor, Dimension aPadding)
 		{
 			mFill = aFill;
 			mAnchor = aAnchor;
+			mPadding = aPadding;
 		}
 	}
 
