@@ -8,6 +8,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.LayoutManager2;
 import java.awt.Rectangle;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Random;
 import javax.swing.BorderFactory;
@@ -284,6 +286,16 @@ public class TableLayout implements LayoutManager2
 					label.setBackground(new Color(200, 200, 200));
 					label.setBorder(BorderFactory.createLineBorder(new Color(Color.HSBtoRGB(rnd.nextFloat(), 1f, 0.9f)), 10));
 					label.setOpaque(true);
+					label.addMouseListener(new MouseAdapter()
+					{
+						@Override
+						public void mousePressed(MouseEvent aEvent)
+						{
+							JComponent comp = (JComponent)aEvent.getSource();
+							comp.setBackground(Color.RED);
+							comp.setBorder(BorderFactory.createLineBorder(Color.RED, 10));
+						}
+					});
 					panel.add(label);
 				}
 			}
