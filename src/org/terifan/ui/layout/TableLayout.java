@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.LayoutManager2;
 import java.awt.Rectangle;
@@ -127,6 +128,8 @@ public class TableLayout implements LayoutManager2
 				int insetsW = comp.getInsets().left + comp.getInsets().right;
 				int insetsH = comp.getInsets().top + comp.getInsets().bottom;
 
+				if (comp.getLayout() instanceof TableLayout)insetsH=insetsW=0;
+
 				rowHeight = Math.max(rowHeight, dim.height + insetsH);
 
 				if (ix == columnWidths.size())
@@ -144,10 +147,12 @@ public class TableLayout implements LayoutManager2
 			maxColumns = Math.max(maxColumns, mComponents.get(iy).size());
 		}
 
+		int b = 1;//(aTarget.getParent().getLayout() instanceof TableLayout)?0:1;
+
 		mColumnWidths = columnWidths;
 		mRowHeights = rowHeights;
-		mWidth = columnWidths.stream().mapToInt(e -> e).sum() + mSpacingX * (maxColumns - 1);
-		mHeight = rowHeights.stream().mapToInt(e -> e).sum() + mSpacingY * (rowCount - 1);
+		mWidth = columnWidths.stream().mapToInt(e -> e).sum() + mSpacingX * (maxColumns - 1) + b * (aTarget.getInsets().left + aTarget.getInsets().right);
+		mHeight = rowHeights.stream().mapToInt(e -> e).sum() + mSpacingY * (rowCount - 1) + b * (aTarget.getInsets().top + aTarget.getInsets().bottom);
 	}
 
 
@@ -156,27 +161,39 @@ public class TableLayout implements LayoutManager2
 	{
 		int rowCount = getRowCount();
 
+		int extraW = 0;//aParent.getWidth() - mWidth - aParent.getInsets().left - aParent.getInsets().right;
+		int extraH = 0;//aParent.getHeight() - mHeight - aParent.getInsets().top - aParent.getInsets().bottom;
+
+		int maxCols = 0;
+		for (int iy = 0; iy < mRowHeights.size() && iy < rowCount; iy++)
+		{
+			maxCols = Math.max(maxCols, mColumnWidths.size());
+		}
+
 		int rowY = aParent.getInsets().top;
+
 		for (int iy = 0; iy < mRowHeights.size() && iy < rowCount; iy++)
 		{
 			int rowX = aParent.getInsets().left;
 
-			for (int ix = 0; ix < mColumnWidths.size() && ix < mComponents.get(iy).size(); ix++)
+			ArrayList<Component> row = mComponents.get(iy);
+
+			for (int ix = 0; ix < mColumnWidths.size() && ix < row.size(); ix++)
 			{
-				JComponent comp = (JComponent)mComponents.get(iy).get(ix);
+				JComponent comp = (JComponent)row.get(ix);
 				Dimension dim = comp.getPreferredSize();
-				dim.width += comp.getInsets().left + comp.getInsets().right;
-				dim.height += comp.getInsets().top + comp.getInsets().bottom;
+//				dim.width += comp.getInsets().left + comp.getInsets().right;
+//				dim.height += comp.getInsets().top + comp.getInsets().bottom;
 
 				int compX = rowX;
 				int compY = rowY;
-				int cellW = mColumnWidths.get(ix);
-				int cellH = mRowHeights.get(iy);
+				int cellW = mColumnWidths.get(ix) + extraW / maxCols;
+				int cellH = mRowHeights.get(iy) + extraH / rowCount;
 
-				Fill fill = Fill.BOTH;
+				Fill fill = Fill.NONE;
 				Anchor anchor = Anchor.CENTER;
 
-				Rectangle compBounds = new Rectangle(compX, compY, dim.width, dim.height);
+				Rectangle compBounds = new Rectangle(0, 0, dim.width, dim.height);
 				Rectangle cellBounds = new Rectangle(compX, compY, cellW, cellH);
 
 				fill.scale(compBounds, cellBounds);
@@ -184,10 +201,10 @@ public class TableLayout implements LayoutManager2
 
 				comp.setBounds(compBounds);
 
-				rowX += mColumnWidths.get(ix) + mSpacingX;
+				rowX += mColumnWidths.get(ix) + mSpacingX + extraW / maxCols;
 			}
 
-			rowY += mRowHeights.get(iy) + mSpacingY;
+			rowY += mRowHeights.get(iy) + mSpacingY + extraH / rowCount;
 		}
 	}
 
@@ -202,7 +219,7 @@ public class TableLayout implements LayoutManager2
 	}
 
 
-	public synchronized void nextRow()
+	public synchronized void advanceRow()
 	{
 		if (!mCurrentRow.isEmpty())
 		{
@@ -218,8 +235,12 @@ public class TableLayout implements LayoutManager2
 		{
 			JPanel panel = createTestTable(0);
 
+			JPanel outer = new JPanel(new FlowLayout());
+			outer.add(panel);
+
 			JFrame frame = new JFrame();
-			frame.add(new JScrollPane(panel));
+//			frame.add(new JScrollPane(panel));
+			frame.add(outer);
 			frame.pack();
 			frame.setLocationRelativeTo(null);
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -233,8 +254,9 @@ public class TableLayout implements LayoutManager2
 		}
 	}
 
+	private static int _testCount = 7;
 
-	private static int _testCount=7;
+
 	private static JPanel createTestTable(int aLevel)
 	{
 		Random rnd = new Random(_testCount++);
@@ -242,12 +264,12 @@ public class TableLayout implements LayoutManager2
 		TableLayout layout = new TableLayout(5, 5);
 
 		JPanel panel = new JPanel(layout);
-		Color color = new Color(Color.HSBtoRGB(rnd.nextFloat(), 1f, 0.9f));
-		panel.setBorder(BorderFactory.createLineBorder(color, 10));
+		panel.setBorder(BorderFactory.createLineBorder(new Color(Color.HSBtoRGB(rnd.nextFloat(), 1f, 0.9f)), 10));
+		panel.setBackground(new Color(200, 255, 200));
 
-		for (int r = 0; r < 4; r++)
+		for (int r = 0, rn = 1 + rnd.nextInt(4); r < rn; r++)
 		{
-			for (int c = 0, n = 1+rnd.nextInt(4); c < n; c++)
+			for (int c = 0, cn = 1 + rnd.nextInt(4); c < cn; c++)
 			{
 				if (aLevel == 0 && rnd.nextInt(8) == 0)
 				{
@@ -256,16 +278,15 @@ public class TableLayout implements LayoutManager2
 				else
 				{
 					JLabel label = new JLabel("<==" + c + "," + r + "==>");
-					color = new Color(Color.HSBtoRGB(rnd.nextFloat(), 1f, 0.9f));
-					label.setFont(new Font("segeo ui",Font.PLAIN,8+rnd.nextInt(50)));
-					label.setBackground(new Color(200,200,200));
-					label.setBorder(BorderFactory.createLineBorder(color, 10));
+					label.setFont(new Font("segeo ui", Font.PLAIN, 8 + rnd.nextInt(50)));
+					label.setBackground(new Color(200, 200, 200));
+					label.setBorder(BorderFactory.createLineBorder(new Color(Color.HSBtoRGB(rnd.nextFloat(), 1f, 0.9f)), 10));
 					label.setOpaque(true);
 					panel.add(label);
 				}
 			}
 
-			layout.nextRow();
+			layout.advanceRow();
 		}
 
 		return panel;

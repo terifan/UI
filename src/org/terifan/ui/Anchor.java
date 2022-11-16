@@ -4,7 +4,7 @@ import java.awt.Rectangle;
 
 public enum Anchor
 {
-	NORTH_WEST, 
+	NORTH_WEST,
 	NORTH,
 	NORTH_EAST,
 	CENTER,
@@ -13,23 +13,23 @@ public enum Anchor
 	SOUTH_EAST,
 	WEST,
 	EAST;
-	
-	public void translate(Rectangle aBounds, Rectangle aOuter)
+
+	public void translate(Rectangle oBounds, Rectangle aOuter)
 	{
 		switch (this)
 		{
 			case WEST:
 			case NORTH_WEST:
 			case SOUTH_WEST:
-				aBounds.x = aOuter.x;
+				oBounds.x = aOuter.x;
 				break;
 			case CENTER:
 			case NORTH:
 			case SOUTH:
-				aBounds.x = aOuter.x + (aOuter.width - aBounds.width) / 2;
+				oBounds.x = aOuter.x + (aOuter.width - oBounds.width) / 2;
 				break;
 			default:
-				aBounds.x = aOuter.x + aOuter.width - aBounds.width;
+				oBounds.x = aOuter.x + aOuter.width - oBounds.width;
 				break;
 		}
 		switch (this)
@@ -37,15 +37,15 @@ public enum Anchor
 			case NORTH_WEST:
 			case NORTH:
 			case NORTH_EAST:
-				aBounds.y = aOuter.y;
+				oBounds.y = aOuter.y;
 				break;
 			case WEST:
 			case CENTER:
 			case EAST:
-				aBounds.y = aOuter.y + (aOuter.height - aBounds.height) / 2;
+				oBounds.y = aOuter.y + (aOuter.height - oBounds.height) / 2;
 				break;
 			default:
-				aBounds.y = aOuter.y + aOuter.height - aBounds.height;
+				oBounds.y = aOuter.y + aOuter.height - oBounds.height;
 				break;
 		}
 	}
