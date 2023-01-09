@@ -17,7 +17,9 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.TransferHandler;
 import javax.swing.TransferHandler.TransferSupport;
@@ -27,7 +29,7 @@ import javax.swing.TransferHandler.TransferSupport;
  * Implement Drag-n-Drop on a component. Use the static <code>register</code> method to enable default DND or instantiate and override the
  * various methods for custom handling.
  */
-public abstract class DragAndDrop
+public class DragAndDrop
 {
 	public final static DataFlavor DATA_FLAVOR;
 	public final static DataFlavor FILE_FLAVOR;
@@ -35,6 +37,7 @@ public abstract class DragAndDrop
 	public final static DataFlavor STRING_FLAVOR;
 	public final static DataFlavor HTML_FLAVOR;
 	public final static DataFlavor HTML_FRAGMENT_FLAVOR;
+
 
 	static
 	{
@@ -54,17 +57,19 @@ public abstract class DragAndDrop
 	}
 
 	protected JComponent mComponent;
+	protected boolean mCanDrop;
 
 
 	public DragAndDrop(JComponent aComponent)
 	{
-		this(aComponent, true);
+		this(aComponent, true, true);
 	}
 
 
-	public DragAndDrop(JComponent aComponent, boolean aCanDrag)
+	public DragAndDrop(JComponent aComponent, boolean aCanDrag, boolean aCanDrop)
 	{
 		mComponent = aComponent;
+		mCanDrop = aCanDrop;
 
 		if (aCanDrag)
 		{
@@ -81,17 +86,20 @@ public abstract class DragAndDrop
 				DragAndDrop.this.dragEnter(aDtde);
 			}
 
+
 			@Override
 			public void dragOver(DropTargetDragEvent aDtde)
 			{
 				DragAndDrop.this.dragOver(aDtde);
 			}
 
+
 			@Override
 			public void dropActionChanged(DropTargetDragEvent aDtde)
 			{
-				DragAndDrop.this.dropActionChanged(aDtde);
+				DragAndDrop.this.onDropActionChanged(aDtde);
 			}
+
 
 			@Override
 			public void dragExit(DropTargetEvent aDte)
@@ -99,14 +107,23 @@ public abstract class DragAndDrop
 				DragAndDrop.this.dragExit(aDte);
 			}
 
+
 			@Override
 			public void drop(DropTargetDropEvent aDtde)
 			{
 				try
 				{
-					Object transferData = aDtde.getTransferable().getTransferData(aDtde.getTransferable().getTransferDataFlavors()[0]);
-
-					DragAndDrop.this.drop(new DropEvent(aDtde.getLocation(), aDtde.getDropAction(), transferData));
+					if (canDrop(new CanDropEvent(aDtde.getLocation(), aDtde.getDropAction())))
+					{
+						aDtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+						DataFlavor flavor = aDtde.getTransferable().getTransferDataFlavors()[0];
+						Object transferData = aDtde.getTransferable().getTransferData(flavor);
+						if (transferData instanceof List)
+						{
+							transferData = new ArrayList((List)transferData);
+						}
+						DragAndDrop.this.onDrop(new DropEvent(aDtde.getLocation(), aDtde.getDropAction(), transferData));
+					}
 				}
 				catch (Throwable e)
 				{
@@ -120,14 +137,10 @@ public abstract class DragAndDrop
 	/**
 	 * Helper function to register a component as capable of dragging.
 	 *
-	 * @param aComponent
-	 *   the component that can be dragged
-	 * @param aFlavorProvider
-	 *   provides the type of content dragged from a certain position
-	 * @param aDragProvider
-	 *   provides the value dragged from a position
-	 * @param aDragEndProvider
-	 *   optional, executed when a drop has completed
+	 * @param aComponent the component to be setup
+	 * @param aFlavorProvider an implementation of an FunctionalInterface that provides the type of content dragged
+	 * @param aDragProvider an implementation of an FunctionalInterface that provides the value dragged
+	 * @param aDragEndProvider optional, executed when a drop has completed
 	 */
 	public static void register(JComponent aComponent, FlavorProvider aFlavorProvider, DragProvider aDragProvider, DragEndProvider aDragEndProvider)
 	{
@@ -139,11 +152,13 @@ public abstract class DragAndDrop
 				return aFlavorProvider.dragFlavor(aDragOrigin);
 			}
 
+
 			@Override
-			public Object drag(Point aDragOrigin)
+			public Object onDrag(Point aDragOrigin)
 			{
-				return aDragProvider.drag(aDragOrigin);
+				return aDragProvider.onDrag(aDragOrigin);
 			}
+
 
 			@Override
 			public void dragEnd(boolean aSuccess, Object aDropValue, int aDropAction)
@@ -166,10 +181,9 @@ public abstract class DragAndDrop
 	/**
 	 * Called when a drag is recognized. This implementation returns null.
 	 *
-	 * @param aDragOrigin
-	 *   the position on the component where the drag occurred.
+	 * @param aDragOrigin the position on the component where the drag occurred.
 	 */
-	public Object drag(Point aDragOrigin)
+	public Object onDrag(Point aDragOrigin)
 	{
 		return null;
 	}
@@ -178,24 +192,21 @@ public abstract class DragAndDrop
 	/**
 	 * Return true if the drop is accepted. This method always return false and must be replaced in order for drops to be allowed.
 	 *
-	 * @param aDropEvent
-	 *   an object containing details about the drop.
-	 * @return
-	 *   true if the drop is allowed
+	 * @param aDropEvent an object containing details about the drop.
+	 * @return true if the drop is allowed
 	 */
-	public boolean canDrop(DropEvent aDropEvent)
+	public boolean canDrop(CanDropEvent aDropEvent)
 	{
-		return false;
+		return mCanDrop;
 	}
 
 
 	/**
 	 * Called when a drop occur. This implementation does nothing.
 	 *
-	 * @param aDropEvent
-	 *   an object containing details about the drop.
+	 * @param aDropEvent an object containing details about the drop.
 	 */
-	public void drop(DropEvent aDropEvent)
+	public void onDrop(DropEvent aDropEvent)
 	{
 	}
 
@@ -203,8 +214,7 @@ public abstract class DragAndDrop
 	/**
 	 * Notified when a transfer has finished. This implementation does nothing.
 	 *
-	 * @param aDropEvent
-	 *   an object containing details about the drop.
+	 * @param aDropEvent an object containing details about the drop.
 	 */
 	public void dragEnd(boolean aSuccess, Object aDropValue, int aDropAction)
 	{
@@ -226,7 +236,7 @@ public abstract class DragAndDrop
 	}
 
 
-	public void dropActionChanged(DropTargetDragEvent aDtde)
+	public void onDropActionChanged(DropTargetDragEvent aDtde)
 	{
 	}
 
@@ -234,8 +244,7 @@ public abstract class DragAndDrop
 	/**
 	 * Return the type of data that can be dragged from the current location
 	 *
-	 * @param aDragOrigin
-	 *   the position on the component where the drag may occur.
+	 * @param aDragOrigin the position on the component where the drag may occur.
 	 */
 	public DataFlavor dragFlavor(Point aDragOrigin)
 	{
@@ -257,7 +266,8 @@ public abstract class DragAndDrop
 				{
 					try
 					{
-						Object transferData = aDragSourceDropEvent.getDragSourceContext().getTransferable().getTransferData(transferable.getTransferDataFlavors()[0]);
+						DataFlavor flavor = transferable.getTransferDataFlavors()[0];
+						Object transferData = aDragSourceDropEvent.getDragSourceContext().getTransferable().getTransferData(flavor);
 						dragEnd(aDragSourceDropEvent.getDropSuccess(), transferData, aDragSourceDropEvent.getDropAction());
 					}
 					catch (UnsupportedFlavorException | IOException e)
@@ -292,7 +302,7 @@ public abstract class DragAndDrop
 		{
 			try
 			{
-				drop(new DropEvent(aSupport));
+				onDrop(new DropEvent(aSupport));
 			}
 			catch (Throwable e)
 			{
@@ -333,7 +343,10 @@ public abstract class DragAndDrop
 		@Override
 		public DataFlavor[] getTransferDataFlavors()
 		{
-			return new DataFlavor[]{mFlavor};
+			return new DataFlavor[]
+			{
+				mFlavor
+			};
 		}
 
 
@@ -347,7 +360,7 @@ public abstract class DragAndDrop
 		@Override
 		public Object getTransferData(DataFlavor aFlavor)
 		{
-			Object drag = drag(mDragOrigin);
+			Object drag = onDrag(mDragOrigin);
 
 			if (mFlavor == FILE_FLAVOR)
 			{
@@ -366,36 +379,19 @@ public abstract class DragAndDrop
 	}
 
 
-	public static class DropEvent
+	public static class CanDropEvent
 	{
 		public final static int COPY = DnDConstants.ACTION_COPY;
 		public final static int MOVE = DnDConstants.ACTION_MOVE;
 
-		private int mDropAction;
-		private Point mDropLocation;
-		private Object mTransferData;
+		protected Point mDropLocation;
+		protected int mDropAction;
 
 
-		public DropEvent(TransferSupport aSupport)
+		CanDropEvent(Point aDropLocation, int aDropAction)
 		{
-			try
-			{
-				mTransferData = aSupport.getTransferable().getTransferData(DATA_FLAVOR);
-			}
-			catch (UnsupportedFlavorException | IOException e)
-			{
-				throw new IllegalStateException(e);
-			}
-			mDropLocation = aSupport.getDropLocation().getDropPoint();
-			mDropAction = aSupport.getDropAction();
-		}
-
-
-		public DropEvent(Point aDropLocation, int aDropActon, Object aTransferData)
-		{
-			mTransferData = aTransferData;
+			mDropAction = aDropAction;
 			mDropLocation = aDropLocation;
-			mDropAction = aDropActon;
 		}
 
 
@@ -411,9 +407,45 @@ public abstract class DragAndDrop
 		}
 
 
-		public Object getTransferData()
+		@Override
+		public String toString()
 		{
-			return mTransferData;
+			String action = mDropAction == MOVE ? "move" : mDropAction == COPY ? "copy" : "other";
+			String at = "[" + mDropLocation.x + "," + mDropLocation.y + "]";
+			return "{action=" + action + ", dropLocation=" + at + "}";
+		}
+	}
+
+
+	public static class DropEvent extends CanDropEvent
+	{
+		private Object mTransferData;
+
+
+		public DropEvent(TransferSupport aSupport)
+		{
+			super(aSupport.getDropLocation().getDropPoint(), aSupport.getDropAction());
+			try
+			{
+				mTransferData = aSupport.getTransferable().getTransferData(DATA_FLAVOR);
+			}
+			catch (UnsupportedFlavorException | IOException e)
+			{
+				throw new IllegalStateException(e);
+			}
+		}
+
+
+		public DropEvent(Point aDropLocation, int aDropActon, Object aTransferData)
+		{
+			super(aDropLocation, aDropActon);
+			mTransferData = aTransferData;
+		}
+
+
+		public <T> T getTransferData()
+		{
+			return (T)mTransferData;
 		}
 
 
@@ -447,7 +479,7 @@ public abstract class DragAndDrop
 	@FunctionalInterface
 	public interface DragProvider
 	{
-		Object drag(Point aDragOrigin);
+		Object onDrag(Point aDragOrigin);
 	}
 
 
@@ -456,7 +488,6 @@ public abstract class DragAndDrop
 	{
 		void dragEnd(boolean aSuccess, Object aDropValue, int aDropAction);
 	}
-
 
 //	public static void main(String ... args)
 //	{
@@ -474,7 +505,7 @@ public abstract class DragAndDrop
 //				}
 //
 //				@Override
-//				public void drop(DropEvent aDropEvent)
+//				public void onDrop(DropEvent aDropEvent)
 //				{
 //					DefaultMutableTreeNode data = (DefaultMutableTreeNode)aDropEvent.getTransferData();
 //
@@ -491,7 +522,7 @@ public abstract class DragAndDrop
 //				}
 //
 //				@Override
-//				public Object drag(Point aDragOrigin)
+//				public Object onDrag(Point aDragOrigin)
 //				{
 //					return tree.getClosestPathForLocation(aDragOrigin.x, aDragOrigin.y).getLastPathComponent();
 //				}
@@ -512,7 +543,7 @@ public abstract class DragAndDrop
 //				}
 //
 //				@Override
-//				public void drop(DropEvent aDropEvent)
+//				public void onDrop(DropEvent aDropEvent)
 //				{
 //					JLabel label = new JLabel(aDropEvent.getTransferData().toString());
 //					label.setLocation(aDropEvent.getDropLocation());
@@ -523,7 +554,7 @@ public abstract class DragAndDrop
 //					new DragAndDrop(label)
 //					{
 //						@Override
-//						public Object drag(Point aDragOrigin)
+//						public Object onDrag(Point aDragOrigin)
 //						{
 //							return ((JLabel)mComponent).getText();
 //						}
