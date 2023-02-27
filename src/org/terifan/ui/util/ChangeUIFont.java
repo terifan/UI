@@ -57,7 +57,6 @@ public final class ChangeUIFont
 
 			if (value instanceof FontUIResource)
 			{
-				FontUIResource orig = (FontUIResource)value;
 				UIManager.put(key, new FontUIResource(aFont));
 			}
 		}
