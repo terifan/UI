@@ -381,10 +381,11 @@ public class TextBox implements Cloneable, Serializable
 	}
 
 
-	public void translate(int aDeltaX, int aDeltaY)
+	public TextBox translate(int aDeltaX, int aDeltaY)
 	{
 		mBounds.translate(aDeltaX, aDeltaY);
 		mDirty = true;
+		return this;
 	}
 
 
@@ -483,9 +484,9 @@ public class TextBox implements Cloneable, Serializable
 		{
 			return measure();
 		}
-		if (mBounds.isEmpty())
+//		if (mBounds.isEmpty())
 		{
-			mBounds.setBounds(0, 0, Short.MAX_VALUE, Short.MAX_VALUE);
+			mBounds.setSize(Short.MAX_VALUE, Short.MAX_VALUE);
 		}
 		if (mMaxWidth > 0)
 		{
@@ -545,6 +546,20 @@ public class TextBox implements Cloneable, Serializable
 		bounds.height += mMargins.top + mMargins.bottom;
 
 		return bounds;
+	}
+
+
+	public TextBox updateBounds()
+	{
+		return updateBounds(new FontRenderContext(null, true, false));
+	}
+
+
+	public TextBox updateBounds(FontRenderContext aFontRenderContext)
+	{
+		Rectangle bounds = measure(aFontRenderContext);
+		setBounds(bounds);
+		return this;
 	}
 
 
