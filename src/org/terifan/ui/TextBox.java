@@ -621,8 +621,9 @@ public class TextBox implements Cloneable, Serializable
 
 		if (mShadowColor != null)
 		{
-			renderImpl(aGraphics, aTranslateX + mShadowOffset.x, aTranslateY + mShadowOffset.y, hasShadow, true);
+			renderImpl(aGraphics, aTranslateX, aTranslateY, hasShadow, true);
 		}
+
 		return renderImpl(aGraphics, aTranslateX, aTranslateY, hasShadow, false);
 	}
 
@@ -968,22 +969,30 @@ public class TextBox implements Cloneable, Serializable
 
 		int adjust = (int)(aLineMetrics.getHeight() - aLineMetrics.getDescent());
 
-		if (mRenderCallback != null)
+		int ix = aOffsetX + mPadding.left;
+		int iy = aOffsetY + adjust + mPadding.top;
+		if (aShadow)
 		{
-			mRenderCallback.beforeRender(aText, aOffsetX, aOffsetY, aWidth, aHeight, aOffsetX + mPadding.left, aOffsetY + adjust + mPadding.top);
+			ix += mShadowOffset.x;
+			iy += mShadowOffset.y;
 		}
 
-		aGraphics.drawString(aText.mText, aOffsetX + mPadding.left, aOffsetY + adjust + mPadding.top);
+		if (mRenderCallback != null)
+		{
+			mRenderCallback.beforeRender(aText, aOffsetX, aOffsetY, aWidth, aHeight, ix, iy);
+		}
+
+		aGraphics.drawString(aText.mText, ix, iy);
 
 		if (aShadow && mMirrorShadow)
 		{
 			aGraphics.setColor(mShadowMirrorColor);
-			aGraphics.drawString(aText.mText, aOffsetX + mPadding.left - 2 * mShadowOffset.x, aOffsetY + adjust + mPadding.top);
+			aGraphics.drawString(aText.mText, ix - 2 * mShadowOffset.x, iy);
 		}
 
 		if (mRenderCallback != null)
 		{
-			mRenderCallback.afterRender(aText, aOffsetX, aOffsetY, aWidth, aHeight, aOffsetX + mPadding.left, aOffsetY + adjust + mPadding.top);
+			mRenderCallback.afterRender(aText, aOffsetX, aOffsetY, aWidth, aHeight, ix, iy);
 		}
 	}
 
