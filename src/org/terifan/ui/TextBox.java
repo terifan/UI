@@ -258,6 +258,38 @@ public class TextBox implements Cloneable, Serializable
 	}
 
 
+	public TextBox setPaddingTop(int aTop)
+	{
+		mPadding.top = aTop;
+		mDirty = true;
+		return this;
+	}
+
+
+	public TextBox setPaddingLeft(int aLeft)
+	{
+		mPadding.left = aLeft;
+		mDirty = true;
+		return this;
+	}
+
+
+	public TextBox setPaddingBottom(int aBottom)
+	{
+		mPadding.bottom = aBottom;
+		mDirty = true;
+		return this;
+	}
+
+
+	public TextBox setPaddingRight(int aRight)
+	{
+		mPadding.right = aRight;
+		mDirty = true;
+		return this;
+	}
+
+
 	public Border getBorder()
 	{
 		return mBorder;
@@ -544,6 +576,9 @@ public class TextBox implements Cloneable, Serializable
 		bounds.y -= mMargins.top;
 		bounds.width += mMargins.left + mMargins.right;
 		bounds.height += mMargins.top + mMargins.bottom;
+
+//		bounds.width += mPadding.left + mPadding.right;
+//		bounds.height += mPadding.top + mPadding.bottom;
 
 		return bounds;
 	}
