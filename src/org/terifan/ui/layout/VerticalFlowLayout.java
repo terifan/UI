@@ -18,6 +18,7 @@ public class VerticalFlowLayout implements LayoutManager
 	private int mVGap;
 	private int mAlignment;
 	private int mAnchor;
+	private Insets mInsets;
 
 
 	public VerticalFlowLayout()
@@ -43,13 +44,21 @@ public class VerticalFlowLayout implements LayoutManager
 		mVGap = aVGap;
 		mAlignment = aAlignment;
 		mAnchor = aAnchor;
+		mInsets = new Insets(0, 0, 0, 0);
+	}
+
+
+	public VerticalFlowLayout setInsets(Insets aInsets)
+	{
+		this.mInsets = aInsets;
+		return this;
 	}
 
 
 	private Dimension layoutSize(Container aParent, boolean aMinimum)
 	{
-		Dimension dim = new Dimension(0, 0);
-		Dimension d;
+		Dimension total = new Dimension(0, 0);
+		Dimension cd;
 		synchronized (aParent.getTreeLock())
 		{
 			int n = aParent.getComponentCount();
@@ -58,20 +67,20 @@ public class VerticalFlowLayout implements LayoutManager
 				Component c = aParent.getComponent(i);
 				if (c.isVisible())
 				{
-					d = aMinimum ? c.getMinimumSize() : c.getPreferredSize();
-					dim.width = Math.max(dim.width, d.width);
-					dim.height += d.height;
+					cd = aMinimum ? c.getMinimumSize() : c.getPreferredSize();
+					total.width = Math.max(total.width, cd.width + mInsets.left + mInsets.right);
+					total.height += cd.height;
 					if (i > 0)
 					{
-						dim.height += mVGap;
+						total.height += mVGap;
 					}
 				}
 			}
 		}
 		Insets insets = aParent.getInsets();
-		dim.width += insets.left + insets.right;
-		dim.height += insets.top + insets.bottom;
-		return dim;
+		total.width += insets.left + insets.right;
+		total.height += insets.top + insets.bottom + mInsets.top + mInsets.bottom;
+		return total;
 	}
 
 
@@ -88,14 +97,14 @@ public class VerticalFlowLayout implements LayoutManager
 			for (int i = 0; i < n; i++)
 			{
 				Component c = aParent.getComponent(i);
-				Dimension d = c.getPreferredSize();
-				y += d.height + mVGap;
+				Dimension cd = c.getPreferredSize();
+				y += cd.height + mVGap;
 			}
-			y -= mVGap; //otherwise there's a vgap too many
+			y -= mVGap;
 
 			if (mAnchor == TOP)
 			{
-				y = insets.top;
+				y = insets.top + mInsets.top;
 			}
 			else
 			{
@@ -105,30 +114,31 @@ public class VerticalFlowLayout implements LayoutManager
 				}
 				else
 				{
-					y = pd.height - y - insets.bottom;
+					y = pd.height - y - insets.bottom - mInsets.bottom;
 				}
 			}
 
 			for (int i = 0; i < n; i++)
 			{
 				Component c = aParent.getComponent(i);
-				Dimension d = c.getPreferredSize();
-				int x = insets.left;
-				int wid = d.width;
+				Dimension cd = c.getPreferredSize();
+				int x = insets.left + mInsets.left;
+				int wid = cd.width;
+				int pdwidth = pd.width - mInsets.left - mInsets.right;
 				if (mAlignment == CENTER)
 				{
-					x = (pd.width - d.width) / 2;
+					x = (pdwidth - cd.width) / 2;
 				}
 				else if (mAlignment == RIGHT)
 				{
-					x = pd.width - d.width - insets.right;
+					x = pdwidth - cd.width - insets.right;
 				}
 				else if (mAlignment == BOTH)
 				{
-					wid = pd.width - insets.left - insets.right;
+					wid = pdwidth - insets.left - insets.right;
 				}
-				c.setBounds(x, y, wid, d.height);
-				y += d.height + mVGap;
+				c.setBounds(x, y, wid, cd.height);
+				y += cd.height + mVGap;
 			}
 		}
 	}
