@@ -753,7 +753,7 @@ public class TextBox implements Cloneable, Serializable
 			boxH -= bi.top + bi.bottom;
 		}
 
-		int extraLineHeight = 0;
+		int borderHeight = 0;
 		if (mTextBorder != null)
 		{
 			Insets bi = mTextBorder.getBorderInsets(null);
@@ -761,7 +761,7 @@ public class TextBox implements Cloneable, Serializable
 			boxY += bi.top;
 			boxW -= bi.left + bi.right;
 			boxH -= bi.top + bi.bottom;
-			extraLineHeight = bi.top + bi.bottom;
+			borderHeight = bi.top + bi.bottom;
 		}
 
 		LineMetrics lm = mFont.getLineMetrics("Adgjy", aFontRenderContext);
@@ -772,11 +772,11 @@ public class TextBox implements Cloneable, Serializable
 			boxH = lineHeight;
 		}
 
-		int lineHeightExtra = lineHeight + mLineSpacing + extraLineHeight;
-		int boxHeightExtra = boxH + mLineSpacing + extraLineHeight;
+		int lineHeightExtra = lineHeight + mLineSpacing + borderHeight;
+		int boxHeightExtra = boxH + mLineSpacing + borderHeight;
 
 		int lineY = boxY;
-		int lineCount = Math.min(Math.min(mTextLines.size(), mMaxLineCount > 0 ? mMaxLineCount : Integer.MAX_VALUE), boxHeightExtra / lineHeightExtra);
+		int lineCount = lineHeightExtra == 0 ? 1 : Math.min(Math.min(mTextLines.size(), mMaxLineCount > 0 ? mMaxLineCount : Integer.MAX_VALUE), boxHeightExtra / lineHeightExtra);
 
 		switch (mAnchor)
 		{
