@@ -8,7 +8,9 @@ import javax.swing.JLabel;
 
 public class TitleLabel extends JLabel
 {
-	private Color mLineColor;
+	private final static long serialVersionUID = 1L;
+
+	protected Color mLineColor;
 
 
 	public TitleLabel(String aText, Color aLineColor)
@@ -22,32 +24,41 @@ public class TitleLabel extends JLabel
 	@Override
 	protected void paintComponent(Graphics aGraphics)
 	{
-		TextBox textBox = new TextBox(getText()).setBounds(0, 0, getWidth(), getHeight()).setAnchor(Anchor.WEST).setForeground(getForeground()).setBackground(getBackground());
+		int w = getWidth();
+		int h = getHeight();
 
-		if (getHorizontalAlignment() == CENTER)
+		TextBox textBox = new TextBox(getText()).setBounds(0, 0, w, h).setAnchor(Anchor.WEST).setForeground(getForeground()).setBackground(getBackground());
+
+		switch (getHorizontalAlignment())
 		{
-			textBox.setAnchor(Anchor.CENTER);
-		}
-		else if (getHorizontalAlignment() == RIGHT)
-		{
-			textBox.setAnchor(Anchor.EAST);
+			case CENTER:
+				textBox.setAnchor(Anchor.CENTER);
+				break;
+			case RIGHT:
+				textBox.setAnchor(Anchor.EAST);
+				break;
+			default:
+				textBox.setAnchor(Anchor.WEST);
+				break;
 		}
 
 		Rectangle rect = textBox.render(aGraphics, true).measure();
 
-		aGraphics.setColor(mLineColor);
-		if (getHorizontalAlignment() == CENTER)
+		switch (getHorizontalAlignment())
 		{
-			aGraphics.drawLine(0, rect.height / 2, rect.x - 5, rect.height / 2);
-			aGraphics.drawLine(rect.x + rect.width + 5, rect.height / 2, getWidth(), rect.height / 2);
-		}
-		else if (getHorizontalAlignment() == RIGHT)
-		{
-			aGraphics.drawLine(0, rect.height / 2, rect.x - 5, rect.height / 2);
-		}
-		else
-		{
-			aGraphics.drawLine(rect.x + rect.width + 5, rect.height / 2, getWidth(), rect.height / 2);
+			case CENTER:
+				aGraphics.setColor(mLineColor);
+				aGraphics.drawLine(0, rect.height / 2, rect.x - 5, rect.height / 2);
+				aGraphics.drawLine(rect.x + rect.width + 5, rect.height / 2, w, rect.height / 2);
+				break;
+			case RIGHT:
+				aGraphics.setColor(mLineColor);
+				aGraphics.drawLine(0, rect.height / 2, rect.x - 5, rect.height / 2);
+				break;
+			default:
+				aGraphics.setColor(mLineColor);
+				aGraphics.drawLine(rect.x + rect.width + 5, rect.height / 2, w, rect.height / 2);
+				break;
 		}
 	}
 }
