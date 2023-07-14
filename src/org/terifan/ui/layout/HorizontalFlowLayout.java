@@ -15,7 +15,7 @@ import static org.terifan.ui.Anchor.WEST;
 import org.terifan.ui.Fill;
 
 
-public class VerticalFlowLayout implements LayoutManager
+public class HorizontalFlowLayout implements LayoutManager
 {
 	private int mGap;
 	private Anchor mAnchor;
@@ -23,31 +23,31 @@ public class VerticalFlowLayout implements LayoutManager
 	private Insets mInsets;
 
 
-	public VerticalFlowLayout()
+	public HorizontalFlowLayout()
 	{
-		this(0, Anchor.NORTH_WEST, Fill.NONE);
+		this(0, Anchor.WEST, Fill.NONE);
 	}
 
 
-	public VerticalFlowLayout(int aGap)
+	public HorizontalFlowLayout(int aGap)
 	{
-		this(aGap, Anchor.NORTH_WEST, Fill.NONE);
+		this(aGap, Anchor.WEST, Fill.NONE);
 	}
 
 
-	public VerticalFlowLayout(int aGap, Anchor aAnchor)
+	public HorizontalFlowLayout(int aGap, Anchor aAnchor)
 	{
 		this(aGap, aAnchor, Fill.NONE);
 	}
 
 
-	public VerticalFlowLayout(int aGap, Fill aFill)
+	public HorizontalFlowLayout(int aGap, Fill aFill)
 	{
-		this(aGap, Anchor.NORTH_WEST, aFill);
+		this(aGap, Anchor.WEST, aFill);
 	}
 
 
-	public VerticalFlowLayout(int aGap, Anchor aAnchor, Fill aFill)
+	public HorizontalFlowLayout(int aGap, Anchor aAnchor, Fill aFill)
 	{
 		mGap = aGap;
 		mAnchor = aAnchor;
@@ -56,21 +56,21 @@ public class VerticalFlowLayout implements LayoutManager
 	}
 
 
-	public VerticalFlowLayout setAnchor(Anchor aAnchor)
+	public HorizontalFlowLayout setAnchor(Anchor aAnchor)
 	{
 		mAnchor = aAnchor;
 		return this;
 	}
 
 
-	public VerticalFlowLayout setFill(Fill aFill)
+	public HorizontalFlowLayout setFill(Fill aFill)
 	{
 		mFill = aFill;
 		return this;
 	}
 
 
-	public VerticalFlowLayout setInsets(Insets aInsets)
+	public HorizontalFlowLayout setInsets(Insets aInsets)
 	{
 		mInsets = aInsets;
 		return this;
@@ -89,11 +89,11 @@ public class VerticalFlowLayout implements LayoutManager
 				if (comp.isVisible())
 				{
 					Dimension compDim = aMinimum ? comp.getMinimumSize() : comp.getPreferredSize();
-					total.width = Math.max(total.width, compDim.width);
-					total.height += compDim.height;
+					total.width += compDim.width;
+					total.height = Math.max(total.height, compDim.height);
 					if (i > 0)
 					{
-						total.height += mGap;
+						total.width += mGap;
 					}
 				}
 			}
@@ -113,36 +113,36 @@ public class VerticalFlowLayout implements LayoutManager
 		{
 			int n = aParent.getComponentCount();
 			Dimension parentDim = aParent.getSize();
+			int x = 0;
 
-			int y = 0;
 			for (int i = 0; i < n; i++)
 			{
 				Component c = aParent.getComponent(i);
 				Dimension cd = c.getPreferredSize();
-				y += cd.height + mGap;
+				x += cd.width + mGap;
 			}
-			y -= mGap;
+			x -= mGap;
 
-			if (mFill == Fill.BOTH || mFill == Fill.VERTICAL)
+			if (mFill == Fill.BOTH || mFill == Fill.HORIZONTAL)
 			{
-				y = insets.top + mInsets.top;
+				x = insets.left + mInsets.left;
 			}
 			else
 			{
 				switch (mAnchor)
 				{
 					case NORTH_WEST:
-					case NORTH:
-					case NORTH_EAST:
-						y = insets.top + mInsets.top;
+					case WEST:
+					case SOUTH_WEST:
+						x = insets.left + mInsets.left;
 						break;
 					case CENTER:
-					case WEST:
-					case EAST:
-						y = (parentDim.height - y) / 2;
+					case NORTH:
+					case SOUTH:
+						x = (parentDim.width - x) / 2;
 						break;
 					default:
-						y = parentDim.height - insets.bottom - mInsets.bottom - y;
+						x = parentDim.width - insets.right - mInsets.right - x;
 						break;
 				}
 			}
@@ -153,33 +153,33 @@ public class VerticalFlowLayout implements LayoutManager
 				Dimension compDimp = comp.getPreferredSize();
 				int compWidth = compDimp.width;
 				int compHeight = compDimp.height;
-				int x;
-				if (mFill == Fill.BOTH || mFill == Fill.HORIZONTAL)
+				int y;
+				if (mFill == Fill.BOTH || mFill == Fill.VERTICAL)
 				{
-					x = insets.left + mInsets.left;
-					compWidth = parentDim.width - mInsets.left - mInsets.right;
+					y = insets.top + mInsets.top;
+					compHeight = parentDim.height - mInsets.top - mInsets.bottom;
 				}
 				else
 				{
 					switch (mAnchor)
 					{
 						case NORTH_WEST:
-						case WEST:
-						case SOUTH_WEST:
-							x = insets.left + mInsets.left;
+						case NORTH:
+						case NORTH_EAST:
+							y = insets.top + mInsets.top;
 							break;
 						case CENTER:
-						case NORTH:
-						case SOUTH:
-							x = (parentDim.width - mInsets.left - mInsets.right - compWidth) / 2 + mInsets.left + insets.left;
+						case WEST:
+						case EAST:
+							y = (parentDim.height - mInsets.top - mInsets.bottom - compHeight) / 2 + mInsets.top + insets.top;
 							break;
 						default:
-							x = parentDim.width - mInsets.left - mInsets.right - compWidth - insets.right - mInsets.right;
+							y = parentDim.height - mInsets.top - mInsets.bottom - compHeight - insets.bottom - mInsets.bottom;
 							break;
 					}
 				}
 				comp.setBounds(x, y, compWidth, compHeight);
-				y += compHeight + mGap;
+				x += compWidth + mGap;
 			}
 		}
 	}
