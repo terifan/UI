@@ -31,7 +31,6 @@ import javax.swing.AbstractAction;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
-import org.terifan.util.log.Log;
 
 
 public class ImagePane extends JPanel
@@ -119,7 +118,7 @@ public class ImagePane extends JPanel
 				}
 				catch (IOException e)
 				{
-					e.printStackTrace(Log.out);
+					e.printStackTrace(System.out);
 				}
 			}
 		}
