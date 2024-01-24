@@ -2,6 +2,7 @@ package org.terifan.ui;
 
 import java.awt.Rectangle;
 
+
 public enum Anchor
 {
 	NORTH_WEST,
@@ -13,6 +14,7 @@ public enum Anchor
 	SOUTH_EAST,
 	WEST,
 	EAST;
+
 
 	public void translate(Rectangle oBounds, Rectangle aOuter)
 	{

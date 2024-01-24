@@ -21,6 +21,7 @@ public class VerticalFlowLayout implements LayoutManager
 	private Anchor mAnchor;
 	private Fill mFill;
 	private Insets mInsets;
+	private boolean mFillLast;
 
 
 	public VerticalFlowLayout()
@@ -157,7 +158,7 @@ public class VerticalFlowLayout implements LayoutManager
 				if (mFill == Fill.BOTH || mFill == Fill.HORIZONTAL)
 				{
 					x = insets.left + mInsets.left;
-					compWidth = parentDim.width - mInsets.left - mInsets.right;
+					compWidth = parentDim.width - mInsets.left - mInsets.right - insets.left - insets.right;
 				}
 				else
 				{
@@ -178,6 +179,12 @@ public class VerticalFlowLayout implements LayoutManager
 							break;
 					}
 				}
+
+				if (mFillLast && i == n - 1)
+				{
+					compHeight = Math.max(compHeight, parentDim.height - insets.bottom - mInsets.bottom - y);
+				}
+
 				comp.setBounds(x, y, compWidth, compHeight);
 				y += compHeight + mGap;
 			}
@@ -215,5 +222,12 @@ public class VerticalFlowLayout implements LayoutManager
 	public String toString()
 	{
 		return getClass().getName() + "[gap=" + mGap + ", anchor=" + mAnchor + "]";
+	}
+
+
+	public VerticalFlowLayout setFillLast(boolean aState)
+	{
+		mFillLast = aState;
+		return this;
 	}
 }

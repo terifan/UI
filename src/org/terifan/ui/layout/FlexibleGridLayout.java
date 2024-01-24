@@ -302,8 +302,8 @@ public class FlexibleGridLayout implements LayoutManager
 		{
 			FlexibleGridLayout layout = new FlexibleGridLayout(3, 0, 0);
 			layout.setColumnResizeWeight(0, 1);
-			layout.setColumnResizeWeight(0, 5);
-			layout.setColumnResizeWeight(0, 2);
+			layout.setColumnResizeWeight(1, 5);
+			layout.setColumnResizeWeight(2, 2);
 			layout.setColumnMinimumSize(0, new Dimension(100, 0));
 			layout.setFillVertical(true);
 
