@@ -516,10 +516,10 @@ public class TextBox implements Cloneable, Serializable
 		{
 			return measure();
 		}
-//		if (mBounds.isEmpty())
-//		{
-//			mBounds.setSize(Short.MAX_VALUE, Short.MAX_VALUE);
-//		}
+		if (mBounds.isEmpty())
+		{
+			mBounds.setSize(Short.MAX_VALUE, Short.MAX_VALUE);
+		}
 		if (mMaxWidth > 0)
 		{
 			mBounds.width = Math.min(mBounds.width, mMaxWidth);
