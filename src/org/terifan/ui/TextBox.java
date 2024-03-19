@@ -516,10 +516,10 @@ public class TextBox implements Cloneable, Serializable
 		{
 			return measure();
 		}
-//		if (mBounds.isEmpty())
-//		{
-//			mBounds.setSize(Short.MAX_VALUE, Short.MAX_VALUE);
-//		}
+		if (mBounds.isEmpty())
+		{
+			mBounds.setSize(Short.MAX_VALUE, Short.MAX_VALUE);
+		}
 		if (mMaxWidth > 0)
 		{
 			mBounds.width = Math.min(mBounds.width, mMaxWidth);
@@ -1159,6 +1159,6 @@ public class TextBox implements Cloneable, Serializable
 	public static void enableAntialiasing(Graphics aGraphics)
 	{
 		Graphics2D g = (Graphics2D)aGraphics;
-		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
 	}
 }
