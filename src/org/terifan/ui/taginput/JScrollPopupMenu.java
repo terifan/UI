@@ -6,18 +6,15 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.LayoutManager;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
 import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollBar;
 
 
-public class JScrollPopupMenu extends JPopupMenu
+class JScrollPopupMenu extends JPopupMenu
 {
-	protected int maximumVisibleRows = 10;
-	private JScrollBar popupScrollBar;
+	private int mMaximumVisibleRows = 10;
+	private JScrollBar mPopupScrollBar;
 
 
 	public JScrollPopupMenu()
@@ -43,31 +40,31 @@ public class JScrollPopupMenu extends JPopupMenu
 
 	protected JScrollBar getScrollBar()
 	{
-		if (popupScrollBar == null)
+		if (mPopupScrollBar == null)
 		{
-			popupScrollBar = new JScrollBar(JScrollBar.VERTICAL);
-			popupScrollBar.addAdjustmentListener(e ->
+			mPopupScrollBar = new JScrollBar(JScrollBar.VERTICAL);
+			mPopupScrollBar.addAdjustmentListener(e ->
 			{
 				doLayout();
 				repaint();
 			});
 
-			popupScrollBar.setVisible(false);
+			mPopupScrollBar.setVisible(false);
 		}
 
-		return popupScrollBar;
+		return mPopupScrollBar;
 	}
 
 
 	public int getMaximumVisibleRows()
 	{
-		return maximumVisibleRows;
+		return mMaximumVisibleRows;
 	}
 
 
 	public void setMaximumVisibleRows(int maximumVisibleRows)
 	{
-		this.maximumVisibleRows = maximumVisibleRows;
+		this.mMaximumVisibleRows = maximumVisibleRows;
 	}
 
 
@@ -85,7 +82,7 @@ public class JScrollPopupMenu extends JPopupMenu
 	{
 		super.addImpl(comp, constraints, index);
 
-		if (maximumVisibleRows < getComponentCount() - 1)
+		if (mMaximumVisibleRows < getComponentCount() - 1)
 		{
 			getScrollBar().setVisible(true);
 		}
@@ -100,7 +97,7 @@ public class JScrollPopupMenu extends JPopupMenu
 
 		super.remove(index);
 
-		if (maximumVisibleRows >= getComponentCount() - 1)
+		if (mMaximumVisibleRows >= getComponentCount() - 1)
 		{
 			getScrollBar().setVisible(false);
 		}
@@ -128,7 +125,7 @@ public class JScrollPopupMenu extends JPopupMenu
 					{
 						unit = preferredSize.height;
 					}
-					if (i++ < maximumVisibleRows)
+					if (i++ < mMaximumVisibleRows)
 					{
 						extent += preferredSize.height;
 					}

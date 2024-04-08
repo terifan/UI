@@ -23,15 +23,19 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.WeakHashMap;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
 import javax.swing.Action;
+import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
+import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -782,5 +786,19 @@ public final class Utilities
 	public static float getDPIScale()
 	{
 		return Toolkit.getDefaultToolkit().getScreenSize().width / 1920f;
+	}
+
+
+	public static <T extends AbstractButton> T getSelection(ButtonGroup aButtonGroup)
+	{
+		for (Enumeration en = aButtonGroup.getElements(); en.hasMoreElements();)
+		{
+			JToggleButton button = (JToggleButton)en.nextElement();
+			if (button.isSelected())
+			{
+				return (T)button;
+			}
+		}
+		return null;
 	}
 }
