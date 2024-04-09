@@ -4,7 +4,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 
-class ImagePaneResampler extends Thread
+class ImagePaneResampler implements Runnable
 {
 	private BufferedImage mInput;
 	private ResampledImageCallback mCallback;
@@ -42,8 +42,8 @@ class ImagePaneResampler extends Thread
 
 		mCallback.update(output);
 	}
-	
-	
+
+
 	public interface ResampledImageCallback
 	{
 		public void update(BufferedImage aOutput);

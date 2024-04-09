@@ -411,7 +411,7 @@ public class ImagePane extends JPanel
 	@Override
 	protected synchronized void paintComponent(Graphics aGraphics)
 	{
-		paintImage((Graphics2D)aGraphics, true, false);
+		paintImage((Graphics2D)aGraphics, mMouseButtonPressed, false);
 	}
 
 
@@ -526,7 +526,7 @@ public class ImagePane extends JPanel
 						mScaledOffsetY = oy;
 						repaint();
 					});
-					mImageFilter.start();
+					new Thread(mImageFilter).start();
 				}
 				else
 				{
