@@ -1,14 +1,11 @@
 package org.terifan.ui.taginput;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
-import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Collections;
@@ -26,29 +23,22 @@ import javax.swing.event.MenuKeyEvent;
 import javax.swing.event.MenuKeyListener;
 
 
-public class TagInput extends JComponent implements LayoutManager
+public class TagInput extends JComponent
 {
-	private final static int LABEL_INPUT_SPACING = 1;
-
 	protected JPanel mLabelsPanel;
 	protected JTextField mTextInput;
 	protected JPopupMenu mPopupMenu;
-	protected int mComputedLabelsWidth;
-	protected int mTextInputWidth;
 	protected String mLastFilter;
+	protected Label mEditingLabel;
 	protected List<String> mOptions;
 	protected SelectionListener mSelectionListener;
-	private String mEditTag;
 
 
 	public TagInput(List<String> aOptions, List<String> aSelections)
 	{
-		mTextInputWidth = 100;
-
 		mOptions = aOptions;
 
-		mTextInput = new JTextField();
-//		mTextInput.setBorder(BorderFactory.createEmptyBorder());
+		mTextInput = new JTextField(10);
 		mTextInput.addKeyListener(new KeyAdapter()
 		{
 			@Override
@@ -57,6 +47,10 @@ public class TagInput extends JComponent implements LayoutManager
 				if (aEvent.getKeyCode() == KeyEvent.VK_ENTER)
 				{
 					createTag();
+				}
+				else if (aEvent.getKeyCode() == KeyEvent.VK_ESCAPE)
+				{
+					cancelEdit();
 				}
 				else if (aEvent.getKeyCode() == KeyEvent.VK_DOWN && mPopupMenu != null)
 				{
@@ -73,24 +67,25 @@ public class TagInput extends JComponent implements LayoutManager
 				createPopupMenu(false);
 			}
 		});
+		mTextInput.addFocusListener(new FocusAdapter()
+		{
+			@Override
+			public void focusLost(FocusEvent aEvent)
+			{
+				cancelEdit();
+			}
+		});
 
-		mLabelsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+		mLabelsPanel = new JPanel(new SimpleLayoutManager());
 		for (String option : aSelections)
 		{
 			mLabelsPanel.add(new Label(this, option));
 		}
+		mLabelsPanel.add(mTextInput);
 
+		super.setLayout(new FlowLayout(FlowLayout.LEFT));
 		super.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-		super.setLayout(this);
 		super.add(mLabelsPanel);
-		super.add(mTextInput);
-	}
-
-
-	public TagInput setTextInputWidth(int aTextInputWidth)
-	{
-		mTextInputWidth = aTextInputWidth;
-		return this;
 	}
 
 
@@ -108,12 +103,15 @@ public class TagInput extends JComponent implements LayoutManager
 		{
 			return;
 		}
+
 		mLastFilter = filter;
+
 		if (mPopupMenu != null)
 		{
 			mPopupMenu.setVisible(false);
 			mPopupMenu = null;
 		}
+
 		List<String> list = filter.isEmpty() ? Collections.EMPTY_LIST : mOptions.stream().filter(option -> option.startsWith(filter)).toList();
 		if (list.isEmpty())
 		{
@@ -155,7 +153,20 @@ public class TagInput extends JComponent implements LayoutManager
 				{
 				}
 			});
+			mLabelsPanel.validate();
 			mPopupMenu.show(mTextInput, 0, mTextInput.getBounds().height);
+		}
+	}
+
+
+	protected void cancelEdit()
+	{
+		if (mEditingLabel != null)
+		{
+			mEditingLabel.setVisible(true);
+			mEditingLabel = null;
+			mTextInput.setText("");
+			((SimpleLayoutManager)mLabelsPanel.getLayout()).setEditingLabel(null);
 		}
 	}
 
@@ -167,19 +178,26 @@ public class TagInput extends JComponent implements LayoutManager
 			mPopupMenu.setVisible(false);
 			mPopupMenu = null;
 		}
+
 		String text = mTextInput.getText();
-		mLabelsPanel.add(new Label(this, text));
 		mTextInput.setText("");
-		if (mEditTag != null)
+
+		if (mEditingLabel != null)
 		{
-			fireTagChanged(mEditTag, text);
-			mEditTag = null;
+			String old = mEditingLabel.getText();
+			mEditingLabel.setText(text);
+			fireTagChanged(old, text);
+			cancelEdit();
 		}
 		else
 		{
-			fireTagAdded(text);
+			if (!text.isEmpty())
+			{
+				mLabelsPanel.add(new Label(this, text));
+				fireTagAdded(text);
+			}
+			revalidate();
 		}
-		revalidate();
 	}
 
 
@@ -193,30 +211,44 @@ public class TagInput extends JComponent implements LayoutManager
 
 	protected void editTag(Label aLabel)
 	{
-		mEditTag = aLabel.getText();
-		mTextInput.setText(mEditTag);
-		mLabelsPanel.remove(aLabel);
+		if (!mTextInput.getText().isEmpty())
+		{
+			createTag();
+		}
+
+		((SimpleLayoutManager)mLabelsPanel.getLayout()).setEditingLabel(aLabel);
+
+		mEditingLabel = aLabel;
+		mTextInput.setText(mEditingLabel.getText());
 		revalidate();
 		mTextInput.requestFocus();
-		mTextInput.selectAll();
 	}
 
 
 	protected void fireTagAdded(String aText)
 	{
-		mSelectionListener.tagAdded(aText);
+		if (mSelectionListener != null)
+		{
+			mSelectionListener.tagAdded(aText);
+		}
 	}
 
 
 	protected void fireTagChanged(String aFromText, String aToText)
 	{
-		mSelectionListener.tagChanged(aFromText, aToText);
+		if (mSelectionListener != null)
+		{
+			mSelectionListener.tagChanged(aFromText, aToText);
+		}
 	}
 
 
 	protected void fireTagRemoved(String aText)
 	{
-		mSelectionListener.tagRemoved(aText);
+		if (mSelectionListener != null)
+		{
+			mSelectionListener.tagRemoved(aText);
+		}
 	}
 
 
@@ -237,67 +269,4 @@ public class TagInput extends JComponent implements LayoutManager
 			createTag();
 		}
 	};
-
-
-	@Override
-	protected void paintComponent(Graphics aGraphics)
-	{
-//		aGraphics.setColor(Color.YELLOW);
-//		aGraphics.fillRect(0, 0, getWidth(), getHeight());
-
-		super.paintComponent(aGraphics);
-	}
-
-
-	@Override
-	public void addLayoutComponent(String aName, Component aComp)
-	{
-	}
-
-
-	@Override
-	public void removeLayoutComponent(Component aComp)
-	{
-	}
-
-
-	@Override
-	public Dimension preferredLayoutSize(Container aParent)
-	{
-		Insets bi = getBorder().getBorderInsets(this);
-
-		Dimension dd = mLabelsPanel.getPreferredSize();
-		dd.height = Math.max(dd.height, 20);
-
-		if (mLabelsPanel.getComponentCount() == 0)
-		{
-			dd.width = 0;
-		}
-
-		Dimension d = new Dimension(0, 0);
-		mComputedLabelsWidth = dd.width;
-		d.width += mComputedLabelsWidth;
-		d.width += LABEL_INPUT_SPACING;
-		d.width += mTextInputWidth;
-		d.height = dd.height + bi.bottom + bi.top;
-
-		return d;
-	}
-
-
-	@Override
-	public Dimension minimumLayoutSize(Container aParent)
-	{
-		return preferredLayoutSize(aParent);
-	}
-
-
-	@Override
-	public void layoutContainer(Container aParent)
-	{
-		Dimension d = preferredLayoutSize(aParent);
-		mLabelsPanel.setBounds(1, 1, mComputedLabelsWidth, d.height - 2);
-		int lw = Math.max(mComputedLabelsWidth, 1);
-		mTextInput.setBounds(lw + LABEL_INPUT_SPACING, 1, d.width - lw - LABEL_INPUT_SPACING - 1, d.height - 2);
-	}
 }
