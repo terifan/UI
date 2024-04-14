@@ -1,8 +1,6 @@
 package org.terifan.ui.taginput;
 
 import java.awt.FlowLayout;
-import java.awt.Graphics;
-import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -13,8 +11,8 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.event.CaretEvent;
@@ -25,16 +23,17 @@ import javax.swing.event.MenuKeyListener;
 
 public class TagInput extends JComponent
 {
-	protected JPanel mLabelsPanel;
 	protected JTextField mTextInput;
 	protected JPopupMenu mPopupMenu;
 	protected String mLastFilter;
-	protected Label mEditingLabel;
+	protected Tag mEditingTag;
 	protected List<String> mOptions;
 	protected SelectionListener mSelectionListener;
+	protected JLabel mTitle;
+	protected TagInputLayoutManager mLayout;
 
 
-	public TagInput(List<String> aOptions, List<String> aSelections)
+	public TagInput(String aTitle, List<String> aOptions, List<String> aSelections)
 	{
 		mOptions = aOptions;
 
@@ -76,16 +75,18 @@ public class TagInput extends JComponent
 			}
 		});
 
-		mLabelsPanel = new JPanel(new SimpleLayoutManager());
+		mTitle = new JLabel(aTitle);
+		mLayout = new TagInputLayoutManager(mTitle, mTextInput);
+
+		super.add(mTitle);
+		super.setLayout(mLayout);
 		for (String option : aSelections)
 		{
-			mLabelsPanel.add(new Label(this, option));
+			super.add(new Tag(this, option));
 		}
-		mLabelsPanel.add(mTextInput);
+		super.add(mTextInput);
 
-		super.setLayout(new FlowLayout(FlowLayout.LEFT));
 		super.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-		super.add(mLabelsPanel);
 	}
 
 
@@ -153,7 +154,7 @@ public class TagInput extends JComponent
 				{
 				}
 			});
-			mLabelsPanel.validate();
+			validate();
 			mPopupMenu.show(mTextInput, 0, mTextInput.getBounds().height);
 		}
 	}
@@ -161,12 +162,12 @@ public class TagInput extends JComponent
 
 	protected void cancelEdit()
 	{
-		if (mEditingLabel != null)
+		if (mEditingTag != null)
 		{
-			mEditingLabel.setVisible(true);
-			mEditingLabel = null;
+			mEditingTag.setVisible(true);
+			mEditingTag = null;
 			mTextInput.setText("");
-			((SimpleLayoutManager)mLabelsPanel.getLayout()).setEditingLabel(null);
+			mLayout.setEditingLabel(null);
 		}
 	}
 
@@ -182,10 +183,10 @@ public class TagInput extends JComponent
 		String text = mTextInput.getText();
 		mTextInput.setText("");
 
-		if (mEditingLabel != null)
+		if (mEditingTag != null)
 		{
-			String old = mEditingLabel.getText();
-			mEditingLabel.setText(text);
+			String old = mEditingTag.getText();
+			mEditingTag.setText(text);
 			fireTagChanged(old, text);
 			cancelEdit();
 		}
@@ -193,7 +194,7 @@ public class TagInput extends JComponent
 		{
 			if (!text.isEmpty())
 			{
-				mLabelsPanel.add(new Label(this, text));
+				add(new Tag(this, text));
 				fireTagAdded(text);
 			}
 			revalidate();
@@ -201,25 +202,24 @@ public class TagInput extends JComponent
 	}
 
 
-	protected void removeTag(Label aLabel)
+	protected void removeTag(Tag aLabel)
 	{
-		mLabelsPanel.remove(aLabel);
+		remove(aLabel);
 		fireTagRemoved(aLabel.getText());
 		revalidate();
 	}
 
 
-	protected void editTag(Label aLabel)
+	protected void editTag(Tag aTag)
 	{
 		if (!mTextInput.getText().isEmpty())
 		{
 			createTag();
 		}
 
-		((SimpleLayoutManager)mLabelsPanel.getLayout()).setEditingLabel(aLabel);
-
-		mEditingLabel = aLabel;
-		mTextInput.setText(mEditingLabel.getText());
+		mLayout.setEditingLabel(aTag);
+		mEditingTag = aTag;
+		mTextInput.setText(mEditingTag.getText());
 		revalidate();
 		mTextInput.requestFocus();
 	}

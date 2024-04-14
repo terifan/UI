@@ -186,6 +186,7 @@ public class VerticalFlowLayout implements LayoutManager
 				}
 
 				comp.setBounds(x, y, compWidth, compHeight);
+				comp.revalidate();
 				y += compHeight + mGap;
 			}
 		}
