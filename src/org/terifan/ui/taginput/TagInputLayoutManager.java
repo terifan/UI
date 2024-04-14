@@ -16,7 +16,7 @@ class TagInputLayoutManager implements LayoutManager
 	private final static int COL_SPACING = 4;
 	private final static int ROW_SPACING = 2;
 
-	private XTag mEditingTag;
+	private Tag mEditingTag;
 	private JLabel mLabel;
 	private JTextField mTextField;
 	private ArrayList<Rectangle> mLayoutInfo;
@@ -30,7 +30,7 @@ class TagInputLayoutManager implements LayoutManager
 	}
 
 
-	public void setEditingLabel(XTag aEditingLabel)
+	public void setEditingLabel(Tag aEditingLabel)
 	{
 		mEditingTag = aEditingLabel;
 	}
@@ -156,7 +156,7 @@ class TagInputLayoutManager implements LayoutManager
 			{
 				Component comp = aTarget.getComponent(i);
 				d = comp.getPreferredSize();
-				if (comp instanceof XTag)
+				if (comp instanceof Tag)
 				{
 					layout = mLayoutInfo.get(row);
 					if (comp == mEditingTag)

@@ -9,13 +9,13 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
 
-public class XTag extends JLabel
+public class Tag extends JLabel
 {
 	private int BUTTON_WIDTH = 16;
 	private TagInput mTagInput;
 
 
-	XTag(TagInput aTagInput, String aText)
+	Tag(TagInput aTagInput, String aText)
 	{
 		super(aText);
 
@@ -30,11 +30,11 @@ public class XTag extends JLabel
 			{
 				if (aEvent.getX() < getWidth() - BUTTON_WIDTH)
 				{
-					mTagInput.editTag(XTag.this);
+					mTagInput.editTag(Tag.this);
 				}
 				else
 				{
-					mTagInput.removeTag(XTag.this);
+					mTagInput.removeTag(Tag.this);
 				}
 			}
 		});
