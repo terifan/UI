@@ -186,7 +186,8 @@ public class VerticalFlowLayout implements LayoutManager
 				}
 
 				comp.setBounds(x, y, compWidth, compHeight);
-				comp.revalidate();
+				comp.invalidate();
+
 				y += compHeight + mGap;
 			}
 		}
@@ -196,7 +197,7 @@ public class VerticalFlowLayout implements LayoutManager
 	@Override
 	public Dimension minimumLayoutSize(Container parent)
 	{
-		return layoutSize(parent, false);
+		return layoutSize(parent, true);
 	}
 
 

@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 import org.terifan.ui.Utilities;
 import org.terifan.ui.layout.VerticalFlowLayout;
 
@@ -42,8 +43,13 @@ public class TestTagInput
 			tagInput3.setBorder(BorderFactory.createLineBorder(Color.RED, 3));
 			vert.add(tagInput3);
 
+			JPanel p = new JPanel(new BorderLayout());
+			p.add(vert, BorderLayout.CENTER);
+
+			JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, p, new JScrollPane(new JTextArea(4, 80)));
+
 			JPanel other = new JPanel(new BorderLayout());
-			other.add(new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, vert, new JScrollPane(new JTextArea(4, 80))), BorderLayout.CENTER);
+			other.add(splitPane, BorderLayout.CENTER);
 
 			JFrame frame = new JFrame();
 			frame.add(other);
