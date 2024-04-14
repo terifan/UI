@@ -9,20 +9,20 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
 
-public class Label extends JLabel
+public class XTag extends JLabel
 {
 	private int BUTTON_WIDTH = 16;
 	private TagInput mTagInput;
 
 
-	Label(TagInput aTagInput, String aText)
+	XTag(TagInput aTagInput, String aText)
 	{
 		super(aText);
 
 		mTagInput = aTagInput;
 
 		super.setOpaque(true);
-		super.setBorder(BorderFactory.createLineBorder(new Color(64, 64, 64)));
+		super.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(64, 64, 64)), BorderFactory.createEmptyBorder(0, 2, 0, 2)));
 		super.addMouseListener(new MouseAdapter()
 		{
 			@Override
@@ -30,11 +30,11 @@ public class Label extends JLabel
 			{
 				if (aEvent.getX() < getWidth() - BUTTON_WIDTH)
 				{
-					mTagInput.editTag(Label.this);
+					mTagInput.editTag(XTag.this);
 				}
 				else
 				{
-					mTagInput.removeTag(Label.this);
+					mTagInput.removeTag(XTag.this);
 				}
 			}
 		});

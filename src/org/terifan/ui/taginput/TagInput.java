@@ -26,7 +26,7 @@ public class TagInput extends JComponent
 	protected JTextField mTextInput;
 	protected JPopupMenu mPopupMenu;
 	protected String mLastFilter;
-	protected Tag mEditingTag;
+	protected XTag mEditingTag;
 	protected List<String> mOptions;
 	protected SelectionListener mSelectionListener;
 	protected JLabel mTitle;
@@ -82,7 +82,7 @@ public class TagInput extends JComponent
 		super.setLayout(mLayout);
 		for (String option : aSelections)
 		{
-			super.add(new Tag(this, option));
+			super.add(new XTag(this, option));
 		}
 		super.add(mTextInput);
 
@@ -194,7 +194,7 @@ public class TagInput extends JComponent
 		{
 			if (!text.isEmpty())
 			{
-				add(new Tag(this, text));
+				add(new XTag(this, text));
 				fireTagAdded(text);
 			}
 			revalidate();
@@ -202,7 +202,7 @@ public class TagInput extends JComponent
 	}
 
 
-	protected void removeTag(Tag aLabel)
+	protected void removeTag(XTag aLabel)
 	{
 		remove(aLabel);
 		fireTagRemoved(aLabel.getText());
@@ -210,7 +210,7 @@ public class TagInput extends JComponent
 	}
 
 
-	protected void editTag(Tag aTag)
+	protected void editTag(XTag aTag)
 	{
 		if (!mTextInput.getText().isEmpty())
 		{
