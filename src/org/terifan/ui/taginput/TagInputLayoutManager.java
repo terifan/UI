@@ -13,7 +13,7 @@ import javax.swing.JTextField;
 
 class TagInputLayoutManager implements LayoutManager
 {
-	private final static int SPACING = 4;
+	private final static int COL_SPACING = 4;
 	private final static int ROW_SPACING = 2;
 
 	private Tag mEditingTag;
@@ -51,7 +51,7 @@ class TagInputLayoutManager implements LayoutManager
 	@Override
 	public Dimension minimumLayoutSize(Container aTarget)
 	{
-		return preferredLayoutSize(aTarget);
+		return new Dimension(8, 8);
 	}
 
 
@@ -99,7 +99,7 @@ class TagInputLayoutManager implements LayoutManager
 					rowWidth = 0;
 					rowCount = 0;
 				}
-				rowWidth += (rowCount > 0 ? SPACING : 0) + d.width;
+				rowWidth += (rowCount > 0 ? COL_SPACING : 0) + d.width;
 				rowCount++;
 			}
 		}
@@ -115,7 +115,7 @@ class TagInputLayoutManager implements LayoutManager
 				rowWidth = 0;
 				rowCount = 0;
 			}
-			rowWidth += (rowCount > 0 ? SPACING : 0) + d.width;
+			rowWidth += (rowCount > 0 ? COL_SPACING : 0) + d.width;
 			rowCount++;
 		}
 
@@ -150,7 +150,7 @@ class TagInputLayoutManager implements LayoutManager
 
 			Dimension d = mLabel.getPreferredSize();
 			mLabel.setBounds(x, y, d.width, layout.height);
-			x += d.width + SPACING;
+			x += d.width + COL_SPACING;
 
 			for (int i = 0, col = 1, row = 0; i < n; i++)
 			{
@@ -167,7 +167,7 @@ class TagInputLayoutManager implements LayoutManager
 					comp.setVisible(true);
 					comp.setBounds(x, y, d.width, layout.height);
 
-					x += d.width + SPACING;
+					x += d.width + COL_SPACING;
 					col++;
 				}
 

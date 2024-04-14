@@ -9,6 +9,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import org.terifan.ui.Utilities;
 import org.terifan.ui.layout.VerticalFlowLayout;
@@ -33,21 +34,20 @@ public class TestTagInput
 			tagInput1.setBorder(BorderFactory.createLineBorder(Color.RED, 3));
 			vert.add(tagInput1);
 
-			TagInput tagInput2 = new TagInput("tags tags tags tags", list4346, Arrays.asList("academic", "foster", "hungry", "inflation", "necessarily", "tree", "written"));
+			TagInput tagInput2 = new TagInput("tags tags tags tags tags tags tags", list4346, Arrays.asList("academic", "foster", "hungry", "inflation", "necessarily", "tree", "written"));
 			tagInput2.setBorder(BorderFactory.createLineBorder(Color.RED, 3));
 			vert.add(tagInput2);
 
-			TagInput tagInput3 = new TagInput("tags tags", list4346, Arrays.asList("academic", "foster", "hungry", "inflation", "necessarily", "tree", "written"));
+			TagInput tagInput3 = new TagInput("tags tags tags tags", list4346, Arrays.asList("academic", "foster", "hungry", "inflation", "necessarily", "tree", "written"));
 			tagInput3.setBorder(BorderFactory.createLineBorder(Color.RED, 3));
 			vert.add(tagInput3);
 
 			JPanel other = new JPanel(new BorderLayout());
-			other.add(new JScrollPane(new JTextArea(4,80)), BorderLayout.NORTH);
-			other.add(vert, BorderLayout.CENTER);
+			other.add(new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, vert, new JScrollPane(new JTextArea(4, 80))), BorderLayout.CENTER);
 
 			JFrame frame = new JFrame();
 			frame.add(other);
-			frame.setSize(400, 768);
+			frame.setSize(1024, 768);
 			frame.setLocationRelativeTo(null);
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			frame.setVisible(true);
