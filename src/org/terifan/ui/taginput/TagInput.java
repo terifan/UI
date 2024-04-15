@@ -1,6 +1,6 @@
 package org.terifan.ui.taginput;
 
-import java.awt.FlowLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -194,7 +194,7 @@ public class TagInput extends JComponent
 		{
 			if (!text.isEmpty())
 			{
-				add(new Tag(this, text));
+				addTag(text);
 				fireTagAdded(text);
 			}
 			revalidate();
@@ -202,10 +202,43 @@ public class TagInput extends JComponent
 	}
 
 
-	protected void removeTag(Tag aLabel)
+	public void addTag(String aTag)
 	{
-		remove(aLabel);
-		fireTagRemoved(aLabel.getText());
+		if (findTag(aTag) == null)
+		{
+			add(new Tag(this, aTag));
+		}
+	}
+
+
+	public void removeTag(String aTag)
+	{
+		Tag tag = findTag(aTag);
+		if (tag != null)
+		{
+			removeTag(tag);
+		}
+	}
+
+
+	private Tag findTag(String aTag)
+	{
+		for (int i = 0; i < getComponentCount(); i++)
+		{
+			Component tag = getComponent(i);
+			if (tag instanceof Tag v && v.getText().equals(aTag))
+			{
+				return v;
+			}
+		}
+		return null;
+	}
+
+
+	protected void removeTag(Tag aTag)
+	{
+		remove(aTag);
+		fireTagRemoved(aTag.getText());
 		revalidate();
 	}
 

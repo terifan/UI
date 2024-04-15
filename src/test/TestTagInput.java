@@ -2,16 +2,18 @@ package test;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.event.ActionEvent;
 import org.terifan.ui.taginput.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
-import javax.swing.ScrollPaneConstants;
 import org.terifan.ui.Utilities;
 import org.terifan.ui.layout.VerticalFlowLayout;
 
@@ -42,6 +44,27 @@ public class TestTagInput
 			TagInput tagInput3 = new TagInput("tags tags tags tags", list4346, Arrays.asList("academic", "foster", "hungry", "inflation", "necessarily", "tree", "written"));
 			tagInput3.setBorder(BorderFactory.createLineBorder(Color.RED, 3));
 			vert.add(tagInput3);
+
+			vert.add(new JButton(new AbstractAction("add")
+			{
+				@Override
+				public void actionPerformed(ActionEvent aEvent)
+				{
+					tagInput1.addTag("test");
+					vert.invalidate();
+					vert.validate();
+				}
+			}));
+			vert.add(new JButton(new AbstractAction("remove")
+			{
+				@Override
+				public void actionPerformed(ActionEvent aEvent)
+				{
+					tagInput1.removeTag("test");
+					vert.invalidate();
+					vert.validate();
+				}
+			}));
 
 			JPanel p = new JPanel(new BorderLayout());
 			p.add(vert, BorderLayout.CENTER);

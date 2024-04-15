@@ -11,12 +11,70 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 import org.terifan.ui.layout.TableLayout;
+import org.terifan.ui.layout.VerticalFlowLayout;
 
 
 public class TestTableLayout
 {
-	public static void main(String... args)
+	public static void main(String ... args)
+	{
+		try
+		{
+			TableLayout layout = new TableLayout();
+			JPanel panel = new JPanel(layout);
+			panel.add(new JLabel("Aaaaaaaa1"));
+			panel.add(new JLabel("Bbbbbbbb1"));
+			layout.advanceRow();
+			panel.add(new JLabel("Aaaaaaaa2"));
+			panel.add(new JLabel("Bbbbbbbb2"));
+			layout.advanceRow();
+			panel.add(new JLabel("Aaaaaaaa3"));
+			panel.add(new JLabel("Bbbbbbbb3"));
+			layout.advanceRow();
+			panel.add(new JLabel("Aaaaaaaa4"));
+			panel.add(new JLabel("Bbbbbbbb4"));
+			layout.advanceRow();
+			panel.add(new JLabel("Aaaaaaaa5"));
+			panel.add(new JLabel("Bbbbbbbb5"));
+			layout.advanceRow();
+			panel.add(new JLabel("Aaaaaaaa6"));
+			panel.add(new JLabel("Bbbbbbbb6"));
+			layout.advanceRow();
+			panel.add(new JLabel("Aaaaaaaa7"));
+			panel.add(new JLabel("Bbbbbbbb7"));
+			layout.advanceRow();
+			panel.add(new JLabel("Aaaaaaaa8"));
+			panel.add(new JLabel("Bbbbbbbb8"));
+			layout.advanceRow();
+			panel.add(new JLabel("Aaaaaaaa9"));
+			panel.add(new JLabel("Bbbbbbbb9"));
+			layout.advanceRow();
+
+			JTabbedPane tabbedPane = new JTabbedPane();
+			tabbedPane.addTab("title", new JScrollPane(panel));
+
+			JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, new JTextArea(), tabbedPane);
+
+			JFrame frame = new JFrame();
+			frame.add(splitPane);
+			frame.setSize(1024, 768);
+			frame.setLocationRelativeTo(null);
+			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			frame.setVisible(true);
+		}
+		catch (Throwable e)
+		{
+			e.printStackTrace(System.out);
+		}
+	}
+
+
+	public static void xmain(String... args)
 	{
 		try
 		{

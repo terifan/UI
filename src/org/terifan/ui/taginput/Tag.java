@@ -7,6 +7,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 
 
 public class Tag extends JLabel
@@ -28,17 +29,19 @@ public class Tag extends JLabel
 			@Override
 			public void mousePressed(MouseEvent aEvent)
 			{
-				if (aEvent.getX() < getWidth() - BUTTON_WIDTH)
+				if (SwingUtilities.isLeftMouseButton(aEvent))
 				{
-					mTagInput.editTag(Tag.this);
-				}
-				else
-				{
-					mTagInput.removeTag(Tag.this);
+					if (aEvent.getX() < getWidth() - BUTTON_WIDTH)
+					{
+						mTagInput.editTag(Tag.this);
+					}
+					else
+					{
+						mTagInput.removeTag(Tag.this);
+					}
 				}
 			}
 		});
-		this.mTagInput = aTagInput;
 	}
 
 
