@@ -194,29 +194,36 @@ public class TagInput extends JComponent
 		{
 			if (!text.isEmpty())
 			{
-				addTag(text);
-				fireTagAdded(text);
+				addTag(text, true);
 			}
 			revalidate();
 		}
 	}
 
 
-	public void addTag(String aTag)
+	public void addTag(String aTag, boolean aFireListener)
 	{
 		if (findTag(aTag) == null)
 		{
 			add(new Tag(this, aTag));
+			if (aFireListener)
+			{
+				fireTagAdded(aTag);
+			}
 		}
 	}
 
 
-	public void removeTag(String aTag)
+	public void removeTag(String aTag, boolean aFireListener)
 	{
 		Tag tag = findTag(aTag);
 		if (tag != null)
 		{
-			removeTag(tag);
+			remove(tag);
+			if (aFireListener)
+			{
+				fireTagRemoved(aTag);
+			}
 		}
 	}
 

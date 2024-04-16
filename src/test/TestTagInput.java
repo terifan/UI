@@ -45,22 +45,23 @@ public class TestTagInput
 			tagInput3.setBorder(BorderFactory.createLineBorder(Color.RED, 3));
 			vert.add(tagInput3);
 
-			vert.add(new JButton(new AbstractAction("add")
+			JButton addButton = new JButton(new AbstractAction("add")
 			{
 				@Override
 				public void actionPerformed(ActionEvent aEvent)
 				{
-					tagInput1.addTag("test");
+					tagInput1.addTag("test", true);
 					vert.invalidate();
 					vert.validate();
 				}
-			}));
+			});
+			vert.add(addButton);
 			vert.add(new JButton(new AbstractAction("remove")
 			{
 				@Override
 				public void actionPerformed(ActionEvent aEvent)
 				{
-					tagInput1.removeTag("test");
+					tagInput1.removeTag("test", true);
 					vert.invalidate();
 					vert.validate();
 				}
