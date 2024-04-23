@@ -67,6 +67,7 @@ public class FilterButtonModel
 
 	public State getState(FilterButton aButton)
 	{
+		assertOwner(aButton);
 		return mButtons.get(aButton);
 	}
 
@@ -91,20 +92,37 @@ public class FilterButtonModel
 	}
 
 
+	public ArrayList<FilterButton> list()
+	{
+		return new ArrayList<>(mButtons.keySet());
+	}
+
+
 	public FilterButton getButton(String aButtonTitle)
 	{
-		return mButtons.keySet().stream().filter(e -> e.getTitle().equals(aButtonTitle)).findFirst().get();
+		return mButtons.keySet().stream().filter(e -> e.getTitle().equals(aButtonTitle)).findFirst().orElse(null);
 	}
 
 
 	public void setState(FilterButton aButton, State aState)
 	{
+		assertOwner(aButton);
 		mButtons.put(aButton, aState);
+	}
+
+
+	private void assertOwner(FilterButton aButton) throws IllegalArgumentException
+	{
+		if (!mButtons.containsKey(aButton))
+		{
+			throw new IllegalArgumentException();
+		}
 	}
 
 
 	public boolean replaceState(FilterButton aButton, State aOldState, State aNewState)
 	{
+		assertOwner(aButton);
 		if (mButtons.get(aButton) == aOldState)
 		{
 			mButtons.put(aButton, aNewState);
