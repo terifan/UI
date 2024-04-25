@@ -765,7 +765,7 @@ public class TextBox implements Cloneable, Serializable
 		}
 
 		LineMetrics lm = mFont.getLineMetrics("Adgjy", aFontRenderContext);
-		int lineHeight = (int)lm.getHeight() + mPadding.top + mPadding.bottom;
+		int lineHeight = (int)lm.getHeight() + mPadding.top + mPadding.bottom + (mShadowColor != null ? Math.abs(mShadowOffset.y) : 0);
 
 		if (boxH < lineHeight)
 		{
@@ -797,7 +797,7 @@ public class TextBox implements Cloneable, Serializable
 			TextSegment str = mTextLines.get(i);
 
 			int lineX = boxX;
-			int lineW = getStringLength(aFontRenderContext, str.mText, mFont) + mPadding.left + mPadding.right;
+			int lineW = getStringLength(aFontRenderContext, str.mText, mFont) + mPadding.left + mPadding.right + (mShadowColor != null ? Math.abs(mShadowOffset.x) : 0);
 
 			switch (mAnchor)
 			{
@@ -962,7 +962,7 @@ public class TextBox implements Cloneable, Serializable
 			aGraphics.fillRect(aOffsetX, aOffsetY, aWidth, aHeight);
 			aGraphics.setColor(mForeground);
 		}
-		else if (aShadow)
+		if (aShadow)
 		{
 			aGraphics.setColor(mShadowColor);
 		}
