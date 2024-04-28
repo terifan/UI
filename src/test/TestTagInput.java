@@ -41,7 +41,7 @@ public class TestTagInput
 			tagInput2.setBorder(BorderFactory.createLineBorder(Color.RED, 3));
 			vert.add(tagInput2);
 
-			TagInput tagInput3 = new TagInput("tags tags tags tags", list4346, Arrays.asList("academic", "foster", "hungry", "inflation", "necessarily", "tree", "written"));
+			TagInput tagInput3 = new TagInput("tags tags tags tags tags tags tags tags tags tags tags tags tags tags", list4346, Arrays.asList("academic", "foster", "necessarily", "tree", "written"));
 			tagInput3.setBorder(BorderFactory.createLineBorder(Color.RED, 3));
 			vert.add(tagInput3);
 

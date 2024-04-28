@@ -35,6 +35,7 @@ class JScrollPopupMenu extends JPopupMenu
 			scrollBar.setValue(scrollBar.getValue() + amount);
 			event.consume();
 		});
+		setMaximumVisibleRows(20);
 	}
 
 
@@ -64,7 +65,7 @@ class JScrollPopupMenu extends JPopupMenu
 
 	public void setMaximumVisibleRows(int maximumVisibleRows)
 	{
-		this.mMaximumVisibleRows = maximumVisibleRows;
+		mMaximumVisibleRows = maximumVisibleRows;
 	}
 
 

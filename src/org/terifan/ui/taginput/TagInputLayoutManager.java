@@ -7,6 +7,8 @@ import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.Arrays;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
@@ -18,15 +20,19 @@ class TagInputLayoutManager implements LayoutManager
 
 	private Tag mEditingTag;
 	private JLabel mLabel;
-	private JTextField mTextField;
-	private ArrayList<Rectangle> mLayoutInfo;
+	private JTextField mCreateField;
+	private JTextField mEditorField;
+	private ArrayList<Dimension> mLayoutDims;
+	private ArrayList<ArrayList<Component>> mLayoutCmps;
 
 
-	public TagInputLayoutManager(JLabel aLabel, JTextField aTextField)
+	public TagInputLayoutManager(JLabel aLabel, JTextField aTextField, JTextField aEditorLabel)
 	{
 		mLabel = aLabel;
-		mTextField = aTextField;
-		mLayoutInfo = new ArrayList<>();
+		mCreateField = aTextField;
+		mEditorField = aEditorLabel;
+		mLayoutDims = new ArrayList<>();
+		mLayoutCmps = new ArrayList<>();
 	}
 
 
@@ -67,66 +73,42 @@ class TagInputLayoutManager implements LayoutManager
 
 	private Dimension computeSize(Container aTarget, int aTargetWidth)
 	{
-		int rowWidth = 0;
+		Insets insets = aTarget.getInsets();
+
+		Dimension rowDim;
+		ArrayList<Component> rowCmp;
+
+		mLayoutCmps.clear();
+		mLayoutDims.clear();
+		mLayoutCmps.add(rowCmp = new ArrayList<>());
+		mLayoutDims.add(rowDim = new Dimension());
+
+		for (Component comp : rearrangeComponents(aTarget))
+		{
+			if (comp instanceof Tag || comp == mLabel || comp == mCreateField)
+			{
+				Dimension dim = comp.getPreferredSize();
+				if (rowDim.width + COL_SPACING + dim.width > aTargetWidth)
+				{
+					mLayoutCmps.add(rowCmp = new ArrayList<>());
+					mLayoutDims.add(rowDim = new Dimension());
+				}
+				rowDim.width += dim.width + COL_SPACING;
+				rowDim.height = Math.max(rowDim.height, dim.height);
+				rowCmp.add(comp);
+			}
+		}
+
 		int totalWidth = 0;
 		int totalHeight = 0;
-
-		aTargetWidth -= aTarget.getInsets().left + aTarget.getInsets().right;
-
-		mLayoutInfo.clear();
-
-		int n = aTarget.getComponentCount();
-
-		int rowHeight = 0;
-		for (int i = 0; i < n; i++)
+		for (Dimension dim : mLayoutDims)
 		{
-			Component comp = aTarget.getComponent(i);
-			rowHeight = Math.max(rowHeight, comp.getPreferredSize().height);
+			totalWidth = Math.max(dim.width - COL_SPACING, totalWidth);
+			totalHeight += dim.height + ROW_SPACING;
 		}
 
-		int rowCount = 0;
-		for (int i = 0; i < n; i++)
-		{
-			Component comp = aTarget.getComponent(i);
-			if (comp instanceof JLabel)
-			{
-				Dimension d = comp.getPreferredSize();
-				if (rowWidth + d.width >= aTargetWidth)
-				{
-					totalWidth = Math.max(totalWidth, rowWidth);
-					totalHeight += rowHeight;
-					mLayoutInfo.add(new Rectangle(rowCount, 0, rowWidth, rowHeight));
-					rowWidth = 0;
-					rowCount = 0;
-				}
-				rowWidth += (rowCount > 0 ? COL_SPACING : 0) + d.width;
-				rowCount++;
-			}
-		}
-
-		if (mEditingTag == null)
-		{
-			Dimension d = mTextField.getPreferredSize();
-			if (rowWidth + d.width >= aTargetWidth)
-			{
-				totalWidth = Math.max(totalWidth, rowWidth);
-				totalHeight += rowHeight;
-				mLayoutInfo.add(new Rectangle(rowCount, 0, rowWidth, rowHeight));
-				rowWidth = 0;
-				rowCount = 0;
-			}
-			rowWidth += (rowCount > 0 ? COL_SPACING : 0) + d.width;
-			rowCount++;
-		}
-
-		totalWidth = Math.max(totalWidth, rowWidth);
-		totalHeight += rowHeight + ROW_SPACING * mLayoutInfo.size();
-
-		Insets insets = aTarget.getInsets();
 		totalWidth += insets.left + insets.right;
-		totalHeight += insets.top + insets.bottom;
-
-		mLayoutInfo.add(new Rectangle(rowCount, 0, rowWidth, rowHeight));
+		totalHeight += insets.top + insets.bottom - ROW_SPACING;
 
 		return new Dimension(totalWidth, totalHeight);
 	}
@@ -141,50 +123,41 @@ class TagInputLayoutManager implements LayoutManager
 
 			Insets insets = aTarget.getInsets();
 
-			int n = aTarget.getComponentCount();
-
-			int x = insets.left;
 			int y = insets.top;
 
-			Rectangle layout = mLayoutInfo.getFirst();
-
-			Dimension d = mLabel.getPreferredSize();
-			mLabel.setBounds(x, y, d.width, layout.height);
-			x += d.width + COL_SPACING;
-
-			for (int i = 0, col = 1, row = 0; i < n; i++)
+			for (int row = 0; row < mLayoutDims.size(); row++)
 			{
-				Component comp = aTarget.getComponent(i);
-				d = comp.getPreferredSize();
-				if (comp instanceof Tag)
+				Dimension layout = mLayoutDims.get(row);
+
+				for (int col = 0, x = insets.left; col < mLayoutCmps.get(row).size(); col++)
 				{
-					layout = mLayoutInfo.get(row);
+					Component comp = mLayoutCmps.get(row).get(col);
+					Dimension dim = comp.getPreferredSize();
+
 					if (comp == mEditingTag)
 					{
 						comp.setVisible(false);
-						comp = mTextField;
+						comp = mEditorField;
 					}
 					comp.setVisible(true);
-					comp.setBounds(x, y, d.width, layout.height);
+					comp.setBounds(x, y, dim.width, layout.height);
 
-					x += d.width + COL_SPACING;
-					col++;
+					x += dim.width + COL_SPACING;
 				}
 
-				if (col >= layout.x)
-				{
-					x = insets.left;
-					y += layout.height + ROW_SPACING;
-					row++;
-					col = 0;
-				}
-			}
-
-			if (mEditingTag == null)
-			{
-				d = mTextField.getPreferredSize();
-				mTextField.setBounds(x, y, d.width, d.height);
+				y += layout.height + ROW_SPACING;
 			}
 		}
+	}
+
+
+	private ArrayList<Component> rearrangeComponents(Container aTarget)
+	{
+		ArrayList<Component> components = new ArrayList<>(Arrays.asList(aTarget.getComponents()));
+		components.remove(mLabel);
+		components.remove(mCreateField);
+		components.addFirst(mLabel);
+		components.addLast(mCreateField);
+		return components;
 	}
 }

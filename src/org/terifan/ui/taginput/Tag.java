@@ -2,67 +2,95 @@ package org.terifan.ui.taginput;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.FlowLayout;
+import java.awt.Insets;
 import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
+import javax.swing.JButton;
+import javax.swing.JComponent;
 
 
-public class Tag extends JLabel
+public class Tag extends JComponent
 {
-	private int BUTTON_WIDTH = 16;
+//	private int BUTTON_WIDTH = 16;
 	private TagInput mTagInput;
+	private JButton mLabelButton;
+	private JButton mDeleteButton;
 
 
 	Tag(TagInput aTagInput, String aText)
 	{
-		super(aText);
-
 		mTagInput = aTagInput;
 
-		super.setOpaque(true);
-		super.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(64, 64, 64)), BorderFactory.createEmptyBorder(0, 2, 0, 2)));
-		super.addMouseListener(new MouseAdapter()
+		mDeleteButton = new JButton("x");
+		mDeleteButton.setFocusPainted(false);
+		mDeleteButton.setFocusable(false);
+		mDeleteButton.setIconTextGap(0);
+		mDeleteButton.setIcon(null);
+		mDeleteButton.setRolloverEnabled(false);
+		mDeleteButton.setOpaque(false);
+		mDeleteButton.setForeground(Color.RED);
+//		mDeleteButton.setMargin(new Insets(3,3,3,3));
+//		mDeleteButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(64, 64, 64)), BorderFactory.createEmptyBorder(0, 2, 0, 2)));
+		mDeleteButton.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+		mDeleteButton.setBorderPainted(false);
+		mDeleteButton.addActionListener(aEvent ->
 		{
-			@Override
-			public void mousePressed(MouseEvent aEvent)
-			{
-				if (SwingUtilities.isLeftMouseButton(aEvent))
-				{
-					if (aEvent.getX() < getWidth() - BUTTON_WIDTH)
-					{
-						mTagInput.editTag(Tag.this);
-					}
-					else
-					{
-						mTagInput.removeTag(Tag.this);
-					}
-				}
-			}
+			mTagInput.removeTag(Tag.this);
 		});
+
+		mLabelButton = new JButton(aText);
+		mLabelButton.setFocusPainted(false);
+		mLabelButton.setFocusable(false);
+		mLabelButton.setIconTextGap(0);
+		mLabelButton.setIcon(null);
+		mLabelButton.setRolloverEnabled(false);
+		mLabelButton.setOpaque(true);
+//		mLabelButton.setMargin(new Insets(3,3,3,3));
+//		mLabelButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(64, 64, 64)), BorderFactory.createEmptyBorder(0, 2, 0, 2)));
+		mLabelButton.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+		mLabelButton.addActionListener(aEvent ->
+		{
+			mTagInput.editTag(Tag.this);
+		});
+
+		super.setLayout(new FlowLayout(FlowLayout.LEFT, 0 ,0));
+		super.add(mLabelButton);
+		super.add(mDeleteButton);
 	}
 
 
-	@Override
-	protected void paintComponent(Graphics aGraphics)
+	public String getText()
 	{
-		int bi = getBorder().getBorderInsets(this).right;
-		int x = getWidth() - 7 - 2 - bi;
-		int y = getHeight() / 2 - 2;
-		super.paintComponent(aGraphics);
-		aGraphics.setColor(Color.red);
-		aGraphics.drawLine(x, y, x + 5, y + 5);
-		aGraphics.drawLine(x + 5, y, x, y + 5);
+		return mLabelButton.getText();
 	}
 
 
-	@Override
-	public Dimension getPreferredSize()
+	public void setText(String aText)
 	{
-		Dimension d = super.getPreferredSize();
-		d.width += BUTTON_WIDTH;
-		return d;
+		mLabelButton.setText(aText);
 	}
+
+
+//	@Override
+//	protected void paintComponent(Graphics aGraphics)
+//	{
+//		int bi = getBorder().getBorderInsets(this).right;
+//		int x = getWidth() - 7 - 2 - bi;
+//		int y = getHeight() / 2 - 2;
+//
+//		super.paintComponent(aGraphics);
+//
+//		aGraphics.setColor(Color.red);
+//		aGraphics.drawLine(x, y, x + 5, y + 5);
+//		aGraphics.drawLine(x + 5, y, x, y + 5);
+//	}
+//
+//
+//	@Override
+//	public Dimension getPreferredSize()
+//	{
+//		Dimension d = super.getPreferredSize();
+//		d.width += BUTTON_WIDTH;
+//		return d;
+//	}
 }

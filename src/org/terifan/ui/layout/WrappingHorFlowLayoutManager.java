@@ -9,14 +9,14 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 
 
-public class WrapHorFlowLayoutManager implements LayoutManager
+public class WrappingHorFlowLayoutManager implements LayoutManager
 {
 	private ArrayList<Rectangle> mLayoutInfo;
 	private int mColSpacing;
 	private int mRowSpacing;
 
 
-	public WrapHorFlowLayoutManager()
+	public WrappingHorFlowLayoutManager()
 	{
 		mLayoutInfo = new ArrayList<>();
 	}
@@ -124,6 +124,7 @@ public class WrapHorFlowLayoutManager implements LayoutManager
 				{
 					layout = mLayoutInfo.get(row);
 					comp.setBounds(x, y, d.width, layout.height);
+					comp.revalidate();
 					x += d.width + mColSpacing;
 					col++;
 				}
