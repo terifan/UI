@@ -3,6 +3,7 @@ package test;
 import java.util.function.Consumer;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 import org.terifan.ui.buttonlist.FilterButton;
 import org.terifan.ui.buttonlist.FilterButtonModel;
 import org.terifan.ui.buttonlist.FilterButtonModel.State;

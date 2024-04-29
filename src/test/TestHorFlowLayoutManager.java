@@ -7,7 +7,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
-import org.terifan.ui.layout.WrapHorFlowLayoutManager;
+import org.terifan.ui.layout.WrappingHorFlowLayoutManager;
 import org.terifan.ui.layout.VerticalFlowLayout;
 
 
@@ -17,7 +17,7 @@ public class TestHorFlowLayoutManager
 	{
 		try
 		{
-			JPanel panel1 = new JPanel(new WrapHorFlowLayoutManager());
+			JPanel panel1 = new JPanel(new WrappingHorFlowLayoutManager());
 			panel1.setBorder(BorderFactory.createLineBorder(Color.RED, 3));
 			panel1.add(new JLabel("Aaaaaaaa1"));
 			panel1.add(new JLabel("Aaaaaaaa2"));

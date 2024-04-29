@@ -12,6 +12,7 @@ public class FilterButtonModel
 {
 	private HashMap<FilterButton, State> mButtons;
 	private FilterButtonStyle mStyle;
+	private ArrayList<StateChangeListener> mStateChangeListeners;
 
 
 	public static enum State
@@ -24,6 +25,7 @@ public class FilterButtonModel
 	{
 		mButtons = new HashMap<>();
 		mStyle = new FilterButtonStyle();
+		mStateChangeListeners = new ArrayList<>();
 	}
 
 
@@ -32,6 +34,24 @@ public class FilterButtonModel
 		aButton.init(this);
 		mButtons.put(aButton, State.NORMAL);
 		return aButton;
+	}
+
+
+	public void clear()
+	{
+		mButtons.clear();
+	}
+
+
+	public void addStateChangeListener(StateChangeListener aStateChangeListener)
+	{
+		mStateChangeListeners.add(aStateChangeListener);
+	}
+
+
+	public interface StateChangeListener
+	{
+		void onChange(FilterButton aButton);
 	}
 
 
@@ -80,21 +100,35 @@ public class FilterButtonModel
 
 	public ArrayList<FilterButton> list(State aState)
 	{
-		ArrayList<FilterButton> keys = new ArrayList<>();
+		ArrayList<FilterButton> buttons = new ArrayList<>();
 		mButtons.forEach((button, state) ->
 		{
 			if (state == aState)
 			{
-				keys.add(button);
+				buttons.add(button);
 			}
 		});
-		return keys;
+		return buttons;
 	}
 
 
 	public ArrayList<FilterButton> list()
 	{
 		return new ArrayList<>(mButtons.keySet());
+	}
+
+
+	public <T> ArrayList<T> listUserObjects(State aState)
+	{
+		ArrayList<T> list = new ArrayList<>();
+		mButtons.forEach((button, state) ->
+		{
+			if (state == aState)
+			{
+				list.add((T)button.getUserObject());
+			}
+		});
+		return list;
 	}
 
 
@@ -108,6 +142,7 @@ public class FilterButtonModel
 	{
 		assertOwner(aButton);
 		mButtons.put(aButton, aState);
+		mStateChangeListeners.forEach(c -> c.onChange(aButton));
 	}
 
 
@@ -125,7 +160,7 @@ public class FilterButtonModel
 		assertOwner(aButton);
 		if (mButtons.get(aButton) == aOldState)
 		{
-			mButtons.put(aButton, aNewState);
+			setState(aButton, aNewState);
 			return true;
 		}
 		return false;
@@ -138,7 +173,7 @@ public class FilterButtonModel
 		{
 			if (entry.getValue() == aState)
 			{
-				mButtons.put(entry.getKey(), State.NORMAL);
+				setState(entry.getKey(), State.NORMAL);
 			}
 		}
 	}

@@ -23,7 +23,8 @@ import javax.swing.event.MenuKeyListener;
 
 public class TagInput extends JComponent
 {
-	protected JTextField mTextInput;
+	protected JTextField mCreateField;
+	protected JTextField mEditorField;
 	protected JPopupMenu mPopupMenu;
 	protected String mLastFilter;
 	protected Tag mEditingTag;
@@ -33,50 +34,66 @@ public class TagInput extends JComponent
 	protected TagInputLayoutManager mLayout;
 
 
+	private KeyAdapter mKeyListener = new KeyAdapter()
+	{
+		@Override
+		public void keyPressed(KeyEvent aEvent)
+		{
+			if (aEvent.getKeyCode() == KeyEvent.VK_ENTER)
+			{
+				if (mEditingTag != null)
+				{
+					updateTag();
+				}
+				else
+				{
+					createTag();
+				}
+			}
+			else if (aEvent.getKeyCode() == KeyEvent.VK_ESCAPE)
+			{
+				cancelEdit();
+			}
+			else if (aEvent.getKeyCode() == KeyEvent.VK_DOWN && mPopupMenu != null)
+			{
+				createPopupMenu(true);
+				mPopupMenu.setSelected(mPopupMenu.getComponent(0));
+			}
+		}
+	};
+
 	public TagInput(String aTitle, List<String> aOptions, List<String> aSelections)
 	{
 		mOptions = aOptions;
 
-		mTextInput = new JTextField(10);
-		mTextInput.addKeyListener(new KeyAdapter()
-		{
-			@Override
-			public void keyPressed(KeyEvent aEvent)
-			{
-				if (aEvent.getKeyCode() == KeyEvent.VK_ENTER)
-				{
-					createTag();
-				}
-				else if (aEvent.getKeyCode() == KeyEvent.VK_ESCAPE)
-				{
-					cancelEdit();
-				}
-				else if (aEvent.getKeyCode() == KeyEvent.VK_DOWN && mPopupMenu != null)
-				{
-					createPopupMenu(true);
-					mPopupMenu.setSelected(mPopupMenu.getComponent(0));
-				}
-			}
-		});
-		mTextInput.addCaretListener(new CaretListener()
+		CaretListener caretListener = new CaretListener()
 		{
 			@Override
 			public void caretUpdate(CaretEvent aEvent)
 			{
 				createPopupMenu(false);
 			}
-		});
-		mTextInput.addFocusListener(new FocusAdapter()
+		};
+		FocusAdapter focusAdapter = new FocusAdapter()
 		{
 			@Override
 			public void focusLost(FocusEvent aEvent)
 			{
 				cancelEdit();
 			}
-		});
+		};
+
+		mEditorField = new JTextField();
+		mEditorField.addKeyListener(mKeyListener);
+		mEditorField.addCaretListener(caretListener);
+		mEditorField.addFocusListener(focusAdapter);
+
+		mCreateField = new JTextField(10);
+		mCreateField.addKeyListener(mKeyListener);
+		mCreateField.addCaretListener(caretListener);
 
 		mTitle = new JLabel(aTitle);
-		mLayout = new TagInputLayoutManager(mTitle, mTextInput);
+		mLayout = new TagInputLayoutManager(mTitle, mCreateField, mEditorField);
 
 		super.add(mTitle);
 		super.setLayout(mLayout);
@@ -84,7 +101,8 @@ public class TagInput extends JComponent
 		{
 			super.add(new Tag(this, option));
 		}
-		super.add(mTextInput);
+		super.add(mCreateField);
+		super.add(mEditorField);
 
 		super.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 	}
@@ -99,7 +117,8 @@ public class TagInput extends JComponent
 
 	protected void createPopupMenu(boolean aFocusable)
 	{
-		String filter = mTextInput.getText();
+		JTextField field = mEditingTag == null ? mCreateField : mEditorField;
+		String filter = field.getText();
 		if (mPopupMenu != null && filter.equals(mLastFilter) && mPopupMenu.isFocusable() == aFocusable)
 		{
 			return;
@@ -138,7 +157,7 @@ public class TagInput extends JComponent
 					if (aEvent.getKeyCode() == KeyEvent.VK_UP && mPopupMenu != null && mPopupMenu.getSelectionModel().getSelectedIndex() == 0)
 					{
 						createPopupMenu(false);
-						mTextInput.requestFocus();
+						field.requestFocus();
 					}
 				}
 
@@ -155,20 +174,22 @@ public class TagInput extends JComponent
 				}
 			});
 			validate();
-			mPopupMenu.show(mTextInput, 0, mTextInput.getBounds().height);
+			mPopupMenu.show(field, 0, field.getBounds().height);
 		}
 	}
 
 
 	protected void cancelEdit()
 	{
-		if (mEditingTag != null)
+		mEditorField.setVisible(false);
+		mEditorField.setText("");
+		if (mEditingTag!=null)
 		{
 			mEditingTag.setVisible(true);
 			mEditingTag = null;
-			mTextInput.setText("");
-			mLayout.setEditingLabel(null);
 		}
+		mLayout.setEditingLabel(null);
+		mCreateField.requestFocus();
 	}
 
 
@@ -180,23 +201,37 @@ public class TagInput extends JComponent
 			mPopupMenu = null;
 		}
 
-		String text = mTextInput.getText();
-		mTextInput.setText("");
-
-		if (mEditingTag != null)
+		String text = mCreateField.getText();
+		if (!text.isEmpty())
 		{
-			String old = mEditingTag.getText();
-			mEditingTag.setText(text);
-			fireTagChanged(old, text);
+			mCreateField.setText("");
+			addTag(text, true);
+			revalidate();
+		}
+	}
+
+
+	protected void updateTag()
+	{
+		if (mPopupMenu != null && mPopupMenu.isVisible())
+		{
+			mPopupMenu.setVisible(false);
+			mPopupMenu = null;
+		}
+
+		String newText = mEditorField.getText();
+		String oldText = mEditingTag.getText();
+
+		if (newText.isEmpty())
+		{
 			cancelEdit();
+			removeTag(oldText, true);
 		}
 		else
 		{
-			if (!text.isEmpty())
-			{
-				addTag(text, true);
-			}
-			revalidate();
+			mEditingTag.setText(newText);
+			fireTagChanged(oldText, newText);
+			cancelEdit();
 		}
 	}
 
@@ -252,16 +287,16 @@ public class TagInput extends JComponent
 
 	protected void editTag(Tag aTag)
 	{
-		if (!mTextInput.getText().isEmpty())
+		if (mEditingTag != null)
 		{
-			createTag();
+			cancelEdit();
 		}
 
-		mLayout.setEditingLabel(aTag);
 		mEditingTag = aTag;
-		mTextInput.setText(mEditingTag.getText());
+		mLayout.setEditingLabel(mEditingTag);
+		mEditorField.setText(mEditingTag.getText());
+		mEditorField.requestFocus();
 		revalidate();
-		mTextInput.requestFocus();
 	}
 
 
@@ -303,10 +338,20 @@ public class TagInput extends JComponent
 		@Override
 		public void actionPerformed(ActionEvent aEvent)
 		{
-			mTextInput.setText(((JMenuItem)aEvent.getSource()).getText());
-			mPopupMenu.setVisible(false);
-			mPopupMenu = null;
-			createTag();
+			if (mEditingTag != null)
+			{
+				mEditorField.setText(((JMenuItem)aEvent.getSource()).getText());
+				mPopupMenu.setVisible(false);
+				mPopupMenu = null;
+				updateTag();
+			}
+			else
+			{
+				mCreateField.setText(((JMenuItem)aEvent.getSource()).getText());
+				mPopupMenu.setVisible(false);
+				mPopupMenu = null;
+				createTag();
+			}
 		}
 	};
 }

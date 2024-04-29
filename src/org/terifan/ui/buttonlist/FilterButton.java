@@ -6,6 +6,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.font.FontRenderContext;
 import java.util.function.Consumer;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import org.terifan.ui.TextBox;
 import org.terifan.ui.buttonlist.FilterButtonModel.State;
@@ -19,11 +20,14 @@ public class FilterButton extends JComponent
 	private transient FilterButtonModel mModel;
 	private String mTitle;
 	private Integer mInfo;
+	private Object mUserObject;
 
 
 	public FilterButton(String aTitle)
 	{
 		mTitle = aTitle;
+
+//		setRolloverEnabled(false);
 
 		addMouseListener(new MouseAdapter()
 		{
@@ -39,6 +43,19 @@ public class FilterButton extends JComponent
 	void init(FilterButtonModel aButtonList)
 	{
 		mModel = aButtonList;
+	}
+
+
+	public Object getUserObject()
+	{
+		return mUserObject;
+	}
+
+
+	public FilterButton setUserObject(Object aUserObject)
+	{
+		mUserObject = aUserObject;
+		return this;
 	}
 
 
@@ -102,7 +119,7 @@ public class FilterButton extends JComponent
 
 		aGraphics.setFont(getFont());
 		aGraphics.setColor(style.backgroundColor);
-		aGraphics.fillRect(0, 0, w, h);
+		aGraphics.drawRect(0, 0, w, h);
 
 		State state = mModel.getState(this);
 		if (state == State.INCLUDE || state == State.EXCLUDE)
