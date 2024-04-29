@@ -38,7 +38,7 @@ public class ImagePane extends JPanel
 	private final static double SCALE_STEP = 1.05;
 	private final static int SCROLL_STEP = 20;
 	private Object mFilter;
-	private boolean mVisibleCursor;
+	private boolean mShowCursor;
 
 
 	public enum Action
@@ -57,29 +57,37 @@ public class ImagePane extends JPanel
 	private static Cursor OPEN_HAND_CURSOR;
 	private static Cursor CLOSED_HAND_CURSOR;
 	private static Cursor HIDDEN_CURSOR;
-	private boolean mControlPressed;
+
+	private ImagePaneResampler mImageFilter;
 	private BufferedImage mImage;
 	private BufferedImage mScaledImage;
-	private int mStartX, mStartY;
-	private int mOffsetX, mOffsetY;
-	private int mScaledOffsetX, mScaledOffsetY;
-	private int mOldOffsetX, mOldOffsetY;
-	private int mImageWidth, mImageHeight;
+	private Overlay mOverlay;
+	private BufferedImage mBackgroundImage;
+	private BufferedImage mPlaceholder;
+	private boolean mControlPressed;
+	private int mStartX;
+	private int mStartY;
+	private int mOffsetX;
+	private int mOffsetY;
+	private int mScaledOffsetX;
+	private int mScaledOffsetY;
+	private int mOldOffsetX;
+	private int mOldOffsetY;
+	private int mImageWidth;
+	private int mImageHeight;
 	private double mScaleValue;
 	private boolean mDoScaleTouchInside;
 	private boolean mDoScaleTouchOutside;
 	private boolean mDoCenterOnMouse;
 	private boolean mMouseButtonPressed;
-	private double mScaledScale;
-	private ImagePaneResampler mImageFilter;
-	private Overlay mOverlay;
 	private boolean mUseControlWhenZooming;
+	private double mScaledScale;
 	private double mMaxScale;
 	private double mMinScale;
-
-	private BufferedImage mBackgroundImage;
-	private BufferedImage mPlaceholder;
-	private int mPlaceholderX, mPlaceholderY, mPlaceholderWidth, mPlaceholderHeight;
+	private int mPlaceholderX;
+	private int mPlaceholderY;
+	private int mPlaceholderWidth;
+	private int mPlaceholderHeight;
 
 
 	public ImagePane()
@@ -96,6 +104,7 @@ public class ImagePane extends JPanel
 		mMaxScale = 10.0;
 		mScaleValue = 1;
 		mDoScaleTouchInside = true;
+		mShowCursor = true;
 
 		synchronized (ImagePane.class)
 		{
@@ -205,8 +214,8 @@ public class ImagePane extends JPanel
 
 	/**
 	 *
-	 * @param aFilter
-	 *  RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR, RenderingHints.VALUE_INTERPOLATION_BILINEAR, RenderingHints.VALUE_INTERPOLATION_BICUBIC
+	 * @param aFilter RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR, RenderingHints.VALUE_INTERPOLATION_BILINEAR,
+	 * RenderingHints.VALUE_INTERPOLATION_BICUBIC
 	 * @return
 	 */
 	public ImagePane setFilter(Object aFilter)
@@ -218,8 +227,8 @@ public class ImagePane extends JPanel
 
 	public ImagePane setCursorVisible(boolean aVisible)
 	{
-		mVisibleCursor = aVisible;
-		super.setCursor(mVisibleCursor ? Cursor.getDefaultCursor() : HIDDEN_CURSOR);
+		mShowCursor = aVisible;
+		super.setCursor(mShowCursor ? Cursor.getDefaultCursor() : HIDDEN_CURSOR);
 		return this;
 	}
 
@@ -246,12 +255,9 @@ public class ImagePane extends JPanel
 	/**
 	 * Sets the image and redraws the view while fading in the new image.
 	 *
-	 * @param aImage
-	 *   the new image
-	 * @param aFadeTimeMillis
-	 *   time spent fading in, typically 500 ms
-	 * @param aFilterImage
-	 *   true if the faded image should be filtered, may cause an extra 500-1000 ms delay before image shown
+	 * @param aImage the new image
+	 * @param aFadeTimeMillis time spent fading in, typically 500 ms
+	 * @param aFilterImage true if the faded image should be filtered, may cause an extra 500-1000 ms delay before image shown
 	 */
 	public synchronized void setImageFaded(BufferedImage aImage, int aFadeTimeMillis, boolean aFilterImage)
 	{
@@ -334,7 +340,6 @@ public class ImagePane extends JPanel
 //			temp.setRGB(0, 0, mImage.getWidth(), mImage.getHeight(), buffer, 0, mImage.getWidth());
 //			mImage = temp;
 //		}
-
 		if (mImage == null)
 		{
 			mScaledOffsetX = 0;
@@ -354,7 +359,7 @@ public class ImagePane extends JPanel
 		// Warning!! Java 7 bug can cause Swing to dead-lock. Set cursor must be executed in swing thread!!
 		SwingUtilities.invokeLater(() ->
 		{
-			setCursor(mVisibleCursor ? Cursor.getDefaultCursor() : HIDDEN_CURSOR);
+			setCursor(mShowCursor ? Cursor.getDefaultCursor() : HIDDEN_CURSOR);
 		});
 	}
 
@@ -392,7 +397,7 @@ public class ImagePane extends JPanel
 		// Warning!! Risk of dead-lock. Set cursor must be executed in swing thread!!
 		SwingUtilities.invokeLater(() ->
 		{
-			if ((mMouseButtonPressed || mControlPressed) && mImage != null && Math.min(getWidth() / (double) mImageWidth, getHeight() / (double) mImageHeight) < mScaleValue)
+			if ((mMouseButtonPressed || mControlPressed) && mImage != null && Math.min(getWidth() / (double)mImageWidth, getHeight() / (double)mImageHeight) < mScaleValue)
 			{
 				setCursor(mMouseButtonPressed ? CLOSED_HAND_CURSOR : OPEN_HAND_CURSOR);
 			}
@@ -402,7 +407,7 @@ public class ImagePane extends JPanel
 			}
 			else
 			{
-				setCursor(mVisibleCursor ? Cursor.getDefaultCursor() : HIDDEN_CURSOR);
+				setCursor(mShowCursor ? Cursor.getDefaultCursor() : HIDDEN_CURSOR);
 			}
 		});
 	}
@@ -449,9 +454,9 @@ public class ImagePane extends JPanel
 		{
 //			aGraphics.drawImage(mBackgroundImage, 0, 0, getWidth(), getHeight(), this);
 
-			for (int y = 0; y < h; y+=mBackgroundImage.getHeight())
+			for (int y = 0; y < h; y += mBackgroundImage.getHeight())
 			{
-				for (int x = 0; x < w; x+=mBackgroundImage.getWidth())
+				for (int x = 0; x < w; x += mBackgroundImage.getWidth())
 				{
 					aGraphics.drawImage(mBackgroundImage, x, y, this);
 				}
