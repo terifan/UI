@@ -108,7 +108,7 @@ public class WrappingHorFlowLayoutManager implements LayoutManager
 
 		mLayoutInfo.add(new Rectangle(itemsInRow, 0, rowWidth, rowHeight));
 
-		return new Dimension(totalWidth, totalHeight);
+		return new Dimension(aMinimum ? 1 : totalWidth, totalHeight);
 	}
 
 
@@ -125,7 +125,7 @@ public class WrappingHorFlowLayoutManager implements LayoutManager
 
 			int n = aTarget.getComponentCount();
 			int targetWidth = aTarget.getWidth();
-			int x = targetWidth - layout.width - insets.right;
+			int x = mAnchor == Anchor.EAST ? targetWidth - layout.width - insets.right: insets.left;
 			int y = insets.top;
 
 			for (int i = 0, index = 0, row = 0; i < n; i++)
@@ -135,18 +135,18 @@ public class WrappingHorFlowLayoutManager implements LayoutManager
 
 				if (comp.isVisible())
 				{
-					layout = mLayoutInfo.get(row);
 					comp.setBounds(x, y, compDim.width, layout.height);
 					comp.revalidate();
 					x += compDim.width + mColSpacing;
 					index++;
 				}
 
-				if (index >= layout.x)
+				if (i + 1 < n && index >= layout.x)
 				{
-					x = targetWidth - layout.width - insets.right;
-					y += layout.height + mRowSpacing;
 					row++;
+					layout = mLayoutInfo.get(row);
+					x = mAnchor == Anchor.EAST ? targetWidth - layout.width - insets.right: insets.left;
+					y += layout.height + mRowSpacing;
 					index = 0;
 				}
 			}
