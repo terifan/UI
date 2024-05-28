@@ -146,9 +146,9 @@ public class FilterButton extends JComponent
 	}
 
 
-	@Override
-	public String toString()
-	{
-		return "FilterButton{title="+mTitle+"}";
-	}
+//	@Override
+//	public String toString()
+//	{
+//		return "FilterButton{title="+mTitle+"}";
+//	}
 }

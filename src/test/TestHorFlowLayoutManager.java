@@ -1,12 +1,13 @@
 package test;
 
 import java.awt.Color;
+import java.util.Random;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
+import org.terifan.ui.Anchor;
 import org.terifan.ui.layout.WrappingHorFlowLayoutManager;
 import org.terifan.ui.layout.VerticalFlowLayout;
 
@@ -17,22 +18,27 @@ public class TestHorFlowLayoutManager
 	{
 		try
 		{
-			JPanel panel1 = new JPanel(new WrappingHorFlowLayoutManager());
-			panel1.setBorder(BorderFactory.createLineBorder(Color.RED, 3));
-			panel1.add(new JLabel("Aaaaaaaa1"));
-			panel1.add(new JLabel("Aaaaaaaa2"));
-			panel1.add(new JLabel("Aaaaaaaa3"));
-			panel1.add(new JLabel("Aaaaaaaa4"));
-			panel1.add(new JLabel("Aaaaaaaa5"));
-			panel1.add(new JLabel("Aaaaaaaa6"));
-			panel1.add(new JLabel("Aaaaaaaa7"));
-			panel1.add(new JLabel("Aaaaaaaa8"));
-			panel1.add(new JLabel("Aaaaaaaa9"));
+			Random rnd = new Random(1);
 
-			JPanel panel2 = new JPanel(new VerticalFlowLayout());
-			panel2.add(panel1);
+			JPanel[] vertPanel = new JPanel[2];
 
-			JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, new JTextArea(), panel2);
+			for (int k = 0; k < 2; k++)
+			{
+				vertPanel[k] = new JPanel(new VerticalFlowLayout());
+				for (int i = 0; i < 5; i++)
+				{
+					JPanel howPanel = new JPanel(new WrappingHorFlowLayoutManager(k == 0 ? Anchor.EAST : Anchor.WEST));
+					howPanel.setBorder(BorderFactory.createLineBorder(Color.RED, 3));
+					for (int j = 0; j < 10; j++)
+					{
+						howPanel.add(new JLabel(Character.toString('A'+j) + Character.toString('a'+j).repeat(5 + rnd.nextInt(20))));
+					}
+
+					vertPanel[k].add(howPanel);
+				}
+			}
+
+			JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, vertPanel[0], vertPanel[1]);
 
 			JFrame frame = new JFrame();
 			frame.add(splitPane);

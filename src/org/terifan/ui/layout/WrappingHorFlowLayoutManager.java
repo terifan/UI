@@ -7,6 +7,7 @@ import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import org.terifan.ui.Anchor;
 
 
 public class WrappingHorFlowLayoutManager implements LayoutManager
@@ -14,11 +15,19 @@ public class WrappingHorFlowLayoutManager implements LayoutManager
 	private ArrayList<Rectangle> mLayoutInfo;
 	private int mColSpacing;
 	private int mRowSpacing;
+	private Anchor mAnchor;
 
 
 	public WrappingHorFlowLayoutManager()
 	{
+		this(Anchor.WEST);
+	}
+
+
+	public WrappingHorFlowLayoutManager(Anchor aAnchor)
+	{
 		mLayoutInfo = new ArrayList<>();
+		mAnchor = aAnchor;
 	}
 
 
@@ -37,7 +46,11 @@ public class WrappingHorFlowLayoutManager implements LayoutManager
 	@Override
 	public Dimension minimumLayoutSize(Container aTarget)
 	{
-		return new Dimension(1, 1);
+//		return new Dimension(1, 1);
+		synchronized (aTarget.getTreeLock())
+		{
+			return computeSize(aTarget, aTarget.getParent().getWidth(), true);
+		}
 	}
 
 
@@ -46,12 +59,12 @@ public class WrappingHorFlowLayoutManager implements LayoutManager
 	{
 		synchronized (aTarget.getTreeLock())
 		{
-			return computeSize(aTarget, aTarget.getParent().getWidth());
+			return computeSize(aTarget, aTarget.getParent().getWidth(), false);
 		}
 	}
 
 
-	private Dimension computeSize(Container aTarget, int aTargetWidth)
+	private Dimension computeSize(Container aTarget, int aTargetWidth, boolean aMinimum)
 	{
 		int rowWidth = 0;
 		int totalWidth = 0;
@@ -72,8 +85,10 @@ public class WrappingHorFlowLayoutManager implements LayoutManager
 			Component comp = aTarget.getComponent(i);
 			if (comp.isVisible())
 			{
-				Dimension d = comp.getPreferredSize();
-				if (rowWidth + d.width >= aTargetWidth)
+				Dimension compDim = aMinimum ? comp.getMinimumSize() : comp.getPreferredSize();
+				int compW = compDim.width;
+				int compH = compDim.height;
+				if (rowWidth > 0 && rowWidth + compW >= aTargetWidth)
 				{
 					totalWidth = Math.max(totalWidth, rowWidth);
 					totalHeight += rowHeight + mRowSpacing;
@@ -82,8 +97,8 @@ public class WrappingHorFlowLayoutManager implements LayoutManager
 					rowHeight = 0;
 					rowCount = 0;
 				}
-				rowWidth += (rowCount > 0 ? mColSpacing : 0) + d.width;
-				rowHeight = Math.max(rowHeight, d.height);
+				rowWidth += (rowCount > 0 ? mColSpacing : 0) + compW;
+				rowHeight = Math.max(rowHeight, compH);
 				rowCount++;
 			}
 		}
@@ -105,15 +120,16 @@ public class WrappingHorFlowLayoutManager implements LayoutManager
 	{
 		synchronized (aTarget.getTreeLock())
 		{
-			computeSize(aTarget, aTarget.getWidth());
+//			computeSize(aTarget, aTarget.getWidth(), false);
 
 			Insets insets = aTarget.getInsets();
 
 			int n = aTarget.getComponentCount();
-			int x = insets.left;
-			int y = insets.top;
 
 			Rectangle layout = mLayoutInfo.getFirst();
+
+			int x = aTarget.getWidth() - layout.width - insets.right;
+			int y = insets.top;
 
 			for (int i = 0, col = 0, row = 0; i < n; i++)
 			{
@@ -131,7 +147,7 @@ public class WrappingHorFlowLayoutManager implements LayoutManager
 
 				if (col >= layout.x)
 				{
-					x = insets.left;
+					x = aTarget.getWidth() - layout.width - insets.right;
 					y += layout.height + mRowSpacing;
 					row++;
 					col = 0;

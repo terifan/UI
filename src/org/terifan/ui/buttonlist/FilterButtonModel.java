@@ -150,7 +150,7 @@ public class FilterButtonModel
 	{
 		if (!mButtons.containsKey(aButton))
 		{
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("" + aButton);
 		}
 	}
 

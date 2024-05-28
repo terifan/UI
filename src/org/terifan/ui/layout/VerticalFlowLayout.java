@@ -26,19 +26,19 @@ public class VerticalFlowLayout implements LayoutManager
 
 	public VerticalFlowLayout()
 	{
-		this(0, Anchor.NORTH_WEST, Fill.NONE);
+		this(0, Anchor.NORTH_WEST, Fill.HORIZONTAL);
 	}
 
 
 	public VerticalFlowLayout(int aGap)
 	{
-		this(aGap, Anchor.NORTH_WEST, Fill.NONE);
+		this(aGap, Anchor.NORTH_WEST, Fill.HORIZONTAL);
 	}
 
 
 	public VerticalFlowLayout(int aGap, Anchor aAnchor)
 	{
-		this(aGap, aAnchor, Fill.NONE);
+		this(aGap, aAnchor, Fill.HORIZONTAL);
 	}
 
 
@@ -115,15 +115,9 @@ public class VerticalFlowLayout implements LayoutManager
 			int n = aParent.getComponentCount();
 			Dimension parentDim = aParent.getSize();
 
-			int y = 0;
-			for (int i = 0; i < n; i++)
-			{
-				Component c = aParent.getComponent(i);
-				Dimension cd = c.getPreferredSize();
-				y += cd.height + mGap;
-			}
-			y -= mGap;
+			int height = computeHeight(aParent);
 
+			int y;
 			if (mFill == Fill.BOTH || mFill == Fill.VERTICAL)
 			{
 				y = insets.top + mInsets.top;
@@ -140,10 +134,10 @@ public class VerticalFlowLayout implements LayoutManager
 					case CENTER:
 					case WEST:
 					case EAST:
-						y = (parentDim.height - y) / 2;
+						y = Math.max(0, (parentDim.height - height) / 2);
 						break;
 					default:
-						y = parentDim.height - insets.bottom - mInsets.bottom - y;
+						y = Math.max(0, parentDim.height - insets.bottom - mInsets.bottom - height);
 						break;
 				}
 			}
@@ -154,7 +148,12 @@ public class VerticalFlowLayout implements LayoutManager
 				Dimension compDimp = comp.getPreferredSize();
 				int compWidth = compDimp.width;
 				int compHeight = compDimp.height;
+
 				int x;
+				if (mFill == Fill.BOTH || mFill == Fill.VERTICAL)
+				{
+					compHeight += (parentDim.height - height) / n;
+				}
 				if (mFill == Fill.BOTH || mFill == Fill.HORIZONTAL)
 				{
 					x = insets.left + mInsets.left;
@@ -186,11 +185,25 @@ public class VerticalFlowLayout implements LayoutManager
 				}
 
 				comp.setBounds(x, y, compWidth, compHeight);
-				comp.invalidate();
+				comp.revalidate();
 
 				y += compHeight + mGap;
 			}
 		}
+	}
+
+
+	private int computeHeight(Container aParent)
+	{
+		int height = 0;
+		for (int i = 0; i < aParent.getComponentCount(); i++)
+		{
+			Component c = aParent.getComponent(i);
+			Dimension cd = c.getPreferredSize();
+			height += cd.height + mGap;
+		}
+		height -= mGap;
+		return height;
 	}
 
 
