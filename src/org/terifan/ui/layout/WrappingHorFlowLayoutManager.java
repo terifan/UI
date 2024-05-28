@@ -66,10 +66,6 @@ public class WrappingHorFlowLayoutManager implements LayoutManager
 
 	private Dimension computeSize(Container aTarget, int aTargetWidth, boolean aMinimum)
 	{
-		int rowWidth = 0;
-		int totalWidth = 0;
-		int totalHeight = 0;
-
 		Insets insets = aTarget.getInsets();
 
 		aTargetWidth -= insets.left + insets.right;
@@ -78,28 +74,29 @@ public class WrappingHorFlowLayoutManager implements LayoutManager
 
 		int n = aTarget.getComponentCount();
 
+		int rowWidth = 0;
 		int rowHeight = 0;
-		int rowCount = 0;
+		int totalWidth = 0;
+		int totalHeight = 0;
+		int itemsInRow = 0;
 		for (int i = 0; i < n; i++)
 		{
 			Component comp = aTarget.getComponent(i);
 			if (comp.isVisible())
 			{
 				Dimension compDim = aMinimum ? comp.getMinimumSize() : comp.getPreferredSize();
-				int compW = compDim.width;
-				int compH = compDim.height;
-				if (rowWidth > 0 && rowWidth + compW >= aTargetWidth)
+				if (itemsInRow > 0 && rowWidth + compDim.width >= aTargetWidth)
 				{
 					totalWidth = Math.max(totalWidth, rowWidth);
 					totalHeight += rowHeight + mRowSpacing;
-					mLayoutInfo.add(new Rectangle(rowCount, 0, rowWidth, rowHeight));
+					mLayoutInfo.add(new Rectangle(itemsInRow, 0, rowWidth, rowHeight));
 					rowWidth = 0;
 					rowHeight = 0;
-					rowCount = 0;
+					itemsInRow = 0;
 				}
-				rowWidth += (rowCount > 0 ? mColSpacing : 0) + compW;
-				rowHeight = Math.max(rowHeight, compH);
-				rowCount++;
+				rowWidth += (itemsInRow > 0 ? mColSpacing : 0) + compDim.width;
+				rowHeight = Math.max(rowHeight, compDim.height);
+				itemsInRow++;
 			}
 		}
 
@@ -109,7 +106,7 @@ public class WrappingHorFlowLayoutManager implements LayoutManager
 		totalWidth += insets.left + insets.right;
 		totalHeight += insets.top + insets.bottom;
 
-		mLayoutInfo.add(new Rectangle(rowCount, 0, rowWidth, rowHeight));
+		mLayoutInfo.add(new Rectangle(itemsInRow, 0, rowWidth, rowHeight));
 
 		return new Dimension(totalWidth, totalHeight);
 	}
@@ -124,33 +121,33 @@ public class WrappingHorFlowLayoutManager implements LayoutManager
 
 			Insets insets = aTarget.getInsets();
 
-			int n = aTarget.getComponentCount();
-
 			Rectangle layout = mLayoutInfo.getFirst();
 
-			int x = aTarget.getWidth() - layout.width - insets.right;
+			int n = aTarget.getComponentCount();
+			int targetWidth = aTarget.getWidth();
+			int x = targetWidth - layout.width - insets.right;
 			int y = insets.top;
 
-			for (int i = 0, col = 0, row = 0; i < n; i++)
+			for (int i = 0, index = 0, row = 0; i < n; i++)
 			{
 				Component comp = aTarget.getComponent(i);
-				Dimension d = comp.getPreferredSize();
+				Dimension compDim = comp.getPreferredSize();
 
 				if (comp.isVisible())
 				{
 					layout = mLayoutInfo.get(row);
-					comp.setBounds(x, y, d.width, layout.height);
+					comp.setBounds(x, y, compDim.width, layout.height);
 					comp.revalidate();
-					x += d.width + mColSpacing;
-					col++;
+					x += compDim.width + mColSpacing;
+					index++;
 				}
 
-				if (col >= layout.x)
+				if (index >= layout.x)
 				{
-					x = aTarget.getWidth() - layout.width - insets.right;
+					x = targetWidth - layout.width - insets.right;
 					y += layout.height + mRowSpacing;
 					row++;
-					col = 0;
+					index = 0;
 				}
 			}
 		}
