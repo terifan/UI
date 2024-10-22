@@ -145,49 +145,52 @@ public class VerticalFlowLayout implements LayoutManager
 			for (int i = 0; i < n; i++)
 			{
 				Component comp = aParent.getComponent(i);
-				Dimension compDimp = comp.getPreferredSize();
-				int compWidth = compDimp.width;
-				int compHeight = compDimp.height;
+				if (comp.isVisible())
+				{
+					Dimension compDimp = comp.getPreferredSize();
+					int compWidth = compDimp.width;
+					int compHeight = compDimp.height;
 
-				int x;
-				if (mFill == Fill.BOTH || mFill == Fill.VERTICAL)
-				{
-					compHeight += (parentDim.height - height) / n;
-				}
-				if (mFill == Fill.BOTH || mFill == Fill.HORIZONTAL)
-				{
-					x = insets.left + mInsets.left;
-					compWidth = parentDim.width - mInsets.left - mInsets.right - insets.left - insets.right;
-				}
-				else
-				{
-					switch (mAnchor)
+					int x;
+					if (mFill == Fill.BOTH || mFill == Fill.VERTICAL)
 					{
-						case NORTH_WEST:
-						case WEST:
-						case SOUTH_WEST:
-							x = insets.left + mInsets.left;
-							break;
-						case CENTER:
-						case NORTH:
-						case SOUTH:
-							x = (parentDim.width - mInsets.left - mInsets.right - compWidth) / 2 + mInsets.left + insets.left;
-							break;
-						default:
-							x = parentDim.width - mInsets.left - mInsets.right - compWidth - insets.right - mInsets.right;
-							break;
+						compHeight += (parentDim.height - height) / n;
 					}
+					if (mFill == Fill.BOTH || mFill == Fill.HORIZONTAL)
+					{
+						x = insets.left + mInsets.left;
+						compWidth = parentDim.width - mInsets.left - mInsets.right - insets.left - insets.right;
+					}
+					else
+					{
+						switch (mAnchor)
+						{
+							case NORTH_WEST:
+							case WEST:
+							case SOUTH_WEST:
+								x = insets.left + mInsets.left;
+								break;
+							case CENTER:
+							case NORTH:
+							case SOUTH:
+								x = (parentDim.width - mInsets.left - mInsets.right - compWidth) / 2 + mInsets.left + insets.left;
+								break;
+							default:
+								x = parentDim.width - mInsets.left - mInsets.right - compWidth - insets.right - mInsets.right;
+								break;
+						}
+					}
+
+					if (mFillLast && i == n - 1)
+					{
+						compHeight = Math.max(compHeight, parentDim.height - insets.bottom - mInsets.bottom - y);
+					}
+
+					comp.setBounds(x, y, compWidth, compHeight);
+					comp.revalidate();
+
+					y += compHeight + mGap;
 				}
-
-				if (mFillLast && i == n - 1)
-				{
-					compHeight = Math.max(compHeight, parentDim.height - insets.bottom - mInsets.bottom - y);
-				}
-
-				comp.setBounds(x, y, compWidth, compHeight);
-				comp.revalidate();
-
-				y += compHeight + mGap;
 			}
 		}
 	}
