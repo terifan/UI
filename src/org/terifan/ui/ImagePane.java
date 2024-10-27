@@ -6,7 +6,6 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -380,13 +379,13 @@ public class ImagePane extends JPanel
 	}
 
 
-	public Image getBackgroundImage()
+	public BufferedImage getBackgroundImage()
 	{
 		return mBackgroundImage;
 	}
 
 
-	public Image getImage()
+	public BufferedImage getImage()
 	{
 		return mImage;
 	}
