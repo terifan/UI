@@ -13,7 +13,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
-import org.terifan.util.cache.Cache;
 import org.terifan.xml.XmlReader;
 
 
@@ -64,7 +63,7 @@ public class StyleSheet
 	protected HashMap<String,Boolean> mBooleans = new HashMap<>();
 	protected HashMap<String,String> mStrings = new HashMap<>();
 
-	protected Cache<String,BufferedImage> mCachedImages;
+	protected HashMap<String,BufferedImage> mCachedImages;
 	private HashMap<String,ComponentStyleSheet> mCachedStyleSheets;
 
 
@@ -89,7 +88,7 @@ public class StyleSheet
 		mRootClass = aRootClass;
 		mRelativeFilePath = aRelativeFilePath;
 		mStyleSheetFileName = aStyleSheetFileName;
-		mCachedImages = new Cache<>(aImageCacheSizeBytes);
+		mCachedImages = new HashMap<>(); //aImageCacheSizeBytes
 		mComponentID = aComponentID;
 		mCachedStyleSheets = new HashMap<>();
 
@@ -441,7 +440,7 @@ public class StyleSheet
 			image = resize(image, aWidth, aHeight);
 		}
 
-		mCachedImages.put("scaled#"+mComponentID+"#"+key, image, 4L*aWidth*aHeight);
+		mCachedImages.put("scaled#"+mComponentID+"#"+key, image); //, 4L*aWidth*aHeight);
 
 		return image;
 	}
@@ -489,7 +488,7 @@ public class StyleSheet
 		Utilities.drawScaledImage(g, getImage(aName, 0), 0, 0, aWidth, aHeight, aFrameTop, aFrameLeft, aFrameBottom, aFrameRight);
 		g.dispose();
 
-		mCachedImages.put("scaled#"+mComponentID+"#"+key, image, 4L*aWidth*aHeight);
+		mCachedImages.put("scaled#"+mComponentID+"#"+key, image); //, 4L*aWidth*aHeight);
 
 		return image;
 	}
@@ -548,7 +547,7 @@ public class StyleSheet
 					image = convertNativeImage(image);
 				}
 
-				mCachedImages.put(mComponentID+"#"+aKey, image, 4*image.getWidth()*image.getHeight());
+				mCachedImages.put(mComponentID+"#"+aKey, image); //, 4*image.getWidth()*image.getHeight());
 			}
 			catch (Exception e)
 			{
