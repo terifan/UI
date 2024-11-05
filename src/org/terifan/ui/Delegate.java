@@ -19,8 +19,7 @@ import javax.swing.JComponent;
 
 
 /**
- * E.g.
- * <code>
+ * E.g.  <code>
  * JButton myButton = new JButton(new Delegate(this, "buttonClicked"));
  *
  * @DelegateTarget(name = "OK")
@@ -30,7 +29,7 @@ import javax.swing.JComponent;
 public class Delegate extends AbstractAction
 {
 	private Supplier mSupplier;
-	private Object [] mParameters;
+	private Object[] mParameters;
 	private String mMethodName;
 	private ArrayList<Object> mRunAfter;
 
@@ -41,18 +40,18 @@ public class Delegate extends AbstractAction
 	 * Note: this constructor will use a DelegateTarget annotation on the method if available to initialize the AbstractAction.
 	 * </p>
 	 *
-	 * @param aObject
-	 *   a single Object to invoke the method on.
-	 * @param aMethod
-	 *   the name of the method to invoke
-	 * @param aParameters
-	 *   parameters sent to the method when invoking it
+	 * @param aObject a single Object to invoke the method on.
+	 * @param aMethod the name of the method to invoke
+	 * @param aParameters parameters sent to the method when invoking it
 	 */
-	public Delegate(Object aObject, String aMethod, Object ... aParameters)
+	public Delegate(Object aObject, String aMethod, Object... aParameters)
 	{
-		this(()->aObject, aMethod, aParameters);
+		this(() -> aObject, aMethod, aParameters);
 
-		if (aObject == null) throw new IllegalArgumentException("Object is null");
+		if (aObject == null)
+		{
+			throw new IllegalArgumentException("Object is null");
+		}
 
 		initAction(aObject, findMethod(aObject));
 	}
@@ -64,14 +63,11 @@ public class Delegate extends AbstractAction
 	 * Note: DelegateTarget annotations aren't processed with this method.
 	 * </p>
 	 *
-	 * @param aSupplier
-	 *   supplier that provide a single Object, an array or List of objects to invoke the method on.
-	 * @param aMethod
-	 *   the name of the method to invoke
-	 * @param aParameters
-	 *   parameters sent to the method when invoking it
+	 * @param aSupplier supplier that provide a single Object, an array or List of objects to invoke the method on.
+	 * @param aMethod the name of the method to invoke
+	 * @param aParameters parameters sent to the method when invoking it
 	 */
-	public Delegate(Supplier aSupplier, String aMethod, Object ... aParameters)
+	public Delegate(Supplier aSupplier, String aMethod, Object... aParameters)
 	{
 		mSupplier = aSupplier;
 		mParameters = aParameters;
@@ -133,7 +129,7 @@ public class Delegate extends AbstractAction
 
 	public String getActionCommandKey()
 	{
-		return (String )getValue(Action.ACTION_COMMAND_KEY);
+		return (String)getValue(Action.ACTION_COMMAND_KEY);
 	}
 
 
@@ -284,7 +280,10 @@ public class Delegate extends AbstractAction
 		}
 		else
 		{
-			objects = new Object[]{object};
+			objects = new Object[]
+			{
+				object
+			};
 		}
 
 		Method method = findMethod(objects[0]);
@@ -334,7 +333,7 @@ public class Delegate extends AbstractAction
 
 		try
 		{
-			Class [] providedTypes = new Class[mParameters.length];
+			Class[] providedTypes = new Class[mParameters.length];
 			for (int i = 0; i < mParameters.length; i++)
 			{
 				if (mParameters[i] == null)
@@ -351,7 +350,7 @@ public class Delegate extends AbstractAction
 				{
 					if (m.getName().equals(mMethodName))
 					{
-						Class [] declaredTypes = m.getParameterTypes();
+						Class[] declaredTypes = m.getParameterTypes();
 
 						if (declaredTypes.length == providedTypes.length)
 						{
@@ -395,7 +394,7 @@ public class Delegate extends AbstractAction
 				types.add(mParameters[i].getClass());
 			}
 
-			throw new IllegalArgumentException("Failed to locate the method specified: class: " + aObject.getClass()+", name: " + mMethodName + ", parameters: " + types, e);
+			throw new DelegateMethodNotFoundException("Method: " + mMethodName + " in " + aObject.getClass() + " with parameters: " + types, e);
 		}
 
 		return method;
@@ -469,45 +468,54 @@ public class Delegate extends AbstractAction
 		 */
 		public String accelerator() default "";
 
+
 		/**
 		 * @see javax.swing.Action#ACTION_COMMAND_KEY
 		 */
 		public String actionCommand() default "";
+
 
 		/**
 		 * @see javax.swing.Action#DISPLAYED_MNEMONIC_INDEX_KEY
 		 */
 		public int displayMnemonic() default 0;
 
+
 		/**
 		 * @see javax.swing.Action#LONG_DESCRIPTION
 		 */
 		public String longDescription() default "";
+
 
 		/**
 		 * @see javax.swing.Action#MNEMONIC_KEY
 		 */
 		public int mnemonic() default 0;
 
+
 		/**
 		 * @see javax.swing.Action#NAME
 		 */
 		public String name() default "";
+
 
 		/**
 		 * @see javax.swing.Action#SELECTED_KEY
 		 */
 		public boolean selected() default false;
 
+
 		/**
 		 * @see javax.swing.Action#SHORT_DESCRIPTION
 		 */
 		public String shortDescription() default "";
 
+
 		/**
 		 * @see javax.swing.Action#SMALL_ICON
 		 */
 		public String smallIcon() default "";
+
 
 		/**
 		 * @see javax.swing.Action#LARGE_ICON_KEY
