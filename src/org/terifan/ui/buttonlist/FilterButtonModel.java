@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import javax.swing.SwingUtilities;
 
 
@@ -150,7 +151,7 @@ public class FilterButtonModel
 	{
 		if (!mButtons.containsKey(aButton))
 		{
-			throw new IllegalArgumentException("" + aButton);
+			throw new IllegalArgumentException(aButton == null ? "<is null>" : "" + aButton);
 		}
 	}
 
@@ -211,5 +212,12 @@ public class FilterButtonModel
 		{
 			aButton.getOnChange().accept(aButton);
 		}
+	}
+
+
+	@Override
+	public String toString()
+	{
+		return "FilerButtonModel" + mButtons.keySet().stream().map(e -> e.getTitle()).collect(Collectors.toList());
 	}
 }
