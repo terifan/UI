@@ -113,6 +113,41 @@ public class FilterButtonModel
 	}
 
 
+	public boolean match(String... aMatch)
+	{
+		for (Entry<FilterButton,State> entry : mButtons.entrySet())
+		{
+			if (entry.getValue() == State.EXCLUDE)
+			{
+				for (String s : aMatch)
+				{
+					if (s.equals(entry.getKey().getTitle()))
+					{
+						return false;
+					}
+				}
+			}
+			else if (entry.getValue() == State.INCLUDE)
+			{
+				boolean b = false;
+				for (String s : aMatch)
+				{
+					if (s.equals(entry.getKey().getTitle()))
+					{
+						b = true;
+						break;
+					}
+				}
+				if (!b)
+				{
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+
 	public ArrayList<FilterButton> list()
 	{
 		return new ArrayList<>(mButtons.keySet());

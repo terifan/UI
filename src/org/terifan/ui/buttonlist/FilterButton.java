@@ -144,11 +144,4 @@ public class FilterButton extends JComponent
 	{
 		return mInfo == null ? mTitle : mTitle + " (" + mInfo + ")";
 	}
-
-
-//	@Override
-//	public String toString()
-//	{
-//		return "FilterButton{title="+mTitle+"}";
-//	}
 }
