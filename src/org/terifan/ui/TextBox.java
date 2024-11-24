@@ -1160,5 +1160,6 @@ public class TextBox implements Cloneable, Serializable
 	{
 		Graphics2D g = (Graphics2D)aGraphics;
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
+		g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
 	}
 }
