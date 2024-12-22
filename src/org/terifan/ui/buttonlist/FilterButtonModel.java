@@ -113,7 +113,7 @@ public class FilterButtonModel
 	}
 
 
-	public boolean match(String... aMatch)
+	public boolean matchAll(String... aMatch)
 	{
 		for (Entry<FilterButton,State> entry : mButtons.entrySet())
 		{
@@ -145,6 +145,40 @@ public class FilterButtonModel
 			}
 		}
 		return true;
+	}
+
+
+	public boolean matchAny(String... aMatch)
+	{
+		for (Entry<FilterButton,State> entry : mButtons.entrySet())
+		{
+			if (entry.getValue() == State.EXCLUDE)
+			{
+				for (String s : aMatch)
+				{
+					if (s.equals(entry.getKey().getTitle()))
+					{
+						return false;
+					}
+				}
+			}
+		}
+		boolean any = true;
+		for (Entry<FilterButton,State> entry : mButtons.entrySet())
+		{
+			if (entry.getValue() == State.INCLUDE)
+			{
+				any = false;
+				for (String s : aMatch)
+				{
+					if (s.equals(entry.getKey().getTitle()))
+					{
+						return true;
+					}
+				}
+			}
+		}
+		return any;
 	}
 
 
