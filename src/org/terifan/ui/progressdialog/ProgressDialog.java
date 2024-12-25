@@ -104,7 +104,6 @@ public class ProgressDialog implements AutoCloseable
 		});
 	}
 
-
 	private AbstractAction mCancelAction = new AbstractAction("Cancel")
 	{
 		@Override
