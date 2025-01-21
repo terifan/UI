@@ -5,8 +5,8 @@ import org.terifan.ui.Anchor;
 import org.terifan.ui.buttonlist.FilterButtonModel.State;
 import static org.terifan.ui.buttonlist.FilterButtonModel.State.EXCLUDE;
 import static org.terifan.ui.buttonlist.FilterButtonModel.State.INCLUDE;
-import static org.terifan.ui.buttonlist.FilterButtonModel.State.NORMAL;
 import static org.terifan.ui.buttonlist.FilterButtonModel.State.SHADED;
+import static org.terifan.ui.buttonlist.FilterButtonModel.State.UNSELECTED;
 
 
 public class FilterButtonStyle
@@ -29,7 +29,7 @@ public class FilterButtonStyle
 				return textColorExcluded;
 			case INCLUDE:
 				return textColorIncluded;
-			case NORMAL:
+			case UNSELECTED:
 				return textColorNormal;
 			case SHADED:
 				return textColorShaded;

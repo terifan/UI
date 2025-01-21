@@ -24,15 +24,15 @@ public class TestFilterButton
 				FilterButton e = model.getButton("Eeeeeeeeee");
 				if (model.getState(a) == State.INCLUDE)
 				{
-					model.replaceState(c, State.NORMAL, State.SHADED);
-					model.replaceState(e, State.NORMAL, State.SHADED);
+					model.replaceState(c, State.UNSELECTED, State.SHADED);
+					model.replaceState(e, State.UNSELECTED, State.SHADED);
 					c.setInfo(null);
 					e.setInfo(null);
 				}
 				else
 				{
-					model.replaceState(c, State.SHADED, State.NORMAL);
-					model.replaceState(e, State.SHADED, State.NORMAL);
+					model.replaceState(c, State.SHADED, State.UNSELECTED);
+					model.replaceState(e, State.SHADED, State.UNSELECTED);
 					c.setInfo(4);
 					e.setInfo(18);
 				}

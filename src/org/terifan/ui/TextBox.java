@@ -26,8 +26,11 @@ import static org.terifan.ui.Anchor.SOUTH_EAST;
 public class TextBox implements Cloneable, Serializable
 {
 	private static final long serialVersionUID = 1L;
-	private final static Insets ZERO_INSETS = new Insets(0,0,0,0);
-	private static char[] DEFAULT_BREAK_CHARS = {' ', '.', ',', '-', '_', ':', ';', '?', '!'};
+	private final static Insets ZERO_INSETS = new Insets(0, 0, 0, 0);
+	private static char[] DEFAULT_BREAK_CHARS =
+	{
+		' ', '.', ',', '-', '_', ':', ';', '?', '!'
+	};
 
 	protected final Insets mMargins;
 	protected final Insets mPadding;
@@ -579,7 +582,6 @@ public class TextBox implements Cloneable, Serializable
 
 //		bounds.width += mPadding.left + mPadding.right;
 //		bounds.height += mPadding.top + mPadding.bottom;
-
 		return bounds;
 	}
 
@@ -765,15 +767,15 @@ public class TextBox implements Cloneable, Serializable
 		}
 
 		LineMetrics lm = mFont.getLineMetrics("Adgjy", aFontRenderContext);
-		int lineHeight = (int)lm.getHeight() + mPadding.top + mPadding.bottom + (mShadowColor != null ? Math.abs(mShadowOffset.y) : 0);
+		int lineHeight = (int)Math.ceil(lm.getHeight()) + mPadding.top + mPadding.bottom + (mShadowColor != null ? Math.abs(mShadowOffset.y) : 0);
 
 		if (boxH < lineHeight)
 		{
 			boxH = lineHeight;
 		}
 
-		int lineHeightExtra = lineHeight + mLineSpacing + borderHeight;
-		int boxHeightExtra = boxH + mLineSpacing + borderHeight;
+		int lineHeightExtra = lineHeight + mLineSpacing;
+		int boxHeightExtra = boxH + mLineSpacing;
 
 		int lineY = boxY;
 		int lineCount = lineHeightExtra == 0 ? 1 : Math.min(Math.min(mTextLines.size(), mMaxLineCount > 0 ? mMaxLineCount : Integer.MAX_VALUE), boxHeightExtra / lineHeightExtra);
@@ -783,7 +785,7 @@ public class TextBox implements Cloneable, Serializable
 			case SOUTH_EAST:
 			case SOUTH:
 			case SOUTH_WEST:
-				lineY += Math.max(0, boxHeightExtra - lineCount * lineHeightExtra);
+				lineY += Math.max(0, boxHeightExtra - lineCount * lineHeightExtra - borderHeight);
 				break;
 			case CENTER:
 			case WEST:
@@ -865,7 +867,8 @@ public class TextBox implements Cloneable, Serializable
 						int offset = Math.max(findStringLimit(aFontRenderContext, str, tmpBoxW), 1);
 						int temp = offset;
 
-						outer: for (; temp > 1; temp--)
+						outer:
+						for (; temp > 1; temp--)
 						{
 							char c = str.charAt(temp - 1);
 							for (char d : mBreakChars)
@@ -968,6 +971,7 @@ public class TextBox implements Cloneable, Serializable
 		}
 
 		int adjust = (int)(aLineMetrics.getHeight() - aLineMetrics.getDescent());
+//		int adjust = (int)Math.ceil(aLineMetrics.getHeight() - aLineMetrics.getAscent() / 2 + aLineMetrics.getDescent() / 2);
 
 		int ix = aOffsetX + mPadding.left;
 		int iy = aOffsetY + adjust + mPadding.top;
@@ -1078,6 +1082,7 @@ public class TextBox implements Cloneable, Serializable
 		private int mLine;
 		private String mText;
 
+
 		public TextSegment(int aLine, String aText)
 		{
 			mLine = aLine;
@@ -1108,6 +1113,7 @@ public class TextBox implements Cloneable, Serializable
 	public static interface TextRenderCallback
 	{
 		public void beforeRender(TextSegment aText, int aOffsetX, int aOffsetY, int aWidth, int aHeight, int aTextX, int aTextY);
+
 
 		public void afterRender(TextSegment aText, int aOffsetX, int aOffsetY, int aWidth, int aHeight, int aTextX, int aTextY);
 	}

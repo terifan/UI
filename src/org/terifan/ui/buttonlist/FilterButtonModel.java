@@ -18,7 +18,7 @@ public class FilterButtonModel
 
 	public static enum State
 	{
-		NORMAL, INCLUDE, EXCLUDE, SHADED
+		UNSELECTED, INCLUDE, EXCLUDE, SHADED
 	}
 
 
@@ -33,8 +33,14 @@ public class FilterButtonModel
 	public FilterButton add(FilterButton aButton)
 	{
 		aButton.init(this);
-		mButtons.put(aButton, State.NORMAL);
+		mButtons.put(aButton, State.UNSELECTED);
 		return aButton;
+	}
+
+
+	public void remove(FilterButton aButton)
+	{
+		mButtons.remove(aButton);
 	}
 
 
@@ -99,7 +105,7 @@ public class FilterButtonModel
 	}
 
 
-	public ArrayList<FilterButton> list(State aState)
+	public ArrayList<FilterButton> getAll(State aState)
 	{
 		ArrayList<FilterButton> buttons = new ArrayList<>();
 		mButtons.forEach((button, state) ->
@@ -115,7 +121,7 @@ public class FilterButtonModel
 
 	public boolean matchAll(String... aMatch)
 	{
-		for (Entry<FilterButton,State> entry : mButtons.entrySet())
+		for (Entry<FilterButton, State> entry : mButtons.entrySet())
 		{
 			if (entry.getValue() == State.EXCLUDE)
 			{
@@ -150,10 +156,14 @@ public class FilterButtonModel
 
 	public boolean matchAny(String... aMatch)
 	{
-		for (Entry<FilterButton,State> entry : mButtons.entrySet())
+		for (Entry<FilterButton, State> entry : mButtons.entrySet())
 		{
 			if (entry.getValue() == State.EXCLUDE)
 			{
+				if (aMatch.length == 0 && entry.getKey().getTitle().isEmpty())
+				{
+					return false;
+				}
 				for (String s : aMatch)
 				{
 					if (s.equals(entry.getKey().getTitle()))
@@ -164,10 +174,14 @@ public class FilterButtonModel
 			}
 		}
 		boolean any = true;
-		for (Entry<FilterButton,State> entry : mButtons.entrySet())
+		for (Entry<FilterButton, State> entry : mButtons.entrySet())
 		{
 			if (entry.getValue() == State.INCLUDE)
 			{
+				if (aMatch.length == 0 && entry.getKey().getTitle().isEmpty())
+				{
+					return true;
+				}
 				any = false;
 				for (String s : aMatch)
 				{
@@ -243,7 +257,7 @@ public class FilterButtonModel
 		{
 			if (entry.getValue() == aState)
 			{
-				setState(entry.getKey(), State.NORMAL);
+				setState(entry.getKey(), State.UNSELECTED);
 			}
 		}
 	}
@@ -258,7 +272,7 @@ public class FilterButtonModel
 		{
 			if (oldState == newState)
 			{
-				setState(aButton, State.NORMAL);
+				setState(aButton, State.UNSELECTED);
 			}
 			else
 			{
