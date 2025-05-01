@@ -17,17 +17,17 @@ public class Test
 			Thread.sleep(1000);
 
 			dialog.setCancellable(true);
-			dialog.setRange(0, 9);
+			dialog.setRange(0, 0, 9);
 
 			for (int i = 0; i < 10 && !dialog.isCancelled(); i++)
 			{
-				dialog.setStatus(i, "Step " + i);
+				dialog.setProgress(0, i, "Step " + i);
 
 				if (i == 5)
 				{
-					dialog.setIndeterminate("Step " + i);
+					dialog.setIndeterminate(0, "Step " + i);
 					Thread.sleep(2000);
-					dialog.setIndeterminate("Step " + i + ", almost ready...");
+					dialog.setIndeterminate(0, "Step " + i + ", almost ready...");
 					Thread.sleep(1000);
 				}
 

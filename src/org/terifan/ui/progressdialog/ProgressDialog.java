@@ -1,7 +1,6 @@
 package org.terifan.ui.progressdialog;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
@@ -16,13 +15,14 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import org.terifan.ui.Utilities;
+import org.terifan.ui.layout.VerticalFlowLayout;
 
 
 /**
- * Display a dialog with a text message and single indeterminate progress bar. The dialog can be canceled
+ * Display a dialog with a text message and single indeterminate progress bar. The dialog can be cancelled
  * <pre>
  * try (ProgressDialog dialog = new ProgressDialog(null, "Loading", "Waiting..."))
  * {
@@ -53,38 +53,55 @@ public class ProgressDialog implements AutoCloseable
 {
 	private JDialog mDialog;
 	private boolean mCancelled;
-	private JLabel mStatus;
-	private JProgressBar mProgressBar;
+	private boolean mPaused;
+	private JLabel[] mLabel;
+	private JProgressBar[] mProgressBar;
 	private JButton mCancelButton;
+	private JToggleButton mPauseButton;
 
 
 	public ProgressDialog(JFrame aOwner, String aTitle, String aStatus)
 	{
-		mStatus = new JLabel(aStatus + " ");
-		mStatus.setHorizontalAlignment(SwingConstants.LEFT);
+		this(aOwner, aTitle, aStatus, 1);
+	}
 
+
+	public ProgressDialog(JFrame aOwner, String aTitle, String aStatus, int aCount)
+	{
 		mCancelButton = new JButton(mCancelAction);
+		mPauseButton = new JToggleButton(new AbstractAction("Pause")
+		{
+			@Override
+			public void actionPerformed(ActionEvent aEvent)
+			{
+				mPaused = !mPaused;
+			}
+		});
 
-		mProgressBar = new JProgressBar(JProgressBar.HORIZONTAL);
+		JPanel mainPanel = new JPanel(new VerticalFlowLayout(8));
+		mainPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
-		JPanel statusPanel = new JPanel(new BorderLayout());
-		statusPanel.setBorder(BorderFactory.createEmptyBorder(16, 8, 0, 8));
-		statusPanel.add(mStatus, BorderLayout.CENTER);
-		statusPanel.setBackground(new Color(255, 255, 255));
+		mLabel = new JLabel[aCount];
+		mProgressBar = new JProgressBar[aCount];
 
-		JPanel progressPanel = new JPanel(new BorderLayout());
-		progressPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 16, 8));
-		progressPanel.add(mProgressBar, BorderLayout.CENTER);
-		progressPanel.setBackground(new Color(255, 255, 255));
+		for (int i = 0; i < aCount; i++)
+		{
+			mLabel[i] = new JLabel(" ", SwingConstants.LEFT);
+			mProgressBar[i] = new JProgressBar(JProgressBar.HORIZONTAL, 0, 100);
+
+			mainPanel.add(mLabel[i]);
+			mainPanel.add(mProgressBar[i]);
+		}
+
+		mLabel[0].setText(aStatus + " ");
 
 		JPanel buttonPanel = new JPanel(new BorderLayout());
-		buttonPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(223, 223, 223)), BorderFactory.createEmptyBorder(16, 8, 16, 8)));
+		buttonPanel.setBorder(BorderFactory.createEmptyBorder(16, 8, 8, 8));
+		buttonPanel.add(mPauseButton, BorderLayout.WEST);
 		buttonPanel.add(mCancelButton, BorderLayout.EAST);
-		buttonPanel.setBackground(new Color(240, 240, 240));
 
 		JPanel body = new JPanel(new BorderLayout());
-		body.add(statusPanel, BorderLayout.NORTH);
-		body.add(progressPanel, BorderLayout.CENTER);
+		body.add(mainPanel, BorderLayout.CENTER);
 		body.add(buttonPanel, BorderLayout.SOUTH);
 
 		mDialog = new JDialog(aOwner, aTitle);
@@ -103,7 +120,6 @@ public class ProgressDialog implements AutoCloseable
 			}
 		});
 	}
-
 
 	private AbstractAction mCancelAction = new AbstractAction("Cancel")
 	{
@@ -127,19 +143,15 @@ public class ProgressDialog implements AutoCloseable
 
 	public void show()
 	{
-		show(0, 100);
-	}
-
-
-	public void show(int aMin, int aMax)
-	{
 		if (SwingUtilities.isEventDispatchThread())
 		{
 			throw new IllegalStateException("Executed on EventDispatchThread");
 		}
 
-		setRange(aMin, aMax);
-		mProgressBar.setIndeterminate(true);
+		for (int i = 0; i < mProgressBar.length; i++)
+		{
+			mProgressBar[i].setIndeterminate(true);
+		}
 
 		mDialog.setVisible(true);
 	}
@@ -158,36 +170,74 @@ public class ProgressDialog implements AutoCloseable
 	}
 
 
+	public boolean isPaused()
+	{
+		return mPaused;
+	}
+
+
+	public int getProgress(int aIndex)
+	{
+		return mProgressBar[aIndex].getValue();
+	}
+
+
 	/**
 	 * Sets the status text and make the progress bar indeterminate.
 	 */
-	public void setIndeterminate(String aText)
+	public ProgressDialog setIndeterminate(int aIndex, String aText)
 	{
-		mProgressBar.setIndeterminate(true);
-		mStatus.setText(aText);
+		mProgressBar[aIndex].setIndeterminate(true);
+		if (aText != null)
+		{
+			mLabel[aIndex].setText(aText);
+		}
+		return this;
 	}
 
 
 	/**
 	 * Sets the status text and current value of progress bar.
 	 */
-	public void setStatus(int aValue, String aText)
+	public ProgressDialog setProgress(int aIndex, int aValue, String aText)
 	{
-		mProgressBar.setValue(aValue);
-		mProgressBar.setIndeterminate(false);
-		mStatus.setText(aText);
+		mProgressBar[aIndex].setIndeterminate(false);
+		mProgressBar[aIndex].setValue(aValue);
+		if (aText != null)
+		{
+			mLabel[aIndex].setText(aText);
+		}
+		return this;
 	}
 
 
-	public void setRange(int aMin, int aMax)
+	public ProgressDialog setRange(int aIndex, int aMin, int aMax)
 	{
-		mProgressBar.setMinimum(aMin);
-		mProgressBar.setMaximum(aMax);
+		mProgressBar[aIndex].setMinimum(aMin);
+		mProgressBar[aIndex].setMaximum(aMax);
+		return this;
 	}
 
 
-	public void setCancellable(boolean aState)
+	public ProgressDialog setCancellable(boolean aState)
 	{
 		mCancelButton.setEnabled(aState);
+		return this;
+	}
+
+
+	public void waitIfPaused()
+	{
+		while (isPaused())
+		{
+			try
+			{
+				Thread.sleep(500);
+			}
+			catch (InterruptedException e)
+			{
+				break;
+			}
+		}
 	}
 }
