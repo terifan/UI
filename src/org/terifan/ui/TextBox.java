@@ -51,6 +51,7 @@ public class TextBox implements Cloneable, Serializable
 	protected int mMaxWidth;
 	protected int mMinWidth;
 	protected String mSuffix;
+	protected boolean mBreakExact;
 	protected boolean mDirty;
 	protected Color mShadowColor;
 	protected Point mShadowOffset;
@@ -78,6 +79,19 @@ public class TextBox implements Cloneable, Serializable
 		mFont = UIManager.getDefaults().getFont("TextField.font");
 		mBreakChars = DEFAULT_BREAK_CHARS;
 		mDirty = true;
+	}
+
+
+	public TextBox setBreakExact(boolean aBreakExact)
+	{
+		mBreakExact = aBreakExact;
+		return this;
+	}
+
+
+	public boolean isBreakExact()
+	{
+		return mBreakExact;
 	}
 
 
@@ -867,15 +881,18 @@ public class TextBox implements Cloneable, Serializable
 						int offset = Math.max(findStringLimit(aFontRenderContext, str, tmpBoxW), 1);
 						int temp = offset;
 
-						outer:
-						for (; temp > 1; temp--)
+						if (!mBreakExact)
 						{
-							char c = str.charAt(temp - 1);
-							for (char d : mBreakChars)
+							outer:
+							for (; temp > 1; temp--)
 							{
-								if (c == d)
+								char c = str.charAt(temp - 1);
+								for (char d : mBreakChars)
 								{
-									break outer;
+									if (c == d)
+									{
+										break outer;
+									}
 								}
 							}
 						}

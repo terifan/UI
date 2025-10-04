@@ -21,6 +21,7 @@ public class NinePatchImage
 	private final static int COLOR_MASK = 0x00ffffff;
 
 	private BufferedImage mImage;
+	private BufferedImage mCroppedImage;
 	private int mSumBlackX;
 	private int mSumBlackY;
 	private boolean mStartBlackX;
@@ -60,6 +61,7 @@ public class NinePatchImage
 	private void init(BufferedImage aImage)
 	{
 		mImage = aImage;
+		mCroppedImage = mImage.getSubimage(1, 1, mImage.getWidth() - 2, mImage.getHeight() - 2);
 		mPadding = new Insets(0, 0, 0, 0);
 
 		int width = mImage.getWidth();
@@ -179,10 +181,10 @@ public class NinePatchImage
 
 	public void paintImage(Graphics aGraphics, int aOffsetX, int aOffsetY, int aWidth, int aHeight)
 	{
-		int extraX = aWidth - (mImage.getWidth() - 2) + mSumBlackX;
-		int extraY = aHeight - (mImage.getHeight() - 2) + mSumBlackY;
+		int extraX = aWidth - mCroppedImage.getWidth() + mSumBlackX;
+		int extraY = aHeight - mCroppedImage.getHeight() + mSumBlackY;
 
-		for (int ix = 0, dx = 0, sx = 1; ix < mResizeSegmentsX.length; ix++)
+		for (int ix = 0, dx = 0, sx = 0; ix < mResizeSegmentsX.length; ix++)
 		{
 			int sw = mResizeSegmentsX[ix];
 			int dw = sw;
@@ -200,7 +202,7 @@ public class NinePatchImage
 				dw = dw * extraX / mSumBlackX;
 			}
 
-			for (int iy = 0, dy = 0, sy = 1; iy < mResizeSegmentsY.length; iy++)
+			for (int iy = 0, dy = 0, sy = 0; iy < mResizeSegmentsY.length; iy++)
 			{
 				int sh = mResizeSegmentsY[iy];
 				int dh = sh;
@@ -218,7 +220,7 @@ public class NinePatchImage
 					dh = dh * extraY / mSumBlackY;
 				}
 
-				aGraphics.drawImage(mImage, aOffsetX + dx, aOffsetY + dy, aOffsetX + dx + dw, aOffsetY + dy + dh, sx, sy, sx + sw, sy + sh, null);
+				aGraphics.drawImage(mCroppedImage, aOffsetX + dx, aOffsetY + dy, aOffsetX + dx + dw, aOffsetY + dy + dh, sx, sy, sx + sw, sy + sh, null);
 
 				sy += sh;
 				dy += dh;
