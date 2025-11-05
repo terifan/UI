@@ -633,6 +633,11 @@ public class TextBox implements Cloneable, Serializable
 
 	public TextBox render(Graphics aGraphics, int aTranslateX, int aTranslateY)
 	{
+		if (mBounds.width <= 0 || mBounds.height <= 0)
+		{
+			return this;
+		}
+
 		boolean hasShadow = mShadowColor != null;
 
 		if (mShadowColor != null)
@@ -1088,6 +1093,47 @@ public class TextBox implements Cloneable, Serializable
 	{
 		mSuffix = aPrefix;
 		mDirty = true;
+		return this;
+	}
+
+
+	/**
+	 * Moves the bounds forward while shrinking it with the longest line of the last render. This allow for multiple renders of text one
+	 * after the other.
+	 * <pre>
+	 * TextBox tb = new TextBox().setBounds(0,0,1000,100).setAnchor(Anchor.WEST);
+	 * tb.setText("hello").render(g).advance();
+	 * tb.setText("sweet").render(g).advance();
+	 * tb.setText("world").render(g).advance();
+	 * </pre>
+	 *
+	 * @return
+	 */
+	public TextBox advance()
+	{
+		int max = 0;
+		for (Rectangle r : mTextBounds)
+		{
+			max = Math.max(max, r.width);
+		}
+
+		if (mAnchor == CENTER)
+		{
+			mAnchor = Anchor.WEST;
+		}
+		switch (mAnchor)
+		{
+			case WEST:
+			case SOUTH_WEST:
+			case NORTH_WEST:
+				mBounds.x += max;
+				break;
+			case EAST:
+			case SOUTH_EAST:
+			case NORTH_EAST:
+				break;
+		}
+		mBounds.width -= max;
 		return this;
 	}
 
