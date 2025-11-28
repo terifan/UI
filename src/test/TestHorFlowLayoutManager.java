@@ -9,8 +9,9 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import org.terifan.ui.Anchor;
 import org.terifan.ui.Fill;
+import org.terifan.ui.Orientation;
 import org.terifan.ui.layout.WrappingHorFlowLayoutManager;
-import org.terifan.ui.layout.VerticalFlowLayout;
+import org.terifan.ui.layout.FlowLayout;
 
 
 public class TestHorFlowLayoutManager
@@ -25,7 +26,7 @@ public class TestHorFlowLayoutManager
 
 			for (int k = 0; k < 2; k++)
 			{
-				vertPanel[k] = new JPanel(new VerticalFlowLayout(0, Fill.BOTH));
+				vertPanel[k] = new JPanel(new FlowLayout(Orientation.HORIZONTAL));
 				for (int i = 0; i < 5; i++)
 				{
 					JPanel howPanel = new JPanel(new WrappingHorFlowLayoutManager(k == 0 ? Anchor.EAST : Anchor.WEST));

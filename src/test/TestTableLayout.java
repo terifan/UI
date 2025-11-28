@@ -1,7 +1,6 @@
 package test;
 
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -15,8 +14,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import org.terifan.ui.Orientation;
+import org.terifan.ui.layout.FlowLayout;
 import org.terifan.ui.layout.TableLayout;
-import org.terifan.ui.layout.VerticalFlowLayout;
 
 
 public class TestTableLayout
@@ -80,7 +80,7 @@ public class TestTableLayout
 		{
 			JPanel panel = createTestTable(0);
 
-			JPanel outer = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+			JPanel outer = new JPanel(new FlowLayout(Orientation.HORIZONTAL));
 			outer.setBackground(Color.WHITE);
 			outer.add(panel);
 			outer.add(new JLabel("X"));

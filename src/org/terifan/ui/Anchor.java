@@ -5,15 +5,15 @@ import java.awt.Rectangle;
 
 public enum Anchor
 {
-	NORTH_WEST,
+	CENTER,
 	NORTH,
 	NORTH_EAST,
-	CENTER,
-	SOUTH_WEST,
-	SOUTH,
+	EAST,
 	SOUTH_EAST,
+	SOUTH,
+	SOUTH_WEST,
 	WEST,
-	EAST;
+	NORTH_WEST;
 
 
 	public void translate(Rectangle oBounds, Rectangle aOuter)

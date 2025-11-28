@@ -4,10 +4,11 @@ import java.util.function.Consumer;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
+import org.terifan.ui.Orientation;
 import org.terifan.ui.buttonlist.FilterButton;
 import org.terifan.ui.buttonlist.FilterButtonModel;
 import org.terifan.ui.buttonlist.FilterButtonModel.State;
-import org.terifan.ui.layout.VerticalFlowLayout;
+import org.terifan.ui.layout.FlowLayout;
 
 
 public class TestFilterButton
@@ -38,7 +39,7 @@ public class TestFilterButton
 				}
 			};
 
-			JPanel panel = new JPanel(new VerticalFlowLayout());
+			JPanel panel = new JPanel(new FlowLayout(Orientation.HORIZONTAL));
 			panel.add(model.add(new FilterButton("Aaaaaaaaaa").setInfo(7).setOnChange(aAction)));
 			panel.add(model.add(new FilterButton("Bbbbbbbbbb").setInfo(2).setOnChange(aAction)));
 			panel.add(model.add(new FilterButton("Cccccccccc").setInfo(4).setOnChange(aAction)));

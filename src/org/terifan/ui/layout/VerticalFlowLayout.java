@@ -6,7 +6,14 @@ import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.LayoutManager;
 import org.terifan.ui.Anchor;
-import org.terifan.ui.Alignment;
+import static org.terifan.ui.Anchor.CENTER;
+import static org.terifan.ui.Anchor.EAST;
+import static org.terifan.ui.Anchor.NORTH;
+import static org.terifan.ui.Anchor.NORTH_EAST;
+import static org.terifan.ui.Anchor.NORTH_WEST;
+import static org.terifan.ui.Anchor.SOUTH;
+import static org.terifan.ui.Anchor.SOUTH_WEST;
+import static org.terifan.ui.Anchor.WEST;
 import org.terifan.ui.Fill;
 
 
@@ -15,12 +22,8 @@ public class VerticalFlowLayout implements LayoutManager
 	private int mGap;
 	private Anchor mAnchor;
 	private Fill mFill;
-	private Alignment mAlignment;
-	private Dimension mPadding;
-
-
-	@Deprecated
-	private final Insets mInsets = new Insets(0, 0, 0, 0);
+	private Insets mInsets;
+	private boolean mFillLast;
 
 
 	public VerticalFlowLayout()
@@ -52,22 +55,7 @@ public class VerticalFlowLayout implements LayoutManager
 		mGap = aGap;
 		mAnchor = aAnchor;
 		mFill = aFill;
-//		mInsets = new Insets(0, 0, 0, 0);
-		mAlignment = Alignment.LEFT;
-		mPadding = new Dimension();
-	}
-
-
-	public Alignment getAlignment()
-	{
-		return mAlignment;
-	}
-
-
-	public VerticalFlowLayout setAlignment(Alignment aAlignment)
-	{
-		mAlignment = aAlignment;
-		return this;
+		mInsets = new Insets(0, 0, 0, 0);
 	}
 
 
@@ -85,28 +73,9 @@ public class VerticalFlowLayout implements LayoutManager
 	}
 
 
-	public int getGap()
+	public VerticalFlowLayout setInsets(Insets aInsets)
 	{
-		return mGap;
-	}
-
-
-	public VerticalFlowLayout setGap(int aGap)
-	{
-		mGap = aGap;
-		return this;
-	}
-
-
-	public Dimension getPadding()
-	{
-		return mPadding;
-	}
-
-
-	public VerticalFlowLayout setPadding(Dimension aPadding)
-	{
-		mPadding = aPadding;
+		mInsets = aInsets;
 		return this;
 	}
 
@@ -143,7 +112,6 @@ public class VerticalFlowLayout implements LayoutManager
 	public void layoutContainer(Container aParent)
 	{
 		Insets insets = aParent.getInsets();
-
 		synchronized (aParent.getTreeLock())
 		{
 			int n = aParent.getComponentCount();
@@ -176,25 +144,14 @@ public class VerticalFlowLayout implements LayoutManager
 				}
 			}
 
-			int maxWidth = 0;
 			for (int i = 0; i < n; i++)
 			{
 				Component comp = aParent.getComponent(i);
 				if (comp.isVisible())
 				{
 					Dimension compDimp = comp.getPreferredSize();
-					maxWidth = Math.max(maxWidth, compDimp.width + mPadding.width);
-				}
-			}
-
-			for (int i = 0; i < n; i++)
-			{
-				Component comp = aParent.getComponent(i);
-				if (comp.isVisible())
-				{
-					Dimension compDimp = comp.getPreferredSize();
-					int compWidth = compDimp.width + mPadding.width;
-					int compHeight = compDimp.height + mPadding.height;
+					int compWidth = compDimp.width;
+					int compHeight = compDimp.height;
 
 					int x;
 					if (mFill == Fill.BOTH || mFill == Fill.VERTICAL)
@@ -208,39 +165,27 @@ public class VerticalFlowLayout implements LayoutManager
 					}
 					else
 					{
-						int adjust = compWidth;
-						switch (mAlignment)
-						{
-							case LEFT:
-								adjust = 0;
-								break;
-							case JUSTIFY:
-								adjust = mInsets.left - mInsets.right - insets.left - insets.right;
-								compWidth = maxWidth;
-								break;
-							case RIGHT:
-								adjust = maxWidth - compWidth;
-								break;
-							case CENTER:
-								adjust = maxWidth / 2 - compWidth / 2;
-								break;
-						}
 						switch (mAnchor)
 						{
 							case NORTH_WEST:
 							case WEST:
 							case SOUTH_WEST:
-								x = insets.left + mInsets.left + adjust;
+								x = insets.left + mInsets.left;
 								break;
 							case CENTER:
 							case NORTH:
 							case SOUTH:
-								x = (parentDim.width - maxWidth - mInsets.left - mInsets.right) / 2 + adjust + mInsets.left + insets.left;
+								x = (parentDim.width - mInsets.left - mInsets.right - compWidth) / 2 + mInsets.left + insets.left;
 								break;
 							default:
-								x = parentDim.width - maxWidth - mInsets.left - mInsets.right + adjust - insets.right - mInsets.right;
+								x = parentDim.width - mInsets.left - mInsets.right - compWidth - insets.right - mInsets.right;
 								break;
 						}
+					}
+
+					if (mFillLast && i == n - 1)
+					{
+						compHeight = Math.max(compHeight, parentDim.height - insets.bottom - mInsets.bottom - y);
 					}
 
 					comp.setBounds(x, y, compWidth, compHeight);
@@ -297,5 +242,12 @@ public class VerticalFlowLayout implements LayoutManager
 	public String toString()
 	{
 		return getClass().getName() + "[gap=" + mGap + ", anchor=" + mAnchor + "]";
+	}
+
+
+	public VerticalFlowLayout setFillLast(boolean aState)
+	{
+		mFillLast = aState;
+		return this;
 	}
 }

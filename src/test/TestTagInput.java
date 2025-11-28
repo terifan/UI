@@ -14,8 +14,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
+import org.terifan.ui.Orientation;
 import org.terifan.ui.Utilities;
-import org.terifan.ui.layout.VerticalFlowLayout;
+import org.terifan.ui.layout.FlowLayout;
 
 
 public class TestTagInput
@@ -31,7 +32,7 @@ public class TestTagInput
 		{
 			Utilities.setSystemLookAndFeel();
 
-			JPanel vert = new JPanel(new VerticalFlowLayout());
+			JPanel vert = new JPanel(new FlowLayout(Orientation.HORIZONTAL));
 
 			TagInput tagInput1 = new TagInput("tags", list4346, Arrays.asList("academic", "foster", "hungry", "inflation", "necessarily", "tree", "written"));
 			tagInput1.setBorder(BorderFactory.createLineBorder(Color.RED, 3));

@@ -36,11 +36,6 @@ public class SplitPane extends JComponent
 		REPEAT
 	}
 
-	public enum Orientation
-	{
-		HORIZONTAL, VERTICAL;
-	}
-
 	private int mDividerPosition;
 	private Orientation mOrientation;
 	private double mResizeWeight;
