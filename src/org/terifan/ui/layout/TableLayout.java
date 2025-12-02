@@ -7,10 +7,12 @@ import java.awt.Insets;
 import java.awt.LayoutManager2;
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import javax.swing.JComponent;
 import org.terifan.ui.Anchor;
 import org.terifan.ui.Fill;
+import org.terifan.ui.Orientation;
 
 
 public class TableLayout implements LayoutManager2
@@ -19,44 +21,109 @@ public class TableLayout implements LayoutManager2
 	private ArrayList<ArrayList<Component>> mComponents;
 	private ArrayList<Integer> mColumnWidths;
 	private ArrayList<Integer> mRowHeights;
-	private HashMap<Component,Params> mParams;
+	private HashMap<Component, LayoutParams> mParams;
 	private int mWidth;
 	private int mHeight;
 	private int mSpacingX;
 	private int mSpacingY;
-	private Params mDefaultParams;
+	private LayoutParams mDefaultParams;
+	private final Orientation mOrientation;
+	private final int mCellCount;
+	private final float[] mWeights;
 
 
-	public TableLayout()
+	public TableLayout(Orientation aOrientation, float... aWeights)
 	{
-		this(0, 0);
+		this(aOrientation, aWeights.length);
+
+		System.arraycopy(aWeights, 0, mWeights, 0, aWeights.length);
 	}
 
 
-	public TableLayout(int aSpacingX, int aSpacingY)
+	public TableLayout(Orientation aOrientation, int aCellCount)
 	{
+		mOrientation = aOrientation;
+		mCellCount = aCellCount;
+
 		mColumnWidths = new ArrayList<>();
 		mRowHeights = new ArrayList<>();
 		mComponents = new ArrayList<>();
-		mSpacingX = aSpacingX;
-		mSpacingY = aSpacingY;
+		mWeights = new float[aCellCount];
+
+		Arrays.fill(mWeights, 1f);
 
 		mParams = new HashMap<>();
-		mCurrentRow = new ArrayList<>();
-		mComponents.add(mCurrentRow);
 
-		mDefaultParams = new Params(Fill.BOTH, Anchor.WEST, new Dimension(0, 0));
+		mDefaultParams = new LayoutParams().setFill(Fill.NONE).setAnchor(Anchor.WEST).setPadding(new Dimension(0, 0)).setMargins(new Insets(0, 0, 0, 0));
+	}
+
+
+	public int getSpacingX()
+	{
+		return mSpacingX;
+	}
+
+
+	public TableLayout setSpacingX(int aSpacingX)
+	{
+		this.mSpacingX = aSpacingX;
+		return this;
+	}
+
+
+	public int getSpacingY()
+	{
+		return mSpacingY;
+	}
+
+
+	public TableLayout setSpacingY(int aSpacingY)
+	{
+		this.mSpacingY = aSpacingY;
+		return this;
+	}
+
+
+	public LayoutParams getDefaultParams()
+	{
+		return mDefaultParams;
+	}
+
+
+	public TableLayout setDefaultParams(LayoutParams aDefaultParams)
+	{
+		mDefaultParams = aDefaultParams;
+		return this;
 	}
 
 
 	@Override
 	public void addLayoutComponent(Component aComponent, Object aConstraints)
 	{
+		if (mCurrentRow == null)
+		{
+			mCurrentRow = new ArrayList<>();
+			mComponents.add(mCurrentRow);
+		}
+
 		mCurrentRow.add(aComponent);
 
-		if (aConstraints != null)
+		if (aConstraints instanceof LayoutParams v)
 		{
-			mParams.put(aComponent, (Params)aConstraints);
+			mParams.put(aComponent, v);
+		}
+		else if (aConstraints instanceof Anchor v)
+		{
+			mParams.put(aComponent, new LayoutParams().setAnchor(v));
+		}
+		else if (aConstraints instanceof Fill v)
+		{
+			mParams.put(aComponent, new LayoutParams().setFill(v));
+		}
+
+		if (mCurrentRow.size() == mCellCount)
+		{
+			mCurrentRow = null;
 		}
 	}
 
@@ -64,7 +131,18 @@ public class TableLayout implements LayoutManager2
 	@Override
 	public void addLayoutComponent(String aName, Component aComponent)
 	{
+		if (mCurrentRow == null)
+		{
+			mCurrentRow = new ArrayList<>();
+			mComponents.add(mCurrentRow);
+		}
+
 		mCurrentRow.add(aComponent);
+
+		if (mCurrentRow.size() == mCellCount)
+		{
+			mCurrentRow = null;
+		}
 	}
 
 
@@ -188,6 +266,10 @@ public class TableLayout implements LayoutManager2
 				{
 					Component comp = row.get(ix);
 					Dimension dim = comp.getPreferredSize();
+					Insets margins = getMargins(comp) instanceof Insets v ? v : mDefaultParams.mMargins;
+
+					dim.width += margins.left + margins.right;
+					dim.width += margins.top + margins.bottom;
 
 					floatW += mColumnWidths.get(ix) + extraW / (double)maxCols;
 					floatH += mRowHeights.get(iy) + extraH / (double)rowCount;
@@ -199,6 +281,9 @@ public class TableLayout implements LayoutManager2
 
 					Rectangle compBounds = new Rectangle(0, 0, dim.width, dim.height);
 					Rectangle cellBounds = new Rectangle(compX, compY, cellW, cellH);
+
+					compBounds.x += margins.left;
+					compBounds.y += margins.top;
 
 					getFill(comp).scale(compBounds, cellBounds);
 					getAnchor(comp).translate(compBounds, cellBounds);
@@ -226,16 +311,6 @@ public class TableLayout implements LayoutManager2
 	}
 
 
-	public synchronized void advanceRow()
-	{
-		if (!mCurrentRow.isEmpty())
-		{
-			mCurrentRow = new ArrayList<>();
-			mComponents.add(mCurrentRow);
-		}
-	}
-
-
 	@Override
 	public Dimension maximumLayoutSize(Container aTarget)
 	{
@@ -245,92 +320,75 @@ public class TableLayout implements LayoutManager2
 
 	private Fill getFill(Component aComponent)
 	{
-		Params params = mParams.getOrDefault(aComponent, mDefaultParams);
+		LayoutParams params = mParams.getOrDefault(aComponent, mDefaultParams);
 		return params.mFill != null ? params.mFill : mDefaultParams.mFill;
 	}
 
 
 	private Anchor getAnchor(Component aComponent)
 	{
-		Params params = mParams.getOrDefault(aComponent, mDefaultParams);
+		LayoutParams params = mParams.getOrDefault(aComponent, mDefaultParams);
 		return params.mAnchor != null ? params.mAnchor : mDefaultParams.mAnchor;
+	}
+
+
+	private Insets getMargins(Component aComponent)
+	{
+		LayoutParams params = mParams.getOrDefault(aComponent, mDefaultParams);
+		return params.mMargins != null ? params.mMargins : mDefaultParams.mMargins;
 	}
 
 
 	private Dimension getPadding(Component aComponent)
 	{
-		Params params = mParams.getOrDefault(aComponent, mDefaultParams);
+		LayoutParams params = mParams.getOrDefault(aComponent, mDefaultParams);
 		return params.mPadding != null ? params.mPadding : mDefaultParams.mPadding;
 	}
 
 
-	private float getWeightX(Component aComponent)
-	{
-		Params params = mParams.getOrDefault(aComponent, mDefaultParams);
-		return params.mWeightX != null ? params.mWeightX : mDefaultParams.mWeightX;
-	}
-
-
-	private float getWeightY(Component aComponent)
-	{
-		Params params = mParams.getOrDefault(aComponent, mDefaultParams);
-		return params.mWeightY != null ? params.mWeightY : mDefaultParams.mWeightY;
-	}
-
-
-	public static class Params
+	public static class LayoutParams
 	{
 		Fill mFill;
 		Anchor mAnchor;
 		Dimension mPadding;
-		Float mWeightX;
-		Float mWeightY;
+		Insets mMargins;
 
 
-		public Params()
+		public LayoutParams()
 		{
 		}
 
 
-		public Params(Fill aFill, Anchor aAnchor, Dimension aPadding)
+		public Insets getMargins()
 		{
-			mFill = aFill;
-			mAnchor = aAnchor;
-			mPadding = aPadding;
+			return mMargins;
 		}
 
 
-		public Params setFill(Fill aFill)
+		public LayoutParams setMargins(Insets aMargins)
+		{
+			this.mMargins = aMargins;
+			return this;
+		}
+
+
+		public LayoutParams setFill(Fill aFill)
 		{
 			this.mFill = aFill;
 			return this;
 		}
 
 
-		public Params setAnchor(Anchor aAnchor)
+		public LayoutParams setAnchor(Anchor aAnchor)
 		{
 			this.mAnchor = aAnchor;
 			return this;
 		}
 
 
-		public Params setPadding(Dimension aPadding)
+		public LayoutParams setPadding(Dimension aPadding)
 		{
 			this.mPadding = aPadding;
-			return this;
-		}
-
-
-		public Params setWeigthX(Float aWeigthX)
-		{
-			this.mWeightX = aWeigthX;
-			return this;
-		}
-
-
-		public Params setWeigthY(Float aWeigthY)
-		{
-			this.mWeightY = aWeigthY;
 			return this;
 		}
 	}
