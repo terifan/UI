@@ -1,4 +1,4 @@
-package org.terifan.ui._deprecated;
+package deprecated;
 
 import java.awt.Color;
 import java.awt.Font;

@@ -1,26 +1,17 @@
-package org.terifan.ui.layout;
+package deprecated;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.util.Arrays;
-import javax.swing.BorderFactory;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 
 /**
  * This layout combines a flow layout and grid layout.
- *
- * aaa | bb    | cccc
- * dd  | eeeee | f
  */
-public class FlexibleGridLayout implements LayoutManager
+public class ColumnLayout implements LayoutManager
 {
 	private int mHorGap;
 	private int mVerGap;
@@ -32,7 +23,7 @@ public class FlexibleGridLayout implements LayoutManager
 	private Dimension[] mColumnMinimumSize;
 
 
-	public FlexibleGridLayout(int aColumns, int aHorGap, int aVerGap)
+	public ColumnLayout(int aColumns, int aHorGap, int aVerGap)
 	{
 		if (aColumns < 1)
 		{
@@ -51,7 +42,7 @@ public class FlexibleGridLayout implements LayoutManager
 	}
 
 
-	public FlexibleGridLayout setColumnMinimumSize(int aColumnIndex, Dimension aDimension)
+	public ColumnLayout setColumnMinimumSize(int aColumnIndex, Dimension aDimension)
 	{
 		mColumnMinimumSize[aColumnIndex] = aDimension;
 		return this;
@@ -64,7 +55,7 @@ public class FlexibleGridLayout implements LayoutManager
 	}
 
 
-	public FlexibleGridLayout setFillVertical(boolean aFillVertical)
+	public ColumnLayout setFillVertical(boolean aFillVertical)
 	{
 		mFillVertical = aFillVertical;
 		return this;
@@ -77,7 +68,7 @@ public class FlexibleGridLayout implements LayoutManager
 	}
 
 
-	public FlexibleGridLayout setColumnResizeWeight(int aColumnIndex, double aWeight)
+	public ColumnLayout setColumnResizeWeight(int aColumnIndex, double aWeight)
 	{
 		mColumnResizeWeight[aColumnIndex] = aWeight;
 		return this;
@@ -90,7 +81,7 @@ public class FlexibleGridLayout implements LayoutManager
 	}
 
 
-	public FlexibleGridLayout setColumnMargin(int aColumnIndex, Insets aInsets)
+	public ColumnLayout setColumnMargin(int aColumnIndex, Insets aInsets)
 	{
 		mColumnMargin[aColumnIndex] = aInsets;
 		return this;
@@ -103,7 +94,7 @@ public class FlexibleGridLayout implements LayoutManager
 	}
 
 
-	public FlexibleGridLayout setColumnPadding(int aColumnIndex, Insets aInsets)
+	public ColumnLayout setColumnPadding(int aColumnIndex, Insets aInsets)
 	{
 		mColumnPadding[aColumnIndex] = aInsets;
 		return this;
@@ -117,28 +108,28 @@ public class FlexibleGridLayout implements LayoutManager
 
 
 	@Override
-	public void addLayoutComponent(String name, Component comp)
+	public void addLayoutComponent(String aName, Component aComp)
 	{
 	}
 
 
 	@Override
-	public void removeLayoutComponent(Component comp)
+	public void removeLayoutComponent(Component aComp)
 	{
 	}
 
 
 	@Override
-	public Dimension preferredLayoutSize(Container parent)
+	public Dimension preferredLayoutSize(Container aParent)
 	{
-		return computeSize(parent, true, new int[mColumns], null);
+		return computeSize(aParent, true, new int[mColumns], null);
 	}
 
 
 	@Override
-	public Dimension minimumLayoutSize(Container parent)
+	public Dimension minimumLayoutSize(Container aParent)
 	{
-		return computeSize(parent, false, new int[mColumns], null);
+		return computeSize(aParent, false, new int[mColumns], null);
 	}
 
 
@@ -151,12 +142,12 @@ public class FlexibleGridLayout implements LayoutManager
 			int w = aParent.getWidth();
 			int h = aParent.getHeight();
 
+			int n = aParent.getComponentCount();
 			int[] widths = new int[mColumns];
-			int[] heights = new int[aParent.getComponentCount() / mColumns];
+			int[] heights = new int[n / mColumns];
 			Dimension prefSize = computeSize(aParent, true, widths, heights);
 
 			int extraHeight = mFillVertical ? Math.max(0, (h - prefSize.height) / heights.length) : 0;
-			int n = aParent.getComponentCount();
 
 			double totalWeight = 0;
 			for (double rw : mColumnResizeWeight)
@@ -187,7 +178,7 @@ public class FlexibleGridLayout implements LayoutManager
 						int cw = widths[column];
 
 						double rw = mColumnResizeWeight[column];
-						if (rw > 0 && extraWidth > 0)
+						if (rw > 0)
 						{
 							int s = (int)(rw * extraWidth / resizeWeight);
 							resizeWeight -= rw;
@@ -195,11 +186,11 @@ public class FlexibleGridLayout implements LayoutManager
 							cw += s;
 						}
 
-						Insets margin = mColumnMargin[column];
+						Insets m = mColumnMargin[column];
 
-						if (margin != null)
+						if (m != null)
 						{
-							comp.setBounds(x + margin.left, y + margin.top, cw - margin.left - margin.right, rh - margin.top - margin.bottom);
+							comp.setBounds(x + m.left, y + m.top, cw - m.left - m.right, rh - m.top - m.bottom);
 						}
 						else
 						{
@@ -216,16 +207,17 @@ public class FlexibleGridLayout implements LayoutManager
 	}
 
 
-	private Dimension computeSize(Container parent, boolean aPreferred, int[] widths, int[] heights)
+	private Dimension computeSize(Container aParent, boolean aPreferred, int[] aWidths, int[] aHeights)
 	{
-		synchronized (parent.getTreeLock())
+		synchronized (aParent.getTreeLock())
 		{
-			if ((parent.getComponentCount() % mColumns) != 0)
+			int n = aParent.getComponentCount();
+
+			if ((n % mColumns) != 0)
 			{
-				throw new IllegalStateException("Number of items must be dividable by the number of columns: item count=" + parent.getComponentCount() + ", columns=" + mColumns);
+				throw new IllegalStateException("Number of items must be dividable by the number of columns: item count=" + n + ", columns=" + mColumns);
 			}
 
-			int n = parent.getComponentCount();
 			int height = 0;
 
 			for (int row = 0, i = 0; i < n; row++)
@@ -234,7 +226,7 @@ public class FlexibleGridLayout implements LayoutManager
 
 				for (int column = 0; column < mColumns; column++, i++)
 				{
-					Component comp = parent.getComponent(i);
+					Component comp = aParent.getComponent(i);
 
 					if (comp.isVisible())
 					{
@@ -262,13 +254,13 @@ public class FlexibleGridLayout implements LayoutManager
 						}
 
 						h = Math.max(h, d.height);
-						widths[column] = Math.max(widths[column], d.width);
+						aWidths[column] = Math.max(aWidths[column], d.width);
 					}
 				}
 
-				if (heights != null)
+				if (aHeights != null)
 				{
-					heights[row] = h;
+					aHeights[row] = h;
 				}
 
 				height += h;
@@ -280,7 +272,7 @@ public class FlexibleGridLayout implements LayoutManager
 			}
 
 			int width = 0;
-			for (int w : widths)
+			for (int w : aWidths)
 			{
 				if (w > 0 && width > 0)
 				{
@@ -289,58 +281,9 @@ public class FlexibleGridLayout implements LayoutManager
 				width += w;
 			}
 
-			Insets insets = parent.getInsets();
+			Insets insets = aParent.getInsets();
 
 			return new Dimension(width + insets.left + insets.right, height + insets.top + insets.bottom);
 		}
-	}
-
-
-	public static void main(String ... args)
-	{
-		try
-		{
-			FlexibleGridLayout layout = new FlexibleGridLayout(3, 0, 0);
-			layout.setColumnResizeWeight(0, 1);
-			layout.setColumnResizeWeight(1, 5);
-			layout.setColumnResizeWeight(2, 2);
-			layout.setColumnMinimumSize(0, new Dimension(100, 0));
-			layout.setFillVertical(true);
-
-			JPanel panel = new JPanel(layout);
-			panel.add(newLabel("aaaaaaaaaaa"));
-			panel.add(newLabel("bbbbbbbbbb"));
-			panel.add(newLabel("cccccccc"));
-			panel.add(newLabel("ddddddddddddddddddddddd"));
-			panel.add(newLabel("eeeee"));
-			panel.add(newLabel("fffffffffffffffffff"));
-			panel.add(newLabel("ggggggggggggggggggggggggggggggggg"));
-			panel.add(newLabel("hhhhhhhh"));
-			panel.add(newLabel("iiiiiii"));
-			panel.add(newLabel("jjjjjjjjjjjjjjjjjjjjjjj"));
-			panel.add(newLabel(""));
-			panel.add(newLabel(""));
-
-			JFrame frame = new JFrame();
-			frame.add(panel);
-			frame.setSize(1024, 768);
-			frame.setLocationRelativeTo(null);
-			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			frame.setVisible(true);
-		}
-		catch (Throwable e)
-		{
-			e.printStackTrace(System.out);
-		}
-	}
-
-	private static JLabel newLabel(String aText)
-	{
-		JLabel x = new JLabel(aText);
-		x.setOpaque(true);
-		x.setBackground(Color.YELLOW);
-		x.setFont(new Font("arial",Font.PLAIN,20));
-		x.setBorder(BorderFactory.createLineBorder(Color.RED));
-		return x;
 	}
 }

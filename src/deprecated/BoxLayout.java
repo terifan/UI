@@ -1,4 +1,4 @@
-package org.terifan.ui.layout;
+package deprecated;
 
 import java.awt.Color;
 import java.awt.Component;

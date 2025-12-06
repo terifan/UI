@@ -22,14 +22,15 @@ public class TableLayout implements LayoutManager2
 	private ArrayList<Integer> mColumnWidths;
 	private ArrayList<Integer> mRowHeights;
 	private HashMap<Component, LayoutParams> mParams;
-	private int mWidth;
-	private int mHeight;
+//	private int mWidth;
+//	private int mHeight;
 	private int mSpacingX;
 	private int mSpacingY;
 	private LayoutParams mDefaultParams;
 	private final Orientation mOrientation;
 	private final int mCellCount;
 	private final float[] mWeights;
+	private int mCounter;
 
 
 	public TableLayout(Orientation aOrientation, float... aWeights)
@@ -100,13 +101,11 @@ public class TableLayout implements LayoutManager2
 	@Override
 	public void addLayoutComponent(Component aComponent, Object aConstraints)
 	{
-		if (mCurrentRow == null)
+		if ((mCounter % mCellCount) == 0)
 		{
 			mCurrentRow = new ArrayList<>();
 			mComponents.add(mCurrentRow);
 		}
-
-		mCurrentRow.add(aComponent);
 
 		if (aConstraints instanceof LayoutParams v)
 		{
@@ -121,28 +120,22 @@ public class TableLayout implements LayoutManager2
 			mParams.put(aComponent, new LayoutParams().setFill(v));
 		}
 
-		if (mCurrentRow.size() == mCellCount)
-		{
-			mCurrentRow = null;
-		}
+		mCurrentRow.add(aComponent);
+		mCounter += getColSpan(aComponent);
 	}
 
 
 	@Override
 	public void addLayoutComponent(String aName, Component aComponent)
 	{
-		if (mCurrentRow == null)
+		if ((mCounter % mCellCount) == 0)
 		{
 			mCurrentRow = new ArrayList<>();
 			mComponents.add(mCurrentRow);
 		}
 
 		mCurrentRow.add(aComponent);
-
-		if (mCurrentRow.size() == mCellCount)
-		{
-			mCurrentRow = null;
-		}
+		mCounter += getColSpan(aComponent);
 	}
 
 
@@ -205,6 +198,10 @@ public class TableLayout implements LayoutManager2
 				{
 					JComponent comp = (JComponent)mComponents.get(iy).get(ix);
 					Dimension dim = comp.getPreferredSize();
+					Insets margins = getMargins(comp) instanceof Insets v ? v : mDefaultParams.mMargins;
+
+					dim.width += margins.left + margins.right;
+					dim.height += margins.top + margins.bottom;
 
 					rowHeight = Math.max(rowHeight, dim.height);
 
@@ -225,8 +222,8 @@ public class TableLayout implements LayoutManager2
 
 			mColumnWidths = columnWidths;
 			mRowHeights = rowHeights;
-			mWidth = columnWidths.stream().mapToInt(e -> e).sum() + mSpacingX * (maxColumns - 1) + aParent.getInsets().left + aParent.getInsets().right;
-			mHeight = rowHeights.stream().mapToInt(e -> e).sum() + mSpacingY * (rowCount - 1) + aParent.getInsets().top + aParent.getInsets().bottom;
+			int mWidth = columnWidths.stream().mapToInt(e -> e).sum() + mSpacingX * (maxColumns - 1) + aParent.getInsets().left + aParent.getInsets().right;
+			int mHeight = rowHeights.stream().mapToInt(e -> e).sum() + mSpacingY * (rowCount - 1) + aParent.getInsets().top + aParent.getInsets().bottom;
 
 			return new Dimension(mWidth, mHeight);
 		}
@@ -242,13 +239,25 @@ public class TableLayout implements LayoutManager2
 		{
 			int rowCount = getRowCount();
 
-			int extraW = aParent.getWidth() - mWidth;
-			int extraH = aParent.getHeight() - mHeight;
+			Dimension size = layoutSize(aParent, false);
 
-			int maxCols = 0;
-			for (int iy = 0; iy < mRowHeights.size() && iy < rowCount; iy++)
+			int extraW = aParent.getWidth() - size.width;
+			int extraH = aParent.getHeight() - size.height;
+
+			double totalWeight = 0;
+			for (int i = 0; i < mCellCount; i++)
 			{
-				maxCols = Math.max(maxCols, mColumnWidths.size());
+				totalWeight += mWeights[i];
+			}
+			if (totalWeight == 0)
+			{
+				totalWeight = 1;
+			}
+
+			double[] columnWidths = new double[mCellCount];
+			for (int i = 0; i < mCellCount; i++)
+			{
+				columnWidths[i] = mColumnWidths.get(i) + extraW * mWeights[i] / totalWeight;
 			}
 
 			int rowY = insets.top;
@@ -259,25 +268,25 @@ public class TableLayout implements LayoutManager2
 
 				ArrayList<Component> row = mComponents.get(iy);
 
-				double floatW = 0;
-				double floatH = 0;
+				double realX = 0;
+				double realY = 0;
 
-				for (int ix = 0; ix < mColumnWidths.size() && ix < row.size(); ix++)
+				for (int colIndex = 0; colIndex < mColumnWidths.size() && colIndex < row.size();)
 				{
-					Component comp = row.get(ix);
+					Component comp = row.get(colIndex);
 					Dimension dim = comp.getPreferredSize();
 					Insets margins = getMargins(comp) instanceof Insets v ? v : mDefaultParams.mMargins;
+					Dimension padding = getPadding(comp);
 
-					dim.width += margins.left + margins.right;
-					dim.width += margins.top + margins.bottom;
+					dim.width += padding.width;
+					dim.height += margins.top + margins.bottom + padding.height;
 
-					floatW += mColumnWidths.get(ix) + extraW / (double)maxCols;
-					floatH += mRowHeights.get(iy) + extraH / (double)rowCount;
+					realX += columnWidths[colIndex];
 
 					int compX = rowX;
 					int compY = rowY;
-					int cellW = (int)floatW;
-					int cellH = (int)floatH;
+					int cellW = (int)realX;
+					int cellH = (int)realY;
 
 					Rectangle compBounds = new Rectangle(0, 0, dim.width, dim.height);
 					Rectangle cellBounds = new Rectangle(compX, compY, cellW, cellH);
@@ -290,12 +299,15 @@ public class TableLayout implements LayoutManager2
 
 					comp.setBounds(compBounds);
 
-					rowX += mColumnWidths.get(ix) + mSpacingX + extraW / maxCols;
-					floatW -= cellW;
-					floatH -= cellH;
+					for (int i = 0; i < getColSpan(comp); i++, colIndex++)
+					{
+						rowX += columnWidths[colIndex] + mSpacingX;
+					}
+					realX -= cellW;
+					realY -= cellH;
 				}
 
-				rowY += mRowHeights.get(iy) + mSpacingY + extraH / rowCount;
+				rowY += mRowHeights.get(iy) + mSpacingY;
 			}
 		}
 	}
@@ -346,12 +358,20 @@ public class TableLayout implements LayoutManager2
 	}
 
 
+	private int getColSpan(Component aComponent)
+	{
+		return mParams.getOrDefault(aComponent, mDefaultParams).mColSpan;
+	}
+
+
 	public static class LayoutParams
 	{
 		Fill mFill;
 		Anchor mAnchor;
 		Dimension mPadding;
 		Insets mMargins;
+		int mColSpan = 1;
+		int mRowSpan = 1;
 
 
 		public LayoutParams()
@@ -389,6 +409,20 @@ public class TableLayout implements LayoutManager2
 		public LayoutParams setPadding(Dimension aPadding)
 		{
 			this.mPadding = aPadding;
+			return this;
+		}
+
+
+		public LayoutParams setColSpan(int aColSpan)
+		{
+			this.mColSpan = aColSpan;
+			return this;
+		}
+
+
+		public LayoutParams setRowSpan(int aRowSpan)
+		{
+			this.mRowSpan = aRowSpan;
 			return this;
 		}
 	}

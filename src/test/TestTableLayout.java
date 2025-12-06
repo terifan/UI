@@ -1,14 +1,8 @@
 package test;
 
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Insets;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.Random;
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -20,7 +14,6 @@ import javax.swing.JTextField;
 import org.terifan.ui.Anchor;
 import org.terifan.ui.Fill;
 import org.terifan.ui.Orientation;
-import org.terifan.ui.layout.FlowLayout;
 import org.terifan.ui.layout.TableLayout;
 
 
@@ -31,27 +24,28 @@ public class TestTableLayout
 		try
 		{
 			TableLayout.LayoutParams labelParams = new TableLayout.LayoutParams().setAnchor(Anchor.EAST).setMargins(new Insets(0, 0, 8, 0));
-			TableLayout.LayoutParams inputParams = new TableLayout.LayoutParams().setAnchor(Anchor.WEST).setFill(Fill.HORIZONTAL);
+			TableLayout.LayoutParams inputParams = new TableLayout.LayoutParams().setAnchor(Anchor.WEST);
 			TableLayout layout = new TableLayout(Orientation.VERTICAL, 0f, 1f);
 
 			JPanel panel = new JPanel(layout);
-			panel.add(new JLabel("Aaaaaaaa1"), labelParams);
+			panel.add(label("Title"), new TableLayout.LayoutParams().setAnchor(Anchor.CENTER).setColSpan(2));
+			panel.add(label("Aaaaaaaa1"), labelParams);
 			panel.add(new JTextField("Bbbbbbbb1"), inputParams);
-			panel.add(new JLabel("Aaaaaaaa2"), labelParams);
+			panel.add(label("Aaaaaaaa2"), labelParams);
 			panel.add(new JTextField("Bbbbbbbb2"), inputParams);
-			panel.add(new JLabel("Aaaaaaaa3"), labelParams);
+			panel.add(label("Aaaaaaaa3"), labelParams);
 			panel.add(new JTextField("Bbbbbbbb3"), inputParams);
-			panel.add(new JLabel("Aaaaaaaa4"), labelParams);
+			panel.add(label("Aaaaaaaa4"), labelParams);
 			panel.add(new JTextField("Bbbbbbbb4"), inputParams);
-			panel.add(new JLabel("Aaaaaaaa5"), labelParams);
+			panel.add(label("Aaaaaaaa5"), labelParams);
 			panel.add(new JTextField("Bbbbbbbb5"), inputParams);
-			panel.add(new JLabel("Aaaaaaaa6"), labelParams);
+			panel.add(label("Aaaaaaaa6"), labelParams);
 			panel.add(new JTextField("Bbbbbbbb6"), inputParams);
-			panel.add(new JLabel("Aaaaaaaa7"), labelParams);
+			panel.add(label("Aaaaaaaa7"), labelParams);
 			panel.add(new JTextField("Bbbbbbbb7"), inputParams);
-			panel.add(new JLabel("Aaaaaaaa8"), labelParams);
+			panel.add(label("Aaaaaaaa8"), labelParams);
 			panel.add(new JTextField("Bbbbbbbb8"), inputParams);
-			panel.add(new JLabel("Aaaaaaaa9"), labelParams);
+			panel.add(label("Aaaaaaaa9"), labelParams);
 			panel.add(new JTextField("Bbbbbbbb9"), inputParams);
 
 			JTabbedPane tabbedPane = new JTabbedPane();
@@ -70,6 +64,15 @@ public class TestTableLayout
 		{
 			e.printStackTrace(System.out);
 		}
+	}
+
+
+	private static JLabel label(String aText)
+	{
+		JLabel label = new JLabel(aText);
+		label.setOpaque(true);
+		label.setBackground(new Color(new Random().nextInt(0xffffff)));
+		return label;
 	}
 
 //	public static void xmain(String... args)

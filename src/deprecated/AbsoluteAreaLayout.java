@@ -1,4 +1,4 @@
-package org.terifan.ui.layout;
+package deprecated;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -10,15 +10,17 @@ import java.util.HashMap;
 import javax.swing.JComponent;
 
 
-public class StackedLayout implements LayoutManager2
+public class AbsoluteAreaLayout implements LayoutManager2
 {
-	private HashMap<Component,LayoutParams> mConstraints;
+	private HashMap<Component,Rectangle> mConstraints;
 	private int mVerGap;
+	private int mHorGap;
 
 
-	public StackedLayout(int aVerGap)
+	public AbsoluteAreaLayout(int aHorGap, int aVerGap)
 	{
 		mConstraints = new HashMap<>();
+		mHorGap = aHorGap;
 		mVerGap = aVerGap;
 	}
 
@@ -26,7 +28,7 @@ public class StackedLayout implements LayoutManager2
 	@Override
 	public void addLayoutComponent(Component aComp, Object aConstraints)
 	{
-		mConstraints.put(aComp, (LayoutParams)aConstraints);
+		mConstraints.put(aComp, (Rectangle)aConstraints);
 	}
 
 
@@ -82,21 +84,16 @@ public class StackedLayout implements LayoutManager2
 			}
 
 			Rectangle bounds = null;
-			int height = 0;
 
-			for (int i = 0; i < aParent.getComponentCount(); i++)
+			for (int i = 0; i < aParent.getComponentCount(); i++) // ??? i = 1
 			{
-				Component comp = aParent.getComponent(i);
+				Component component = aParent.getComponent(i);
 
-				if (comp.isVisible())
+				if (component.isVisible())
 				{
-					LayoutParams params = mConstraints.get(comp);
-					Rectangle tmp = comp.getBounds();
-					tmp.x = 0;
-					tmp.y = height;
-					tmp.width = comp.getPreferredSize().width;
-					tmp.height = Math.max(comp.getPreferredSize().height, params.height);
-					height += tmp.height;
+					Rectangle tmp = component.getBounds();
+					tmp.width = component.getPreferredSize().width; // ??? minimum
+					tmp.height = component.getPreferredSize().height;
 					if (bounds == null)
 					{
 						bounds = new Rectangle(tmp);
@@ -146,12 +143,12 @@ public class StackedLayout implements LayoutManager2
 				h -= borderInsets.top + borderInsets.bottom;
 			}
 
-			Dimension prefSize = guessPreferredSize(aParent);
 			if (w <= 0)
 			{
-				w = prefSize.width;
+				Dimension d = guessPreferredSize(aParent);
+				w = d.width;
+				h = d.height;
 			}
-			int extraHeight = Math.max(h - prefSize.height, 0);
 
 			for (int i = 0; i < aParent.getComponentCount(); i++)
 			{
@@ -159,20 +156,27 @@ public class StackedLayout implements LayoutManager2
 
 				if (comp.isVisible())
 				{
-					LayoutParams params = mConstraints.get(comp);
-					int ix = x;
-					int iy = y;
-					int iw = w;
-					int ih = (int)(Math.max(params.height, comp.getPreferredSize().height) + params.weight * extraHeight);
+					Rectangle rect = mConstraints.get(comp);
+					int ix = x + (int)(rect.x * w / 100.0);
+					int iy = y + (int)(rect.y * h / 100.0);
+					int iw = (int)(rect.width * w / 100.0);
+					int ih = (int)(rect.height * h / 100.0);
+					if (ix + iw < w)
+					{
+						iw -= mHorGap;
+					}
+					if (iy + ih < h)
+					{
+						ih -= mVerGap;
+					}
 					comp.setBounds(ix, iy, iw, ih);
-					y += ih + mVerGap;
 				}
 			}
 		}
 	}
 
 
-	public LayoutParams getConstraints(Component aComponent)
+	public Rectangle getConstraints(Component aComponent)
 	{
 		return mConstraints.get(aComponent);
 	}
@@ -189,28 +193,29 @@ public class StackedLayout implements LayoutManager2
 
 			if (comp.isVisible())
 			{
-				LayoutParams params = mConstraints.get(comp);
+				Rectangle rect = mConstraints.get(comp);
 
 				Dimension dim = comp.getPreferredSize();
 
-				w = Math.max(w, dim.width);
-				h += mVerGap + Math.max(dim.height, params.height);
+				if (rect.width >= 100)
+				{
+					w = (int)Math.max(w, mHorGap + dim.width);
+				}
+				else
+				{
+					w = (int)Math.max(w, mHorGap + dim.width / (1 - rect.width / 100.0));
+				}
+				if (rect.height >= 100)
+				{
+					h = (int)Math.max(h, mVerGap + dim.height);
+				}
+				else
+				{
+					h = (int)Math.max(h, mVerGap + dim.height / (1 - rect.height / 100.0));
+				}
 			}
 		}
 
-		return new Dimension(w, h == 0 ? 0 : h - mVerGap);
-	}
-
-
-	public static class LayoutParams
-	{
-		int height;
-		double weight;
-
-		public LayoutParams(int aHeight, double aWeight)
-		{
-			height = aHeight;
-			weight = aWeight;
-		}
+		return new Dimension(w, h);
 	}
 }
