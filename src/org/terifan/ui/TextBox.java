@@ -594,8 +594,6 @@ public class TextBox implements Cloneable, Serializable
 		bounds.width += mMargins.left + mMargins.right;
 		bounds.height += mMargins.top + mMargins.bottom;
 
-//		bounds.width += mPadding.left + mPadding.right;
-//		bounds.height += mPadding.top + mPadding.bottom;
 		return bounds;
 	}
 
@@ -774,7 +772,6 @@ public class TextBox implements Cloneable, Serializable
 			boxH -= bi.top + bi.bottom;
 		}
 
-		int borderHeight = 0;
 		if (mTextBorder != null)
 		{
 			Insets bi = mTextBorder.getBorderInsets(null);
@@ -782,7 +779,6 @@ public class TextBox implements Cloneable, Serializable
 			boxY += bi.top;
 			boxW -= bi.left + bi.right;
 			boxH -= bi.top + bi.bottom;
-			borderHeight = bi.top + bi.bottom;
 		}
 
 		LineMetrics lm = mFont.getLineMetrics("Adgjy", aFontRenderContext);
@@ -804,7 +800,7 @@ public class TextBox implements Cloneable, Serializable
 			case SOUTH_EAST:
 			case SOUTH:
 			case SOUTH_WEST:
-				lineY += Math.max(0, boxHeightExtra - lineCount * lineHeightExtra - borderHeight);
+				lineY += Math.max(0, boxHeightExtra - lineCount * lineHeightExtra);
 				break;
 			case CENTER:
 			case WEST:
@@ -993,7 +989,6 @@ public class TextBox implements Cloneable, Serializable
 		}
 
 		int adjust = (int)(aLineMetrics.getHeight() - aLineMetrics.getDescent());
-//		int adjust = (int)Math.ceil(aLineMetrics.getHeight() - aLineMetrics.getAscent() / 2 + aLineMetrics.getDescent() / 2);
 
 		int ix = aOffsetX + mPadding.left;
 		int iy = aOffsetY + adjust + mPadding.top;

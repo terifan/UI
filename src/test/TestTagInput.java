@@ -2,20 +2,26 @@ package test;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import org.terifan.ui.taginput.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import org.terifan.ui.Orientation;
 import org.terifan.ui.Utilities;
+import org.terifan.ui.layout.Box;
 import org.terifan.ui.layout.FlowLayout;
 
 
@@ -32,41 +38,61 @@ public class TestTagInput
 		{
 			Utilities.setSystemLookAndFeel();
 
-			JPanel vert = new JPanel(new FlowLayout(Orientation.HORIZONTAL));
-
-			TagInput tagInput1 = new TagInput("tags", list4346, Arrays.asList("academic", "foster", "hungry", "inflation", "necessarily", "tree", "written"));
+			TagInput tagInput1 = new TagInput("Occupations:", list4346, Arrays.asList("academic", "foster", "hungry", "inflation", "necessarily", "tree", "written"));
 			tagInput1.setBorder(BorderFactory.createLineBorder(Color.RED, 3));
-			vert.add(tagInput1);
 
-			TagInput tagInput2 = new TagInput("tags tags tags tags tags tags tags", list4346, Arrays.asList("academic", "foster", "hungry", "inflation", "necessarily", "tree", "written"));
+			TagInput tagInput2 = new TagInput("Interrests:", list4346, Arrays.asList("academic", "foster", "hungry", "inflation", "necessarily", "tree", "written"));
 			tagInput2.setBorder(BorderFactory.createLineBorder(Color.RED, 3));
+
+			TagInput tagInput3 = new TagInput("", list4346, Arrays.asList("academic", "foster", "necessarily", "tree", "written"));
+			tagInput3.setBorder(BorderFactory.createLineBorder(Color.RED, 3));
+
+			Box vert = new Box(Orientation.VERTICAL);
+
+			vert.add(new Box(Orientation.HORIZONTAL, new JButton(new AbstractAction("Add")
+			{
+				@Override
+				public void actionPerformed(ActionEvent aEvent)
+				{
+					tagInput1.addTag(list4346.get(new Random().nextInt(list4346.size())), true);
+					vert.invalidate();
+					vert.validate();
+				}
+			}), new JButton(new AbstractAction("Remove")
+			{
+				@Override
+				public void actionPerformed(ActionEvent aEvent)
+				{
+					ArrayList<String> tags = tagInput1.getTags();
+					tagInput1.removeTag(tags.get(new Random().nextInt(tags.size())), true);
+					vert.invalidate();
+					vert.validate();
+				}
+			}), new JButton(new AbstractAction("Show input...")
+			{
+				@Override
+				public void actionPerformed(ActionEvent aEvent)
+				{
+					TagInput msg = new TagInput("", list4346, Arrays.asList("test"));
+					JPanel panel = new JPanel(new FlowLayout(Orientation.VERTICAL).setGap(new Dimension(1, 20)));
+					panel.add(msg);
+					panel.add(new JButton("OK"));
+					JDialog dialog = new JDialog((JFrame)null, "Input tags", true);
+					dialog.add(panel);
+					dialog.pack();
+					dialog.setLocationRelativeTo(null);
+					dialog.setVisible(true);
+				}
+			})));
+
+			vert.add(tagInput1);
 			vert.add(tagInput2);
 
-			TagInput tagInput3 = new TagInput("tags tags tags tags tags tags tags tags tags tags tags tags tags tags", list4346, Arrays.asList("academic", "foster", "necessarily", "tree", "written"));
-			tagInput3.setBorder(BorderFactory.createLineBorder(Color.RED, 3));
-			vert.add(tagInput3);
-
-			JButton addButton = new JButton(new AbstractAction("add")
-			{
-				@Override
-				public void actionPerformed(ActionEvent aEvent)
-				{
-					tagInput1.addTag("test", true);
-					vert.invalidate();
-					vert.validate();
-				}
-			});
-			vert.add(addButton);
-			vert.add(new JButton(new AbstractAction("remove")
-			{
-				@Override
-				public void actionPerformed(ActionEvent aEvent)
-				{
-					tagInput1.removeTag("test", true);
-					vert.invalidate();
-					vert.validate();
-				}
-			}));
+			vert.add(new Box(Orientation.HORIZONTAL, new JLabel("Subjects:"), tagInput3));
+//			JPanel box = new JPanel(new FlowLayout(Orientation.HORIZONTAL));
+//			box.add(new JLabel("Subjects:"));
+//			box.add(tagInput3);
+//			vert.add(box);
 
 			JPanel p = new JPanel(new BorderLayout());
 			p.add(vert, BorderLayout.CENTER);

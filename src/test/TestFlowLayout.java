@@ -1,5 +1,6 @@
 package test;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
@@ -175,15 +176,15 @@ public class TestFlowLayout
 			controlsPane.add(controls5);
 			controlsPane.add(controls6);
 
-			JTabbedPane tabbedPane = new JTabbedPane();
-//			tabbedPane.addTab("title", new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
-			tabbedPane.addTab("title", panel);
-
-			JSplitPane splitPaneVer = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, new JScrollPane(controlsPane), tabbedPane);
+			JSplitPane splitPaneVer = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, new JLabel("Dummy"), panel);
 			JSplitPane splitPaneHor = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, splitPaneVer, new JLabel("Dummy"));
 
+			JPanel panel2 = new JPanel(new BorderLayout());
+			panel2.add(new JScrollPane(controlsPane), BorderLayout.NORTH);
+			panel2.add(splitPaneHor, BorderLayout.CENTER);
+
 			JFrame frame = new JFrame();
-			frame.add(splitPaneHor);
+			frame.add(panel2);
 			frame.setSize(1024, 1200);
 			frame.setLocationRelativeTo(null);
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

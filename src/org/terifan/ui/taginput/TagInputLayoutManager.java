@@ -28,7 +28,7 @@ class TagInputLayoutManager implements LayoutManager
 
 	public TagInputLayoutManager(JLabel aLabel, JTextField aTextField, JTextField aEditorLabel)
 	{
-		mLabel = aLabel;
+		mLabel = aLabel == null ? new JLabel("") : aLabel;
 		mCreateField = aTextField;
 		mEditorField = aEditorLabel;
 		mLayoutDims = new ArrayList<>();
@@ -142,7 +142,10 @@ class TagInputLayoutManager implements LayoutManager
 					comp.setVisible(true);
 					comp.setBounds(x, y, dim.width, layout.height);
 
-					x += dim.width + COL_SPACING;
+					if (comp != mLabel || !mLabel.getText().isEmpty())
+					{
+						x += dim.width + COL_SPACING;
+					}
 				}
 
 				y += layout.height + ROW_SPACING;

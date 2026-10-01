@@ -6,6 +6,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.swing.AbstractAction;
@@ -23,18 +24,21 @@ import javax.swing.event.MenuKeyListener;
 
 public class TagInput extends JComponent
 {
+	private final static long serialVersionUID = 1L;
+
 	protected JTextField mCreateField;
 	protected JTextField mEditorField;
 	protected JPopupMenu mPopupMenu;
 	protected String mLastFilter;
 	protected Tag mEditingTag;
-	protected List<String> mOptions;
-	protected SelectionListener mSelectionListener;
 	protected JLabel mTitle;
-	protected TagInputLayoutManager mLayout;
+
+	protected transient List<String> mOptions;
+	protected transient SelectionListener mSelectionListener;
+	protected transient TagInputLayoutManager mLayout;
 
 
-	private KeyAdapter mKeyListener = new KeyAdapter()
+	private transient KeyAdapter mKeyListener = new KeyAdapter()
 	{
 		@Override
 		public void keyPressed(KeyEvent aEvent)
@@ -263,7 +267,21 @@ public class TagInput extends JComponent
 	}
 
 
-	private Tag findTag(String aTag)
+	public ArrayList<String> getTags()
+	{
+		ArrayList<String> result = new ArrayList<>();
+		for (int i = 0, n = getComponentCount(); i < n; i++)
+		{
+			if (getComponent(i) instanceof Tag v)
+			{
+				result.add(v.getText());
+			}
+		}
+		return result;
+	}
+
+
+	protected Tag findTag(String aTag)
 	{
 		for (int i = 0; i < getComponentCount(); i++)
 		{
@@ -329,6 +347,9 @@ public class TagInput extends JComponent
 
 	private class MenuItemAction extends AbstractAction
 	{
+		private final static long serialVersionUID = 1L;
+
+
 		public MenuItemAction(String aText)
 		{
 			super(aText);

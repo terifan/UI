@@ -20,6 +20,12 @@ public class FlowLayout implements LayoutManager
 	private Alignment mAlignment;
 	private Orientation mOrientation;
 	private Wrap mWrap;
+	private Dimension mTotal;
+
+	private int[] mStripSize0 = new int[100];
+	private int[] mStripSize1 = new int[100];
+	private int[] mStripLength = new int[100];
+	private int mStripCount;
 
 
 	public static enum Wrap
@@ -133,33 +139,28 @@ public class FlowLayout implements LayoutManager
 		return this;
 	}
 
-	private int[] mStripWidth = new int[100];
-	private int[] mStripHeight = new int[100];
-	private int[] mStripSize = new int[100];
-	private int mStripCount;
-
 
 	private Dimension layoutSize(Container aTarget, boolean aMinimum)
 	{
 		Insets insets = aTarget.getInsets();
 
-		Dimension total = new Dimension(0, 0);
+		boolean hor = mOrientation == Orientation.HORIZONTAL;
 
-		if (aMinimum)
-		{
-			return total;
-		}
+		int total0 = 0;
+		int total1 = 0;
 
-		int targetWidth = aTarget.getWidth() - (insets.left + insets.right);
-		int targetHeight = aTarget.getHeight() - (insets.top + insets.bottom);
+		int target0 = hor ? aTarget.getWidth() - (insets.left + insets.right) : aTarget.getHeight() - (insets.top + insets.bottom);
+		int target1 = hor ? aTarget.getHeight() - (insets.top + insets.bottom) : aTarget.getWidth() - (insets.left + insets.right);
+
+		System.out.println(target0 + " x " + target1);
 
 		synchronized (aTarget.getTreeLock())
 		{
 			int n = aTarget.getComponentCount();
 
-			mStripWidth = new int[100];
-			mStripHeight = new int[100];
-			mStripSize = new int[100];
+			mStripSize0 = new int[100];
+			mStripSize1 = new int[100];
+			mStripLength = new int[100];
 			mStripCount = 0;
 
 			for (int i = 0; i < n; i++)
@@ -169,14 +170,18 @@ public class FlowLayout implements LayoutManager
 				{
 					Dimension compDimp = aMinimum ? comp.getMinimumSize() : comp.getPreferredSize();
 
-					if (mStripSize[mStripCount] > 0 && mStripHeight[mStripCount] + mGap.height + compDimp.height + mPadding.height > targetHeight)
+					int s0 = hor ? compDimp.width + mPadding.width : compDimp.height + mPadding.height;
+					int s1 = hor ? compDimp.height + mPadding.height : compDimp.width + mPadding.width;
+					int g = hor ? mGap.width : mGap.height;
+
+					if (mWrap != Wrap.NONE && mStripLength[mStripCount] > 0 && mStripSize0[mStripCount] + g + s0 > target0)
 					{
 						mStripCount++;
 					}
 
-					mStripWidth[mStripCount] = Math.max(mStripWidth[mStripCount], compDimp.width + mPadding.width);
-					mStripHeight[mStripCount] += (mStripSize[mStripCount] > 0 ? mGap.height : 0) + compDimp.height + mPadding.height;
-					mStripSize[mStripCount]++;
+					mStripSize0[mStripCount] += (mStripLength[mStripCount] > 0 ? g : 0) + s0;
+					mStripSize1[mStripCount] = Math.max(mStripSize1[mStripCount], s1);
+					mStripLength[mStripCount]++;
 				}
 			}
 
@@ -184,15 +189,17 @@ public class FlowLayout implements LayoutManager
 
 			for (int i = 0; i < mStripCount; i++)
 			{
-				total.width += mStripWidth[i];
-				total.height = Math.max(total.height, mStripHeight[i]);
+				total0 += mStripSize0[i];
+				total1 = Math.max(total1, mStripSize1[i]);
 			}
 		}
-		System.out.println(aMinimum + " " + total + " " + targetWidth + " " + targetHeight);
 
-		total.width += insets.left + insets.right;
-		total.height += insets.top + insets.bottom;
-		return total;
+		total0 += hor ? insets.left + insets.right : insets.top + insets.bottom;
+		total1 += hor ? insets.top + insets.bottom : insets.left + insets.right;
+
+		mTotal = hor ? new Dimension(total0, total1) : new Dimension(total1, total0);
+
+		return new Dimension(0, 0);
 	}
 
 
@@ -201,110 +208,131 @@ public class FlowLayout implements LayoutManager
 	{
 		Insets insets = aTarget.getInsets();
 
-		int targetWidth = aTarget.getWidth();
-		int targetHeight = aTarget.getHeight();
+		boolean hor = mOrientation == Orientation.HORIZONTAL;
+		int target0 = hor ? aTarget.getWidth() - (insets.left + insets.right) : aTarget.getHeight() - (insets.top + insets.bottom);
+		int target1 = hor ? aTarget.getHeight() - (insets.top + insets.bottom) : aTarget.getWidth() - (insets.left + insets.right);
 
 		synchronized (aTarget.getTreeLock())
 		{
 			Dimension parentDim = aTarget.getSize();
 
+			int parentDim0 = hor ? parentDim.width : parentDim.height;
+			int parentDim1 = hor ? parentDim.height : parentDim.width;
+			int g0 = hor ? mGap.width : mGap.height;
+			int g1 = hor ? mGap.height : mGap.width;
+
 			layoutSize(aTarget, false);
 
-			for (int i = 0, stripIndex = 0, stripOffset = 0; stripIndex < mStripCount; stripIndex++)
+			int axis1 = 0;
+
+			for (int i = 0, stripIndex = 0; stripIndex < mStripCount; stripIndex++)
 			{
-				int stripWidth = mStripWidth[stripIndex];
-				int stripHeight = mStripHeight[stripIndex];
+				int stripSize0 = mStripSize0[stripIndex];
+				int stripSize1 = mStripSize1[stripIndex];
 
-				int y;
-				if (mFill == Fill.BOTH || mFill == Fill.VERTICAL)
-				{
-					y = insets.top;
-				}
-				else
-				{
-					switch (mAnchor)
-					{
-						case NORTH_WEST:
-						case NORTH:
-						case NORTH_EAST:
-							y = insets.top;
-							break;
-						case CENTER:
-						case WEST:
-						case EAST:
-							y = Math.max(0, (parentDim.height - stripHeight) / 2);
-							break;
-						default:
-							y = Math.max(0, parentDim.height - insets.bottom - stripHeight);
-							break;
-					}
-				}
+//				switch (mAnchor)
+//				{
+//					case NORTH_WEST:
+//					case NORTH:
+//					case NORTH_EAST:
+//						axis1 = hor ? insets.top : insets.left;
+//						break;
+//					case CENTER:
+//					case WEST:
+//					case EAST:
+//						axis1 = Math.max(0, (parentDim1 - stripSize1) / 2);
+//						break;
+//					default:
+//						axis1 = Math.max(0, parentDim1 - (hor ? insets.bottom : insets.right) - stripSize1);
+//						break;
+//				}
+				int axis0 = 0;
+				int anc0 = 0;
+				int anc1 = 0;
 
-				for (int j = 0; j < mStripSize[stripIndex]; j++, i++)
+				for (int j = 0; j < mStripLength[stripIndex]; j++, i++)
 				{
 					Component comp = aTarget.getComponent(i);
 
 					if (comp.isVisible())
 					{
 						Dimension compDimp = comp.getPreferredSize();
-						int compWidth = compDimp.width + mPadding.width;
-						int compHeight = compDimp.height + mPadding.height;
+						int size0 = hor ? compDimp.width + mPadding.width : compDimp.height + mPadding.height;
+						int size1 = hor ? compDimp.height + mPadding.height : compDimp.width + mPadding.width;
 
-						int x = stripOffset;
 						if (mFill == Fill.BOTH || mFill == Fill.VERTICAL)
 						{
-							compHeight += (parentDim.height - stripHeight) / mStripSize[stripIndex];
+							if (hor)
+							{
+								size1 = mStripSize1[stripIndex];
+							}
+							else
+							{
+								if (stripIndex < mStripCount - 1)
+								{
+									size0 += (target0 - mStripSize0[stripIndex]) / mStripLength[stripIndex];
+								}
+							}
 						}
 						if (mFill == Fill.BOTH || mFill == Fill.HORIZONTAL)
 						{
-							x += insets.left;
-							compWidth = parentDim.width - insets.left - insets.right;
+							if (!hor)
+							{
+								size1 = mStripSize1[stripIndex];
+							}
+							else
+							{
+								size0 += (target0 - mStripSize0[stripIndex]) / mStripLength[stripIndex];
+							}
+						}
+
+						int adjust1 = 0;
+						switch (mAlignment)
+						{
+							case LEFT:
+								adjust1 = insets.left;
+								break;
+							case RIGHT:
+								adjust1 = stripSize1 - size1 - insets.right;
+								break;
+							case CENTER:
+								adjust1 = (stripSize1 - size1) / 2 + insets.left;
+								break;
+						}
+
+//						switch (mAnchor)
+//						{
+//							case NORTH_WEST:
+//							case WEST:
+//							case SOUTH_WEST:
+//								axis0 += adjust1;
+//								break;
+//							case CENTER:
+//							case NORTH:
+//							case SOUTH:
+//								axis0 += (parentDim0 - stripSize0) / 2 + adjust1;
+//								break;
+//							default:
+//								axis0 += parentDim0 - stripSize0 + adjust1;
+//								break;
+//						}
+						if (hor)
+						{
+							comp.setBounds(axis0 + anc0, axis1 + anc1 + adjust1, size0, size1);
 						}
 						else
 						{
-							int adjust = compWidth;
-							switch (mAlignment)
-							{
-								case LEFT:
-									adjust = insets.left;
-									break;
-								case JUSTIFY:
-									adjust = -insets.left - insets.right;
-									compWidth = stripWidth;
-									break;
-								case RIGHT:
-									adjust = stripWidth - compWidth - insets.right;
-									break;
-								case CENTER:
-									adjust = stripWidth / 2 - compWidth / 2 + insets.left;
-									break;
-							}
-							switch (mAnchor)
-							{
-								case NORTH_WEST:
-								case WEST:
-								case SOUTH_WEST:
-									x += adjust;
-									break;
-								case CENTER:
-								case NORTH:
-								case SOUTH:
-									x += (parentDim.width - stripWidth) / 2 + adjust;
-									break;
-								default:
-									x += parentDim.width - stripWidth + adjust;
-									break;
-							}
+							comp.setBounds(axis1 + anc1 + adjust1, axis0 + anc0, size1, size0);
 						}
-
-						comp.setBounds(x, y, compWidth, compHeight);
 						comp.revalidate();
 
-						y += compHeight + mGap.height;
+						axis0 += size0 + g0;
 					}
 				}
 
-				stripOffset += mStripWidth[stripIndex] + mGap.width;
+				axis1 += stripSize1 + g1;
+
+//				stripOffset0 += mStripSize0[stripIndex] + g0;
 			}
 		}
 	}
